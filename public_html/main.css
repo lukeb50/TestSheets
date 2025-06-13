@@ -1,0 +1,572 @@
+*:not(.material-symbols-outlined){
+    font-family: Roboto;
+}
+
+button{
+    background: white;
+    border:2px solid grey;
+    border-radius: 5px;
+    transition: 0.25s;
+}
+
+button:not(:disabled):hover{
+    background: rgba(200,200,200,0.3);
+}
+
+body,html{
+    height: 100%;
+    width:100%;
+    margin: 0;
+    padding: 0;
+}
+
+div.spinner{
+    width:150px;
+    height:150px;
+    margin: auto;
+    position: relative;
+}
+
+div.spinner div{
+    height: 100%;
+    width: 100%;
+    animation: spin 1.5s linear infinite;
+    border-radius: 50%;
+    box-sizing: border-box;
+    border:15px solid rgba(100,100,100,0.1);
+    border-left: 15px solid rgba(50,100,255,0.75);
+}
+
+div.spinner label{
+    top: 0%;
+    position: absolute;
+    display: block;
+    line-height: 150px;
+    text-align: center;
+    width:100%;
+    height: 100%;
+}
+
+input:disabled{
+    background: rgb(240,240,240);
+}
+
+div.centeringDiv{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+label.inputLabelFlex, label.inputLabelPhoneFlex{
+    display: flex;
+    padding-left:5px;
+    padding-right: 5px;
+}
+
+label.inputLabelFlex input, label.inputLabelFlex select{
+    flex:1;
+    margin-left: 5px;
+    border-radius: 5px;
+    border:1px solid black;
+}
+
+label.inputLabelPhoneFlex input:nth-child(1){
+    border-radius: 5px;
+    border:1px solid black;
+    width:40px;
+    text-align: center;
+}
+
+label.inputLabelPhoneFlex input:nth-child(2){
+    flex:1;
+    margin-left: 5px;
+    border-radius: 5px;
+    border:1px solid black;
+}
+
+#mainListContainer{
+    display: flex;
+    flex-direction: column;
+    width:100%;
+    height:100%;
+}
+
+#mainListDiv{
+    display: flex;
+    flex-grow: 1;
+    flex-direction: row;
+}
+
+#mainListDiv div.mainlistholder{
+    display: flex;
+    flex: 1;
+    margin: 10px;
+    border-radius: 7px;
+    border-width: 4px;
+    border-style: solid;
+    flex-direction: column;
+    box-shadow: 0px 10px 5px 2px gray;
+}
+
+#mainListDiv div.mainlistholder div.list{
+    overflow-y: auto;
+    flex-grow: 1;
+    flex-basis: 0px;
+}
+
+#mainListDiv div.mainlistholder label.listNoOption{
+    width:100%;
+    display: block;
+    padding-top: 5px;
+    font-weight: bold;
+    text-align: center;
+}
+
+
+#mainListDiv div.listing{
+    display: flex;
+    align-items: center;
+}
+
+#mainListDiv div.listing div{
+    flex:1;
+    padding:5px;
+}
+
+#mainListDiv div.listing label.listingTitle{
+    font-weight: bold;
+    font-size: 20px;
+    display: block;
+    width:100%;
+}
+
+#mainListDiv div.listing button{
+    margin: 5px;
+    border-width: 3px;
+    border-radius: 10px;
+    font-weight: bold;
+    padding-left: 10px;
+    padding-right: 10px;
+    height: 30px;
+}
+
+#mainLifesavingListHolder,#mainLifesavingListHolder h1,#mainLifesavingListHolder button{
+    border-color: purple;
+}
+
+#mainLifesavingList div.listing:nth-child(even){
+    background:rgba(107, 0, 179,0.2);
+}
+
+#mainFirstAidListHolder,#mainFirstAidListHolder h1,#mainFirstAidListHolder button{
+    border-color: darkorchid;
+}
+
+#mainFirstAidList div.listing:nth-child(even){
+    background: rgba(190, 94, 255,0.2);
+}
+
+#mainLeadershipListHolder,#mainLeadershipListHolder h1,#mainLeadershipListHolder button{
+    border-color: orange;
+}
+
+#mainLeadershipList div.listing:nth-child(even){
+    background: rgba(186, 155, 0,0.2)
+}
+
+#mainOtherListHolder,#mainOtherListHolder h1,#mainOtherListHolder button{
+    border-color: darkgreen;
+}
+
+#mainOtherList div.listing:nth-child(even){
+    background: rgba(5, 102, 0,0.2);
+}
+
+#mainListDiv div h1{
+    text-align: center;
+    margin: 0;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-width: 0px 0px 3px 0px;
+    border-style: solid;
+    font-size: 18px;
+    font-weight: normal;
+    background:rgba(150,150,150,0.1);
+}
+
+#mainListContainer a{
+    margin: auto;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    width: fit-content;
+    text-align: center;
+}
+
+h2{
+    display:block;
+    width: 100%;
+    text-align: center;
+}
+
+#supportedSources{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+h2{
+    padding:0;
+    margin: 0;
+}
+
+#supportedSources div{
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 5px;
+    margin-bottom:5px;
+}
+
+#supportedSources img, #supportedSources label{
+    width: 15px;
+    height: 15px;
+    font-size: 15px;
+}
+
+#csvIcon{
+    font-weight: bold;
+    border: 2px solid green;
+    border-radius: 5px;
+    padding: 2px;
+    font-size: 15px;
+}
+
+#dialogContainer{
+    display: none;
+    position: fixed;
+    top:0;
+    left: 0;
+    width:100%;
+    height: 100%;
+    background:rgba(0,0,0,0.5);
+}
+
+div.dialog{
+    width: 50%;
+    max-width: 500px;
+    min-width: 200px;
+    height: 80%;
+    min-height: 200px;
+    padding:5px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    background:white;
+    position: relative;
+    top:10%;
+    margin: auto;
+}
+
+#sourceDialogSwipeDivHolder, #courseInfoDialogSwipeDivHolder{
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+#sourceDialogSwipeDiv, #courseInfoDialogSwipeDiv{
+    display: flex;
+    overflow-x: hidden;
+    transition: 0.55s;
+    width:300%;
+    right: 0%;
+    position: relative;
+    transition-timing-function: cubic-bezier(.16,0,.33,1.59);
+}
+
+div.swipeScreen{
+    flex: 1;
+    overflow-y: auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#sourceDialogListing div.sourceDialogListOption{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding:5px;
+    transition: 0.5s;
+}
+#sourceDialogListing div.sourceDialogListOption:hover{
+    background:rgba(50,100,255,0.25);
+}
+
+#sourceDialogListing div.sourceDialogListOption:nth-child(odd){
+    background:rgba(50,100,255,0.1);
+}
+
+#sourceDialogListing div.sourceDialogListOption:nth-child(odd):hover{
+    background:rgba(50,100,255,0.25);
+}
+
+#sourceDialogListing div.sourceDialogListOption *{
+    font-size: 1.5em;
+
+}
+#sourceDialogListing div.sourceDialogListOption img{
+    height: 1.5em;
+}
+
+#sourceDialogListing div.sourceDialogListOption *:nth-child(1){
+    margin-right: 5px;
+}
+
+button.cancelButton{
+    font-size: 1.25em;
+    font-weight: bold;
+    border-width: 3px;
+}
+
+div.courseInfoDialogInputHolder{
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 5px;
+    padding-top: 5px;
+}
+
+div.courseInfoDialogInputHolder:nth-child(even){
+    background:rgba(100,150,255,0.15);
+    box-shadow: 0px 0px 3px 1px rgba(100,150,255,0.3);
+}
+
+div.courseInfoDialogInputHolder h3{
+    margin: 0;
+    text-align: center;
+}
+
+div.courseInfoDialogInputHolder label{
+    margin-top: 5px;
+}
+
+#downloadScreen{
+    display: flex;
+    flex-direction: column;
+}
+
+#downloadList{
+    overflow-y: auto;
+}
+
+#downloadList div.downloadListRow{
+    display: flex;
+    align-items: center;
+    padding-bottom: 3px;
+    padding-top: 3px;
+}
+
+#downloadList div.downloadListRow:nth-child(odd){
+    background: rgba(100,150,255,0.2);
+}
+
+#downloadList div.downloadListRow label{
+    flex-grow: 1;
+    margin-left: 5px;
+}
+
+#downloadList div.downloadListRow button{
+    margin-right: 5px;
+}
+
+#MainSelectionContainer{
+    display: none;
+    height: 100%;
+    width:100%;
+    flex-direction: column;
+}
+
+#mainSelectionTableHolder{
+    overflow: auto;
+    flex: 1;
+}
+
+#mainSelectionTable{
+    margin: 0;
+    border-collapse: collapse;
+}
+
+#mainSelectionTable tr th select{
+    border-radius: 3px;
+}
+
+#mainSelectionTable tr input{
+    border-radius: 3px;
+    border: 1px solid black;
+    background: rgba(255,255,255,0.9);
+
+}
+
+#mainSelectionTable tr:nth-child(odd){
+    background:rgba(50,100,255,0.2);
+}
+
+#mainSelectionTable tr:nth-child(1){
+    background:rgba(50,100,255,0.4);
+}
+
+#mainSelectionTable tr td:nth-child(1){
+    min-width: 175px;
+    white-space: nowrap;
+}
+
+#mainSelectionTable tr td, #mainSelectionTable tr th{
+    border:1px solid gray;
+    padding:8px;
+}
+
+#mainSelectionTable tr td:nth-child(1) *,#mainSelectionTable tr th:nth-child(1){
+    text-align: left;
+}
+
+#mainSelectionTableManualResponseBtn{
+    all: revert;
+    margin: 5px;
+    background: white;
+    border:2px solid rgba(50,100,255,0.75);
+    padding:5px;
+    border-radius: 5px;
+    transition: 0.25s;
+}
+
+#mainSelectionTableManualResponseBtn:hover{
+    background: rgba(50,100,255,0.2);
+}
+
+#mainSelectionButtonContainer{
+    margin-top: 2px;
+    box-shadow: 0 -1px 4px 1px rgba(100,100,100,0.75);
+    padding: 10px;
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+#mainSelectionButtonContainer button{
+    padding:5px;
+}
+
+label.hint{
+    font-weight: lighter;
+    font-size: 10px;
+    display: block;
+    text-align: center;
+    margin-top: 5px;
+}
+
+#googleAuthButton{
+    display: flex;
+    background:white;
+    border: 2px solid darkgray;
+    width: fit-content;
+    padding:5px;
+    align-items: center;
+    border-radius: 8px;
+    transition: 0.5s;
+}
+
+#googleAuthButton:hover{
+    background: rgba(155,155,155,0.2);
+}
+
+#googleAuthButton img{
+    height: 30px;
+    width: 30px;
+}
+
+#csvFilePicker{
+    height: 40px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#csvFilePickerButton{
+    all: revert;
+    height: 60%;
+    background: rgba(200, 200, 200, 0.2);
+    border: 2px solid black;
+    border-radius: 5px;
+    transition: 0.5s;
+}
+
+#csvFilePickerButton:hover{
+    background: rgba(200, 200, 200, 0.6);
+}
+
+#csvFilePickerNameHolder{
+    height: 100%;
+    flex:1;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 5px;
+}
+
+#csvConfirmButton{
+    height: 30px;
+    font-weight: bold;
+    padding: 0px 20px;
+}
+
+#csvConfirmButtonHolder{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+}
+
+#googleAuthButton label{
+    margin-left: 10px;
+    font-size: 15px;
+}
+
+@media(max-width: 700px){
+    #mainListDiv{
+        flex-direction: column;
+    }
+
+    #supportedSources{
+        flex-direction: column;
+    }
+
+    #mainListDiv div.mainlistholder div.list{
+        flex-basis: unset;
+    }
+}
+
+.scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    border-radius: 5px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+    background: #888; 
+}
+
+.scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
+
+#contactForm{
+    width:100%;
+    flex:1;
+}

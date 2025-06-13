@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test Sheets</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="main.css">
+        <link href="https://fonts.googleapis.com/css?family=Roboto&amp;display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,300,0,0">    </head>
+    <body>
+        <div id="mainListContainer">
+            <div id="mainListDiv">
+                <div id="mainLifesavingListHolder" class="mainlistholder">
+                    <h1>Lifesaving & Lifeguarding</h1>
+                    <div id="mainLifesavingList" class="list scrollbar"></div>
+                </div>
+                <div id="mainFirstAidListHolder" class="mainlistholder">
+                    <h1>First Aid</h1>
+                    <div id="mainFirstAidList" class="list scrollbar"></div>
+                </div>
+                <div id="mainLeadershipListHolder" class="mainlistholder">
+                    <h1>Leadership</h1>
+                    <div id="mainLeadershipList" class="list scrollbar"></div>
+                </div>
+                <div id="mainOtherListHolder" class="mainlistholder">
+                    <h1>Other</h1>
+                    <div id="mainOtherList" class="list scrollbar"></div>
+                </div>
+            </div>
+            <a href="javascript:void(0)" id="helpButton">Contact Us</a>
+            <h2>Supported Sources</h2>
+            <div id="supportedSources">
+                <div>
+                    <img src="https://storage.googleapis.com/assets_workspace/uploads/7uffzv9dk4sn-7xWvh4uZdi5Gm7fu8xC33c-1d132d3cdfa2407ed1435f5e1ead9ce0-Forms-title-logo.svg">
+                    <label>Google Forms</label>
+                </div>
+                <div>
+                    <label id="csvIcon">CSV</label>
+                    <label>.CSV files</label>
+                </div>
+            </div>
+        </div>
+        <div id="MainSelectionContainer">
+            <div id="mainSelectionTableHolder">
+                <table id="mainSelectionTable"></table>
+            </div>
+            <div id="mainSelectionButtonContainer">
+                <div>
+                    <label id="mainSelectionCountLabel">0 Responses Selected</label>
+                    <button id="cancelSelectionTableBtn">Cancel</button>
+                    <button id="confirmSelectionTableBtn">Confirm</button>
+                </div>
+            </div>
+        </div>
+        <div id="dialogContainer">
+            <div id="sourceDialog" class="dialog">
+                <h2>Select Data Source</h2>
+                <div id="sourceDialogSwipeDivHolder">
+                    <div id="sourceDialogSwipeDiv">
+                        <div class="swipeScreen">
+                            <div id="sourceDialogListing" class="swipeScreenScrollContainer">
+                                <div id="googleFormsSource" class="sourceDialogListOption">
+                                    <img src="https://storage.googleapis.com/assets_workspace/uploads/7uffzv9dk4sn-7xWvh4uZdi5Gm7fu8xC33c-1d132d3cdfa2407ed1435f5e1ead9ce0-Forms-title-logo.svg">
+                                    <label>Google Forms</label>
+                                </div>
+                                <div id="csvSource" class="sourceDialogListOption">
+                                    <label id="csvIcon">CSV</label>
+                                    <label>.CSV file</label>
+                                </div>
+                                <div id="testSource" class="sourceDialogListOption">
+                                    <label id="csvIcon">Test</label>
+                                    <label>Hardcoded Test Entry</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="swipeScreen">
+                            <div id="GoogleFormsInputPage">
+                                <div class="centeringDiv">
+                                    <span id="googleAuthButton">
+                                        <img src="https://fonts.gstatic.com/s/i/productlogos/drive_2020q4/v8/web-64dp/logo_drive_2020q4_color_2x_web_64dp.png">
+                                        <label>Select from Google Drive</label>
+                                    </span>
+                                </div>
+                            </div>
+                            <div id="csvInputPage">
+                                <div id="csvFilePicker">
+                                    <button id="csvFilePickerButton" onclick="document.getElementById('csvUpload').click()">Choose File</button>
+                                    <div id="csvFilePickerNameHolder">
+                                        <label id="csvFilePickerFileName">No file selected</label>
+                                    </div>
+                                </div>
+                                <div id="csvConfirmButtonHolder">
+                                    <button id="csvConfirmButton" disabled>Use</button>
+                                </div>
+                                <input type="file" id="csvUpload" style="display: none" accept=".csv"/>
+                            </div>
+                            <div id="testInputPage"></div>
+                        </div>
+                        <div class="swipeScreen" style="overflow:hidden">
+                            <div class="spinner">
+                                <div></div>
+                                <label>Fetching Data</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="cancelButton" id="cancelSourceDialogButton">Cancel</button>
+            </div>
+            <div id="courseInfoDialog" class="dialog">
+                <div id="courseInfoDialogSwipeDivHolder">
+                    <div id="courseInfoDialogSwipeDiv">
+                        <div class="swipeScreen scrollbar">
+                            <label style="text-align: center;display: block">Fill in information about the host, exam, instructor and examiner, or leave blank.</label>
+                            <button id="autofillCourseInfoButton" style="margin: auto">Fill in From Previous Sheet</button>
+                            <div class="swipeScreenScrollContainer">
+                                <div class="courseInfoDialogInputHolder">
+                                    <h3>Host Information</h3>
+                                    <form>
+                                        <label class="inputLabelFlex">Host Name:<input id="infoHostName" placeholder="Affiliate Name"></label>
+                                        <label class="inputLabelPhoneFlex">Phone: (<input id="infoHostAreaPhone" placeholder="647">)<input id="infoHostPhone" placeholder="111-2222"></label>
+                                        <label class="inputLabelFlex">Street Address:<input id="infoHostAddress" placeholder="123 Main St"></label>
+                                        <label class="inputLabelFlex">City:<input id="infoHostCity" placeholder="Toronto"></label>
+                                        <label class="inputLabelFlex">Province:<select  id="infoHostProvince">
+                                                <option value=""></option>
+                                                <option value="AB">Alberta</option>
+                                                <option value="BC">British Colombia</option>
+                                                <option value="MB">Manitoba</option>
+                                                <option value="NB">New Brunswick</option>
+                                                <option value="NL">Newfoundland and Labrador</option>
+                                                <option value="NS">Nova Scotia</option>
+                                                <option value="NT">Northwest Territories</option>
+                                                <option value="NU">Nunavut</option>
+                                                <option value="ON">Ontario</option>
+                                                <option value="PEI">Prince Edward Island</option>
+                                                <option value="QC">Québec</option>
+                                                <option value="SK">Saskatchewan</option>
+                                                <option value="YK">Yukon</option>
+                                            </select>
+                                        </label>
+                                        <label class="inputLabelFlex">Postal Code:<input id="infoHostPostalCode" placeholder ="A1A 1A1"></label>
+                                    </form>
+                                </div>
+                                <div class="courseInfoDialogInputHolder">
+                                    <h3>Exam Information</h3>
+                                    <form>
+                                        <label class="inputLabelFlex">Exam Date:<input id="infoExamDate" type="date"></label>
+                                        <label class="inputLabelFlex">Facility Name:<input id="infoFacilityName" placeholder="Community Pool"></label>
+                                        <label class="inputLabelPhoneFlex">Facility Phone: (<input id="infoFacilityAreaPhone" placeholder="647">)<input id="infoFacilityPhone" placeholder="111-2222"></label>
+                                    </form>
+                                </div>
+                                <div class="courseInfoDialogInputHolder">
+                                    <h3>Instructor Information</h3>
+                                    <form>
+                                        <label class="inputLabelFlex">Name:<input id="infoInstructorName" placeholder="John Smith"></label>
+                                        <label class="inputLabelFlex">ID#:<input id="infoInstructorId" placeholder="SMJAAA"></label>
+                                        <label class="inputLabelFlex">Email:<input id="infoInstructorEmail" type="email"></label>
+                                        <label class="inputLabelPhoneFlex">Phone: (<input id="infoInstructorAreaPhone" placeholder="647">)<input id="infoInstructorPhone" placeholder="111-2222"></label>
+                                    </form>
+                                </div>
+                                <div class="courseInfoDialogInputHolder">
+                                    <h3>Examiner Information</h3>
+                                    <label><input id="infoExaminerIsInstructor" type="checkbox">Same as Instructor</label>
+                                    <form>
+                                        <label class="inputLabelFlex">Name:<input id="infoExaminerName" placeholder="John Smith"></label>
+                                        <label class="inputLabelFlex">ID#:<input id="infoExaminerId" placeholder="SMJAAA"></label>
+                                        <label class="inputLabelFlex">Email:<input id="infoExaminerEmail" type="email"></label>
+                                        <label class="inputLabelPhoneFlex">Phone: (<input id="infoExaminerAreaPhone" placeholder="647">)<input id="infoExaminerPhone" placeholder="111-2222"></label>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="swipeScreen" style="overflow:hidden">
+                            <div class="spinner">
+                                <div></div>
+                                <label>Generating</label>
+                            </div>
+                        </div>
+                        <div id="downloadScreen" class="swipeScreen">
+                            <h2 id="downloadSheetName">Sheet Name</h2>
+                            <label style="display: block;text-align: center">View or Download</label>
+                            <div id="downloadList" class="scrollbar"></div>
+                        </div>
+                    </div>
+                </div>
+                <button class="cancelButton" id="courseInfoDialogButton">Generate Test Sheet</button>
+            </div>
+            <div id="helpDialog" class="dialog">
+                <iframe id="contactForm" src="https://docs.google.com/forms/d/e/1FAIpQLSfmawXLGiONxwWdfTEdk-wb8MxjxhFbbu4_dmtv9UGZ5CZ5ng/viewform?embedded=true" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+                <button class="cancelButton" id="closeHelpDialogButton">Close</button>
+            </div>
+            <dialog id="loadingDialog"><label>Loading...</label></dialog>
+        </div>
+        <script src="https://accounts.google.com/gsi/client" async defer></script>
+        <script async defer src="https://apis.google.com/js/api.js"></script>
+        <script src="dataSources/Source.js"></script>
+        <script src="dataSources/SourceFactory.js"></script>
+        <script src="dataSources/GoogleFormsSource.js"></script>
+        <script src="dataSources/CsvSource.js"></script>
+        <script src="dataSources/TestSource.js"></script>
+        <script src="dataSources/ResponseContainer.js"></script>
+        <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+        <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+        <script src="javascript/main.js"></script>
+    </body>
+</html>

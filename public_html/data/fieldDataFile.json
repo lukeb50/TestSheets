@@ -1,0 +1,135 @@
+{
+    "Name": {
+        "RegexMatch": "^(?<first>[A-Za-z-]+) (?<last>[A-Za-z- ]*)$",
+        "FieldDivision": {
+            "DivisibleFields": {
+                "FirstName": "first",
+                "LastName": "last"
+            }
+        },
+        "Display": {
+            "English": "Name"
+        }
+    },
+
+    "FirstName": {
+        "Display": {
+            "English": "First Name"
+        }
+    },
+
+    "LastName": {
+        "Display": {
+            "English": "Last Name"
+        }
+    },
+
+    "Address": {
+        "RegexMatch": "^[0-9]+ [\\S\\s]*$",
+        "Display": {
+            "English": "Address"
+        }
+    },
+
+    "Province": {
+        "Display": {
+            "English": "Province"
+        }
+    },
+
+    "Apartment": {
+        "Display": {
+            "English": "Apartment"
+        }
+    },
+
+    "City": {
+        "RegexMatch": "^(?![ -])([-]?[a-zA-Z])+$",
+        "Display": {
+            "English": "City"
+        }
+    },
+
+    "PostalCode": {
+        "RegexMatch": "^[A-z][0-9][A-z] ?[0-9][A-z][0-9]$",
+        "Display": {
+            "English": "Postal Code"
+        },
+        "FieldValueModifications":{
+            "Formatted": []
+        }
+    },
+
+    "Email": {
+        "RegexMatch": "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
+        "Display": {
+            "English": "Email"
+        }
+    },
+
+    "Phone": {
+        "RegexMatch": "^\\(?[0-9]{3}\\)? ?-?[0-9]{3} ?-?[0-9]{4}$",
+        "FieldValueModifications": {
+            "OnlyNumbers": ["\\(|\\)|-| ", ""],
+            "Formatted": ["\\(?([0-9]{3})[\\) -]*([0-9]{3})[\\) -]*([0-9]{4})", "($1)$2-$3"]
+        },
+        "Display": {
+            "English": "Phone"
+        }
+    },
+
+    "DOB": {
+        "RegexMatch": "^(?<year>\\d{2}){1,2}-(?<month>\\d{2})-(?<day>\\d{2})$",
+        "FieldDivision": {
+            "DivisibleFields": {
+                "DOBY": "year",
+                "DOBM": "month",
+                "DOBD": "day"
+            }
+        },
+        "Display": {
+            "English": "Date of Birth"
+        }
+    },
+
+    "DOBY": {
+        "RegexMatch": "^\\d{4}$",
+        "Display": {
+            "English": "Date of Birth (Year)"
+        }
+    },
+
+    "DOBM": {
+        "Display": {
+            "English": "Date of Birth (Month)"
+        }
+    },
+
+    "DOBD": {
+        "Display": {
+            "English": "Date of Birth (Day)"
+        }
+    },
+
+    "Prereq1Date": {
+        "Display": {
+            "English": "Prerequisite 1 Date"
+        }
+    },
+    "Prereq1Location": {
+        "Display": {
+            "English": "Prerequisite 1 Location"
+        }
+    },
+
+    "Prereq2Date": {
+        "Display": {
+            "English": "Prerequisite 2 Date"
+        }
+    },
+    "Prereq2Location": {
+        "Display": {
+            "English": "Prerequisite 2 Location"
+        }
+    }
+}

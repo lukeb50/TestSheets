@@ -1,0 +1,79 @@
+{
+    "lifesaving": [
+        {
+            "name": "Bronze Star (2020)",
+            "descriptionText": "Original Exam",
+            "documentUrl": "BronzeStar2020.pdf",
+            "pageSlotCounts": [6, 7],
+            "DividablesToInclude": ["DOB"],
+            "ModificationsToApply": {
+                "Phone": "Formatted",
+                "PostalCode": "Formatted"
+            },
+            "fields": ["Name", "Address", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD"]
+        }, {
+            "name": "Bronze Medallion (2020)",
+            "descriptionText": "Original Exam",
+            "documentUrl": "BronzeMedallion2020.pdf",
+            "pageSlotCounts": [6, 7],
+            "DividablesToInclude": ["DOB"],
+            "ModificationsToApply": {
+                "Phone": "Formatted",
+                "PostalCode": "Formatted"
+            },
+            "fields": ["Name", "Address", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location"]
+        }, {
+            "name": "Bronze Cross (2020)",
+            "descriptionText": "Original Exam",
+            "documentUrl": "BronzeCross2020.pdf",
+            "pageSlotCounts": [6, 7],
+            "DividablesToInclude": ["DOB"],
+            "ModificationsToApply": {
+                "Phone": "Formatted",
+                "PostalCode": "Formatted"
+            },
+            "fields": ["Name", "Address", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location", "Prereq2Date", "Prereq2Location"]
+        }, {
+            "name": "National Lifeguard (2022)",
+            "descriptionText": "Original Exam - Pool",
+            "documentUrl": "NL-Pool2022.pdf",
+            "pageSlotCounts": [4, 4],
+            "DividablesToInclude": ["DOB","Name"],
+            "ModificationsToApply": {
+                "Phone": "Formatted",
+                "PostalCode": "Formatted"
+            },
+            "fields": ["FirstName", "LastName", "Address", "Province", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location", "Prereq2Date", "Prereq2Location"]
+        }
+    ],
+    "firstAid": [
+        {
+            "name": "Emergency First Aid (2014)",
+            "descriptionText": "Original or Recert Exam",
+            "documentUrl": "EFA2014.pdf",
+            "pageSlotCounts": [5, 5],
+            "DividablesToInclude": ["DOB"],
+            "ModificationsToApply": {
+                "Phone": "Formatted",
+                "PostalCode": "Formatted"
+            },
+            "fields": ["Name", "Address", "Apartment", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD"]
+        }, {
+            "name": "Standard First Aid (2023)",
+            "descriptionText": "Original or Recert Exam",
+            "documentUrl": "SFA2023.pdf",
+            "pageSlotCounts": [5, 5],
+            "DividablesToInclude": ["DOB"],
+            "ModificationsToApply": {
+                "Phone": "Formatted",
+                "PostalCode": "Formatted"
+            },
+            "fields": ["Name", "Address", "Apartment", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location"]
+        }
+    ],
+    "leadership": [
+
+    ],
+    "other": [
+    ]
+}
