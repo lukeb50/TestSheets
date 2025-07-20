@@ -38,12 +38,23 @@
             "descriptionText": "Original Exam - Pool",
             "documentUrl": "NL-Pool2022.pdf",
             "pageSlotCounts": [4, 4],
-            "DividablesToInclude": ["DOB","Name"],
+            "DividablesToInclude": ["DOB", "Name"],
             "ModificationsToApply": {
                 "Phone": "Formatted",
                 "PostalCode": "Formatted"
             },
             "fields": ["FirstName", "LastName", "Address", "Province", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location", "Prereq2Date", "Prereq2Location"]
+        }, {
+            "name": "National Lifeguard (2022)",
+            "descriptionText": "Recertification Exam - Pool",
+            "documentUrl": "NL-Pool-Recert2022.pdf",
+            "pageSlotCounts": [4, 4],
+            "DividablesToInclude": ["DOB", "Name"],
+            "ModificationsToApply": {
+                "Phone": "Formatted",
+                "PostalCode": "Formatted"
+            },
+            "fields": ["FirstName", "LastName", "Address", "Province", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location"]
         }
     ],
     "firstAid": [
