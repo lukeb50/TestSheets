@@ -8,7 +8,9 @@
             "DividablesToInclude": ["DOB"],
             "ModificationsToApply": {
                 "Phone": "Formatted",
-                "PostalCode": "Formatted"
+                "PostalCode": "Formatted",
+                "DOBM": "Numeric",
+                "DOBY": "TwoDigit"
             },
             "fields": ["Name", "Address", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD"]
         }, {
@@ -19,7 +21,9 @@
             "DividablesToInclude": ["DOB"],
             "ModificationsToApply": {
                 "Phone": "Formatted",
-                "PostalCode": "Formatted"
+                "PostalCode": "Formatted",
+                "DOBM": "Numeric",
+                "DOBY": "TwoDigit"
             },
             "fields": ["Name", "Address", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location"]
         }, {
@@ -30,7 +34,9 @@
             "DividablesToInclude": ["DOB"],
             "ModificationsToApply": {
                 "Phone": "Formatted",
-                "PostalCode": "Formatted"
+                "PostalCode": "Formatted",
+                "DOBM": "Numeric",
+                "DOBY": "TwoDigit"
             },
             "fields": ["Name", "Address", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location", "Prereq2Date", "Prereq2Location"]
         }, {
@@ -41,7 +47,9 @@
             "DividablesToInclude": ["DOB", "Name"],
             "ModificationsToApply": {
                 "Phone": "Formatted",
-                "PostalCode": "Formatted"
+                "PostalCode": "Formatted",
+                "DOBM": "Numeric",
+                "DOBY": "TwoDigit"
             },
             "fields": ["FirstName", "LastName", "Address", "Province", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location", "Prereq2Date", "Prereq2Location"]
         }, {
@@ -52,7 +60,9 @@
             "DividablesToInclude": ["DOB", "Name"],
             "ModificationsToApply": {
                 "Phone": "Formatted",
-                "PostalCode": "Formatted"
+                "PostalCode": "Formatted",
+                "DOBM": "Numeric",
+                "DOBY": "TwoDigit"
             },
             "fields": ["FirstName", "LastName", "Address", "Province", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location"]
         }
@@ -66,7 +76,9 @@
             "DividablesToInclude": ["DOB"],
             "ModificationsToApply": {
                 "Phone": "Formatted",
-                "PostalCode": "Formatted"
+                "PostalCode": "Formatted",
+                "DOBM": "Numeric",
+                "DOBY": "TwoDigit"
             },
             "fields": ["Name", "Address", "Apartment", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD"]
         }, {
@@ -77,7 +89,9 @@
             "DividablesToInclude": ["DOB"],
             "ModificationsToApply": {
                 "Phone": "Formatted",
-                "PostalCode": "Formatted"
+                "PostalCode": "Formatted",
+                "DOBM": "Numeric",
+                "DOBY": "TwoDigit"
             },
             "fields": ["Name", "Address", "Apartment", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location"]
         }

@@ -23,12 +23,46 @@ var courseInfoObj = null;
 
 const jsFieldValueModifications = {
     PostalCode: {
+        //Formats a postal code into uppercase with a space
         Formatted: function (value) {
             var matchInfo = value.toUpperCase().match(/(\w{3})[ -]?(\w{3})/);
             return matchInfo[1] + " " + matchInfo[2];
         }
+    },
+    DOBM: {
+        //Converts a written date ("Jan", "October") and returns the corresponding formatted month number (01,10)
+        Numeric: function (value) {
+            //Check for values that do not need to be formatted (ints)
+            if (isNaN(value) || value !== parseInt(value)) {
+                //Make a Date object and check if it is value
+                let date = new Date(value + " 1 2000");
+                if (!isNaN(date.valueOf())) {
+                    //Valid date object
+                    let monthNum = date.getMonth() + 1;
+                    return (monthNum >= 10 ? monthNum : "0" + monthNum).toString();
+                }
+                //Invalid date object, return empty
+                return "";
+            } else {
+                if (!isNaN(value)) {
+                    //An int was provided, pass it through
+                    return value;
+                }
+                return "";
+            }
+        }
+    }
+};
+
+//Place skeletons
+const template = document.getElementById("listSkeleton");
+for (const [listName, listElement] of Object.entries(lists)) {
+    for (var i = 0; i < 3; i++) {
+        let clone = template.content.cloneNode(true);
+        listElement.appendChild(clone);
     }
 }
+;
 
 window.onload = function () {
     //Load JSON files
@@ -226,6 +260,16 @@ function generatePdfFile(sheetData, dataContainer, selectedResponses, courseInfo
                                 if (fieldName.endsWith("Id")) {
                                     val = value.replaceAll(" ", "");
                                 }
+                                if (fieldName === "ExamDate") {
+                                    //Cut off the first part of the exam year: 2025-07-31 -> 25-07-31
+                                    let regexp = new RegExp("([0-9]{2,4})(-[0-9]{1,2}-[0-9]{1,2})");
+                                    let matchInfo = regexp.exec(val);
+                                    if (matchInfo && matchInfo.length === 3) {
+                                        //If regex matches (4 number year)
+                                        let yearMatch = matchInfo[1];
+                                        val = (yearMatch.length === 2 ? yearMatch : yearMatch.substring(2, 4)) + matchInfo[2];
+                                    }
+                                }
                                 formObject.getTextField(fieldName).setText(val);
                             } catch (e) {
                                 console.log("Error occured when filling field " + fieldName, e);
@@ -393,7 +437,9 @@ autofillCourseInfoButton.onclick = function () {
 const matchingTable = document.getElementById("mainSelectionTable");
 const matchingConfirmBtn = document.getElementById("confirmSelectionTableBtn");
 const matchingSelectedCountLabel = document.getElementById("mainSelectionCountLabel");
+const matchingSheetInfoLabel = document.getElementById("mainSelectionSheetLabel");
 function showMatchingScreen(dataContainer, selectedSheet) {
+    matchingSheetInfoLabel.textContent = selectedSheet.name + " - " + selectedSheet.descriptionText;
     listScreen.style.display = "none";
     tableScreen.style.display = "flex";
     clearChildren(matchingTable);

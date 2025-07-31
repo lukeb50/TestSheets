@@ -55,7 +55,7 @@
         "Display": {
             "English": "Postal Code"
         },
-        "FieldValueModifications":{
+        "FieldValueModifications": {
             "Formatted": []
         }
     },
@@ -79,7 +79,7 @@
     },
 
     "DOB": {
-        "RegexMatch": "^(?<year>\\d{2}){1,2}-(?<month>\\d{2})-(?<day>\\d{2})$",
+        "RegexMatch": "^(?<year>\\d{2,4})-(?<month>\\d{2})-(?<day>\\d{2})$",
         "FieldDivision": {
             "DivisibleFields": {
                 "DOBY": "year",
@@ -94,12 +94,19 @@
 
     "DOBY": {
         "RegexMatch": "^\\d{4}$",
+        "FieldValueModifications": {
+            "TwoDigit": ["^([0-9]{2})?([0-9]{2})$", "$2"]
+        },
         "Display": {
             "English": "Date of Birth (Year)"
         }
     },
 
     "DOBM": {
+        "RegexMatch": "January|February|March|April|May|June|July|August|September|October|November|December",
+        "FieldValueModifications": {
+            "Numeric": []
+        },
         "Display": {
             "English": "Date of Birth (Month)"
         }

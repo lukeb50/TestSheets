@@ -45,6 +45,9 @@
                 <table id="mainSelectionTable"></table>
             </div>
             <div id="mainSelectionButtonContainer">
+                <div id="mainSelectionLabelContainer">
+                    <label id="mainSelectionSheetLabel"></label>
+                </div>
                 <div>
                     <label id="mainSelectionCountLabel">0 Responses Selected</label>
                     <button id="cancelSelectionTableBtn">Cancel</button>
@@ -190,6 +193,15 @@
             </div>
             <dialog id="loadingDialog"><label>Loading...</label></dialog>
         </div>
+        <template id="listSkeleton">
+            <div class="listing skeleton">
+                <div>
+                    <label class="listingTitle"></label>
+                    <label class="listingInfo"></label>
+                </div>
+                <button class="listingButton"></button>
+            </div>
+        </template>
         <script src="https://accounts.google.com/gsi/client" async defer></script>
         <script async defer src="https://apis.google.com/js/api.js"></script>
         <script src="dataSources/Source.js"></script>
