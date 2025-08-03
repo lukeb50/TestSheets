@@ -2,12 +2,17 @@ class Source {
 
     sheetInformation;
     fieldData;
+    authenticationProvider;
 
     //Initializes any required functionality
     init() {
         return new Promise((resolve) => {
             resolve();
         });
+    }
+    
+    setAuthenticationProvider(authProvider){
+        this.authenticationProvider = authProvider;
     }
 
     //Prompts the user to provide raw data in the appropriate format

@@ -16,6 +16,9 @@ const courseInfoDialogPages = document.getElementById("courseInfoDialogSwipeDiv"
 //Main Screens
 const listScreen = document.getElementById("mainListContainer");
 const tableScreen = document.getElementById("MainSelectionContainer");
+//Authentication
+const authProvider = new AuthProvider();
+//Data
 var fieldData;
 var sheetData;
 
@@ -62,7 +65,11 @@ for (const [listName, listElement] of Object.entries(lists)) {
         listElement.appendChild(clone);
     }
 }
-;
+
+//Hide test entry in production
+if (location.hostname !== "localhost" && location.hostname !== "127.0.0.1" && location.hostname !== ""){
+    document.getElementById("testSource").style.display = "none";
+}
 
 window.onload = function () {
     //Load JSON files
@@ -145,6 +152,7 @@ function getDataFromSource(selectedSheet) {
             sourceData.button.onclick = function () {
                 let sourceObject = new SourceFactory().getSourceOfType(sourceData.sourceName);
                 sourceObject.setInformation(selectedSheet, fieldData);
+                sourceObject.setAuthenticationProvider(authProvider);
                 sourceObject.execute().then((dataContainer) => {
                     dialogContainer.style.display = "none";
                     resolve(dataContainer);

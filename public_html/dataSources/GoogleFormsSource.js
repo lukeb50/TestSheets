@@ -47,6 +47,7 @@ class GoogleFormsSource extends Source {
                                                 "Authorization": "Bearer " + accessToken
                                             }
                                         }).catch((exception) => {
+                                            console.log(exception);
                                         });
 
                                         let formQuery = fetch("https://forms.googleapis.com/v1/forms/" + formId, {
@@ -67,6 +68,7 @@ class GoogleFormsSource extends Source {
                                         }).catch((e) => {
                                             this.movePageBackwards();
                                             console.log(e);
+                                            this.authenticationProvider.clearCredential(this);
                                             alert("An error occured, please try again");
                                         });
 
@@ -83,15 +85,18 @@ class GoogleFormsSource extends Source {
                         reject("Failed to authenticate");
                     }
                     accessToken = response.access_token;
+                    this.authenticationProvider.addCredential(this, accessToken);
                     showPicker();
                 };
-                if (accessToken === null) {
+                if (!accessToken && !this.authenticationProvider.hasCredential(this)) {
                     // Prompt the user to select a Google Account and ask for consent to share their data
                     // when establishing a new session.
                     this.tokenClient.requestAccessToken({prompt: 'consent'});
                 } else {
                     // Skip display of account chooser and consent dialog for an existing session.
-                    this.tokenClient.requestAccessToken({prompt: ''});
+                    accessToken = this.authenticationProvider.getCredential(this);
+                    showPicker();
+                    //this.tokenClient.requestAccessToken({prompt: ''});
                 }
             });
         });
@@ -111,13 +116,13 @@ class GoogleFormsSource extends Source {
                     let matchedFieldName = null;
                     this.sheetInformation.fields.forEach((fieldName) => {
                         let fieldInfo = this.fieldData[fieldName];
-                        if(fieldInfo['Display']){
+                        if (fieldInfo['Display']) {
                             for (const text of Object.values(fieldInfo['Display'])) {
-                                if(this.stripFieldName(text).includes(this.stripFieldName(questionText))){
-                                    if(matchedFieldName === null){
+                                if (this.stripFieldName(text).includes(this.stripFieldName(questionText))) {
+                                    if (matchedFieldName === null) {
                                         //First match, note it
                                         matchedFieldName = fieldName;
-                                    }else{
+                                    } else {
                                         //Two matches occured, don't indicate
                                         matchedFieldName = null;
                                         break;
@@ -127,7 +132,7 @@ class GoogleFormsSource extends Source {
                         }
                     });
                     //A single field matched
-                    if(matchedFieldName !==null){
+                    if (matchedFieldName !== null) {
                         match[matchedFieldName] = questionIdentifier;
                     }
                 }
