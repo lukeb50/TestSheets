@@ -27,7 +27,13 @@
     "Address": {
         "RegexMatch": "^[0-9]+ [\\S\\s]*$",
         "Display": {
-            "English": "Address"
+            "English": "Street Address"
+        }
+    },
+    
+    "FullAddress": {
+        "Display": {
+            "English": "Full Address"
         }
     },
 
@@ -57,7 +63,8 @@
         },
         "FieldValueModifications": {
             "Formatted": []
-        }
+        },
+        "Autofill": [["Address", "City"]]
     },
 
     "Email": {
@@ -80,6 +87,10 @@
 
     "DOB": {
         "RegexMatch": "^(?<year>\\d{2,4})-(?<month>\\d{2})-(?<day>\\d{2})$",
+        "FieldValueModifications": {
+            "ShortYear": [],
+            "Spaced": ["-"," "]
+        },
         "FieldDivision": {
             "DivisibleFields": {
                 "DOBY": "year",
@@ -118,6 +129,12 @@
         }
     },
 
+    "Prereq1Name": {
+        "Display": {
+            "English": "Prerequisite 1 Name"
+        }
+    },
+
     "Prereq1Date": {
         "Display": {
             "English": "Prerequisite 1 Date"
@@ -129,6 +146,12 @@
         }
     },
 
+    "Prereq2Name": {
+        "Display": {
+            "English": "Prerequisite 2 Name"
+        }
+    },
+
     "Prereq2Date": {
         "Display": {
             "English": "Prerequisite 2 Date"
@@ -137,6 +160,12 @@
     "Prereq2Location": {
         "Display": {
             "English": "Prerequisite 2 Location"
+        }
+    },
+
+    "LSSId": {
+        "Display": {
+            "English": "LSS ID"
         }
     }
 }

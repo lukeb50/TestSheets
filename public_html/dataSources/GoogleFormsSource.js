@@ -46,8 +46,6 @@ class GoogleFormsSource extends Source {
                                             headers: {
                                                 "Authorization": "Bearer " + accessToken
                                             }
-                                        }).catch((exception) => {
-                                            console.log(exception);
                                         });
 
                                         let formQuery = fetch("https://forms.googleapis.com/v1/forms/" + formId, {

@@ -1,4 +1,4 @@
-/* global fetch, Promise, PDFLib, URL */
+/* global fetch, Promise, PDFLib, URL, autofills */
 
 //Main screen lists
 const lifesavingList = document.getElementById("mainLifesavingList");
@@ -54,6 +54,18 @@ const jsFieldValueModifications = {
                 return "";
             }
         }
+    },
+    DOB: {
+        //Removes the 20 from a year (ex: 2025-05-12 -> 25-05-12)
+        ShortYear: function (value) {
+            let regexp = new RegExp("([0-9]{2,4})(-[0-9]{1,2}-[0-9]{1,2})");
+            let matchInfo = regexp.exec(value);
+            if (matchInfo && matchInfo.length === 3) {
+                //If regex matches (4 number year)
+                let yearMatch = matchInfo[1];
+                return (yearMatch.length === 2 ? yearMatch : yearMatch.substring(2, 4)) + matchInfo[2];
+            }
+        }
     }
 };
 
@@ -67,7 +79,7 @@ for (const [listName, listElement] of Object.entries(lists)) {
 }
 
 //Hide test entry in production
-if (location.hostname !== "localhost" && location.hostname !== "127.0.0.1" && location.hostname !== ""){
+if (location.hostname !== "localhost" && location.hostname !== "127.0.0.1" && location.hostname !== "") {
     document.getElementById("testSource").style.display = "none";
 }
 
@@ -115,11 +127,8 @@ function initializeListings() {
                 dataContainer.matchQuestionFields();
                 showMatchingScreen(dataContainer, selectedSheet).catch((e) => {
                     console.log("Error on matching screen:", e);
-                    listScreen.style.display = "flex";
-                    tableScreen.style.display = "none";
-                    dialogContainer.style.display = "none";
+                    hideMatchingScreen();
                 });
-                //dataContainer.splitDividedFields(selectedSheet, fieldData);
             }).catch((e) => {
                 console.log("Error getting data source:", e);
             });
@@ -189,42 +198,69 @@ function generatePdfFile(sheetData, dataContainer, selectedResponses, courseInfo
         var loadedPdfBytes = await response.arrayBuffer();
         var loadedPdfDoc = await PDFLib.PDFDocument.load(loadedPdfBytes);
         let numberOfSelectedResponses = selectedResponses.length;
-        let totalPageCount = (() => {
+        var hasUniquePages = sheetData['repeatingPages'] ? true : false;
+        let totalPageCount = (() => {//TODO: modify to account for uniques
             let count = 0;
             let pageCount = 0;
             while (count < numberOfSelectedResponses) {
                 count += sheetData.pageSlotCounts[pageCount % sheetData.pageSlotCounts.length];
                 pageCount++;
+                if (hasUniquePages && pageCount !== 0 && pageCount % sheetData.pageSlotCounts.length === 0) {//Only do an initial run for all pages if uniques exist
+                    break;
+                }
+            }
+            if (hasUniquePages) {
+                while (count < numberOfSelectedResponses) {
+                    for (var i = 0; i < sheetData.repeatingPages.length; i++) {
+                        count += sheetData.pageSlotCounts[sheetData.repeatingPages[i]];
+                        pageCount++;
+                        if (count >= numberOfSelectedResponses) {
+                            break;
+                        }
+                    }
+                }
             }
             return pageCount;
         })();
-        var count = 1;
-        var currentPage = 0;
-        var currentOverallPage = 0;
-        var currentDocSlot = 1;
+        var count = 1;//current response, 1-based
+        var currentPage = 0; //current page in the PDF file, 0-based
+        var currentOverallPage = 0; //current total page, 0-based
+        var currentDocSlot = 1; //current response slot in the pdf file, 1-based
+        var isFirstRun = true; //If this is the first PDF file, boolean
         var formObject = loadedPdfDoc.getForm();
         while (count <= numberOfSelectedResponses) {
 //Handle a single page
             for (x = 0; x < sheetData.pageSlotCounts[currentPage] && count <= numberOfSelectedResponses; x++) {
-//Fill in fields
+//Fill in fields for a response
                 let responseObj = dataContainer.getResponse(selectedResponses[count - 1]);
+                //Fill in number box if it exists
+                try {
+                    let field = formObject.getTextField("NumberBox" + currentDocSlot);
+                    field.setText(count.toString());
+                } catch (e) {
+                    console.log(e);
+                }
                 Object.keys(dataContainer.matching).forEach((fieldName) => {
                     try {
 //Try to fill in the given field
-                        let answerText = responseObj.getAnswer(dataContainer.matching[fieldName]).answerContent;
+                        var answerText = responseObj.getAnswer(dataContainer.matching[fieldName]).answerContent;
                         let field = formObject.getTextField(fieldName + "" + currentDocSlot);
                         if (sheetData['ModificationsToApply'] && sheetData['ModificationsToApply'][fieldName]) {
-                            let modificationName = sheetData['ModificationsToApply'][fieldName];
-                            if (fieldData[fieldName]['FieldValueModifications'] && fieldData[fieldName]['FieldValueModifications'][modificationName]) {
-                                if (fieldData[fieldName]['FieldValueModifications'][modificationName].length === 2) {
-                                    //Encoded JSON modification
-                                    let modificationDetails = fieldData[fieldName]['FieldValueModifications'][modificationName];
-                                    answerText = answerText.replaceAll(new RegExp(modificationDetails[0], "g"), modificationDetails[1]);
-                                } else {
-                                    //Reference JSON modification
-                                    console.log("Handling modification for " + answerText);
-                                    console.log(jsFieldValueModifications[fieldName][modificationName](answerText));
-                                    answerText = jsFieldValueModifications[fieldName][modificationName](answerText);
+                            var isMultipleModifications = Array.isArray(sheetData['ModificationsToApply'][fieldName]);
+                            for (var i = 0; i < (isMultipleModifications ? sheetData['ModificationsToApply'][fieldName].length : 1); i++) {
+                                //Pick either the whole text if single, or the ith element in the modifcations array if multiple apply
+                                let modificationName = isMultipleModifications ? sheetData['ModificationsToApply'][fieldName][i] : sheetData['ModificationsToApply'][fieldName];
+                                if (fieldData[fieldName]['FieldValueModifications'] && fieldData[fieldName]['FieldValueModifications'][modificationName]) {
+                                    if (fieldData[fieldName]['FieldValueModifications'][modificationName].length === 2) {
+                                        //Encoded JSON modification
+                                        let modificationDetails = fieldData[fieldName]['FieldValueModifications'][modificationName];
+                                        answerText = answerText.replaceAll(new RegExp(modificationDetails[0], "g"), modificationDetails[1]);
+                                    } else {
+                                        //Reference JSON modification
+                                        console.log("Handling modification for " + answerText);
+                                        console.log(jsFieldValueModifications[fieldName][modificationName](answerText));
+                                        answerText = jsFieldValueModifications[fieldName][modificationName](answerText);
+                                    }
                                 }
                             }
                         }
@@ -238,20 +274,33 @@ function generatePdfFile(sheetData, dataContainer, selectedResponses, courseInfo
                 count++;
                 currentDocSlot++;
             }
-//increment page count
-            currentPage++;
+            //increment page count depending on if first run and unique pages
+            if (isFirstRun === true || !hasUniquePages) {//first run, include all pages no matter what
+                currentPage++;
+            } else {
+                //Not the first run and there are unique pages
+                currentPage = sheetData['repeatingPages'][currentPage + 1] ? sheetData['repeatingPages'][currentPage + 1] : currentPage + 1;
+            }
             currentOverallPage++;
             //If at end of the document, or all responses finished (loop will break after)
             if (currentPage === sheetData.pageSlotCounts.length || count > numberOfSelectedResponses) {
-//Add included data (page numbers, etc)
-//Page numbers
+                //Add included data (page numbers, etc)
+                //Page numbers
                 if (formObject.getFieldMaybe("PageTotal")) {
                     formObject.getTextField("PageTotal").setText(totalPageCount.toString());
-                    for (var s = 1; s <= currentPage; s++) {
+                }
+                //Total enrolled
+                if (formObject.getFieldMaybe("TotalEnrolled")) {
+                    formObject.getTextField("TotalEnrolled").setText(numberOfSelectedResponses.toString());
+                }
+                for (var s = 1; s <= currentPage; s++) {
+                    //Current page
+                    if (formObject.getFieldMaybe("PageCurrent" + s)) {
                         formObject.getTextField("PageCurrent" + s).setText((currentOverallPage - (currentPage - s)).toString());
                     }
                 }
-//Checkbox for multiside
+
+                //Checkbox for multiside
                 if (currentPage > 1 && formObject.getFieldMaybe("CheckReverse1")) {
                     for (var s = 1; s <= currentPage; s++) {
                         formObject.getCheckBox("CheckReverse" + s).check();
@@ -270,13 +319,7 @@ function generatePdfFile(sheetData, dataContainer, selectedResponses, courseInfo
                                 }
                                 if (fieldName === "ExamDate") {
                                     //Cut off the first part of the exam year: 2025-07-31 -> 25-07-31
-                                    let regexp = new RegExp("([0-9]{2,4})(-[0-9]{1,2}-[0-9]{1,2})");
-                                    let matchInfo = regexp.exec(val);
-                                    if (matchInfo && matchInfo.length === 3) {
-                                        //If regex matches (4 number year)
-                                        let yearMatch = matchInfo[1];
-                                        val = (yearMatch.length === 2 ? yearMatch : yearMatch.substring(2, 4)) + matchInfo[2];
-                                    }
+                                    val = jsFieldValueModifications['DOB']['ShortYear'](val);
                                 }
                                 formObject.getTextField(fieldName).setText(val);
                             } catch (e) {
@@ -299,7 +342,16 @@ function generatePdfFile(sheetData, dataContainer, selectedResponses, courseInfo
                 }
 //Create master PDF and add the page(s).
                 var pdfDoc = await PDFLib.PDFDocument.create();
-                let pagesToInclude = Array.from({length: currentPage}, (e, i) => i);
+                var pagesToInclude;
+                if (isFirstRun || !hasUniquePages) {
+                    //include all pages
+                    pagesToInclude = Array.from({length: currentPage}, (e, i) => i);
+                } else {
+                    //include only repeating pages up to the current page
+                    //currentPage is always 1 higher than actual
+                    pagesToInclude = sheetData['repeatingPages'].slice(0, sheetData['repeatingPages'].indexOf(currentPage - 1) + 1);
+                }
+                console.log(pagesToInclude, currentPage);
                 let copiedPages = await pdfDoc.copyPages(loadedPdfDoc, pagesToInclude);
                 copiedPages.forEach((page) => {
                     pdfDoc.addPage(page);
@@ -313,8 +365,22 @@ function generatePdfFile(sheetData, dataContainer, selectedResponses, courseInfo
                     loadedPdfDoc = await PDFLib.PDFDocument.load(loadedPdfBytes);
                     formObject = loadedPdfDoc.getForm();
                     //Reset counters for next page
-                    currentPage = 0;
-                    currentDocSlot = 1;
+                    isFirstRun = false;
+                    //If there are specific repeating pages (ex: a unique first page), handle it
+                    if (hasUniquePages) {
+                        currentPage = sheetData['repeatingPages'][0];//pick the first page that repeats
+                        currentDocSlot = (() => {
+                            let slotCounts = 1;
+                            for (var i = 0; i < currentPage; i++) {
+                                slotCounts += sheetData['pageSlotCounts'][i];
+                            }
+                            return slotCounts;
+                        })();
+                    } else {
+                        //Otherwise, reset the counters
+                        currentPage = 0;
+                        currentDocSlot = 1;
+                    }
                 }
             }
         }
@@ -447,6 +513,7 @@ const matchingConfirmBtn = document.getElementById("confirmSelectionTableBtn");
 const matchingSelectedCountLabel = document.getElementById("mainSelectionCountLabel");
 const matchingSheetInfoLabel = document.getElementById("mainSelectionSheetLabel");
 function showMatchingScreen(dataContainer, selectedSheet) {
+    console.log(dataContainer);
     matchingSheetInfoLabel.textContent = selectedSheet.name + " - " + selectedSheet.descriptionText;
     listScreen.style.display = "none";
     tableScreen.style.display = "flex";
@@ -503,7 +570,7 @@ function showMatchingScreen(dataContainer, selectedSheet) {
             let responseRow = document.getElementById("matchingTableRow" + responseId);
             let newInputHolder = createElement("td", responseRow, "", "");
             responseRow.insertBefore(newInputHolder, document.getElementById("matchingTableEmpty" + responseId));
-            let answerInput = createElement("input", newInputHolder, "", "");
+            let answerInput = createElement("input", createElement("span", newInputHolder, "", ""), "", "");
             answerInput.setAttribute("data-response", responseId);
             answerInput.setAttribute("data-question", newQuestionId);
             answerInput.onchange = handleInputUpdate;
@@ -518,6 +585,8 @@ function showMatchingScreen(dataContainer, selectedSheet) {
     }
     //Update label
     updateCountLabel();
+    //Show the autofill buttons as needed
+    handleAutofillButtons();
     //Create new response button
     let manualButton = createElement("Button", matchingTable, "Manually Add Response", "");
     manualButton.id = "mainSelectionTableManualResponseBtn";
@@ -547,6 +616,10 @@ function showMatchingScreen(dataContainer, selectedSheet) {
                 generatePdfFile(selectedSheet, dataContainer, selectedResponses, courseInfo).then((files) => {
                     courseInfoDialogPages.style.right = "200%";
                     showDownloadPage(files, selectedSheet);
+                    resolve();
+                    showMatchingScreen(dataContainer, selectedSheet).catch((err) => {
+                        hideMatchingScreen();
+                    });
                 }).catch((e) => {
                     dialogContainer.style.display = "none";
                     alert("Error generating Pdf files, please try again later");
@@ -574,7 +647,9 @@ function showMatchingScreen(dataContainer, selectedSheet) {
         //Create question boxes
         dataContainer.includedQuestions.forEach((questionId) => {
             let answerObj = response.getAnswer(questionId);
-            let answerInput = createElement("input", createElement("td", row, "", ""), "", "");
+            //Create a td and span to contain the input
+            let tdHolder = createElement("td", row, "", "");
+            let answerInput = createElement("input", createElement("span", tdHolder, "", ""), "", "");
             answerInput.setAttribute("data-response", responseId);
             answerInput.setAttribute("data-question", questionId);
             answerInput.onchange = handleInputUpdate;
@@ -608,6 +683,7 @@ function showMatchingScreen(dataContainer, selectedSheet) {
                 }
             }
         });
+        handleAutofillButtons();
     }
 
     //Handle when user updates a value
@@ -616,6 +692,7 @@ function showMatchingScreen(dataContainer, selectedSheet) {
         let responseId = target.getAttribute("data-response");
         let questionId = target.getAttribute("data-question");
         dataContainer.getResponse(responseId).getAnswer(questionId).answerContent = target.value;
+        handleAutofillButtons();
     }
 
     //Handle when the user clicks the "Select All" checkbox
@@ -673,6 +750,107 @@ function showMatchingScreen(dataContainer, selectedSheet) {
             opt.value = fieldName;
         });
     }
+
+    function handleAutofillButtons() {
+        //Clear all existing buttons
+        document.querySelectorAll("button.autofillButton").forEach((btn) => {
+            btn.remove();
+        });
+        //Go through each field, find if it has autocomplete options
+        selectedSheet.fields.forEach((field) => {
+            if (fieldData[field].Autofill) {
+                var responsesWithAutofill = [];
+                //For each autofill combination, check if fields are assigned
+                var selectedFields = Object.keys(dataContainer.matching);
+                fieldData[field].Autofill.forEach((autofillCombination) => {
+                    //Check if all required fields are assigned
+                    if (autofillCombination.every(val => selectedFields.includes(val))) {
+                        //All required fields are assigned
+                        //For each response, check if the field to autocomplete is empty
+                        for (const [responseId, response] of Object.entries(dataContainer.getResponses())) {
+                            let autofillFieldQuestionId = dataContainer.matching[field];
+                            let answer = response.getAnswer(autofillFieldQuestionId).answerContent;
+                            if (!answer || answer.length === 0 || answer === "") {
+                                //The field to autocomplete is empty, check if the required fields have content
+                                var isValid = true;
+                                autofillCombination.forEach((combinationField) => {
+                                    let fieldId = dataContainer.matching[combinationField];
+                                    let fieldContents = response.getAnswer(fieldId).answerContent;
+                                    if (!fieldContents || fieldContents.length === 0 || fieldContents === "") {
+                                        isValid = false;
+                                    }
+                                });
+                                if (isValid === true) {
+                                    //Signal that this field in this response can be autofilled
+                                    responsesWithAutofill.push(responseId);
+                                }
+                            }
+                        }
+                        ;
+                    }
+                });
+                //For this field, show autofill buttons
+                let fieldId = dataContainer.matching[field];
+                responsesWithAutofill.forEach((responseId) => {
+                    let inputElement = document.querySelector('input[data-response="' + responseId + '"][data-question="' + fieldId + '"]');
+                    if (inputElement) {
+                        let autofillButton = createAutofillButton(inputElement);
+                        handleAutofillButtonClick(autofillButton, responseId, fieldId, field);
+                    }
+                });
+            }
+        });
+
+        function handleAutofillButtonClick(button, responseId, questionId, fieldName) {
+            button.onclick = function () {
+                //Pick which autofill to use
+                var chosenOption = 0;
+                if (fieldData[fieldName].Autofill.length > 1) {
+                    //TODO: implement choosing which autofill to use
+                }
+                var autofillOptionToUse = fieldData[fieldName].Autofill[chosenOption];
+                //find the autofill option in function registry
+                for (var a = 0; a < autofills[fieldName].length; a++) {
+                    //first check, do lengths match
+                    if (autofills[fieldName][a].RequiredFields.length === autofillOptionToUse.length) {
+                        //check if each element matches
+                        if (autofills[fieldName][a].RequiredFields.every(val => autofillOptionToUse.includes(val))) {
+                            //Call the funtion to get autofill data
+                            button.disabled = true;
+                            var inputField = document.querySelector('input[data-response="' + responseId + '"][data-question="' + questionId + '"]');
+                            inputField.disabled = true;
+                            autofills[fieldName][a].function(dataContainer, responseId).then((autofilledValue) => {
+                                inputField.value = autofilledValue;
+                                inputField.disabled = false;
+                                dataContainer.getResponse(responseId).getAnswer(questionId).answerContent = autofilledValue;
+                                button.remove();
+                            }).catch((err) => {
+                                console.log("Error with autofill: " + err);
+                                alert("Autofill failed with reason: " + err);
+                                button.disabled = false;
+                                inputField.disabled = false;
+                            });
+                            //Don't check further
+                            break;
+                        }
+                    }
+                }
+            };
+        }
+
+        function createAutofillButton(inputField) {
+            let parentSpan = inputField.parentElement;
+            let btn = createElement("button", parentSpan, "online_prediction", "material-symbols-outlined autofillButton");
+            btn.title = "Autofill Information";
+            return btn;
+        }
+    }
+}
+
+function hideMatchingScreen() {
+    listScreen.style.display = "flex";
+    tableScreen.style.display = "none";
+    dialogContainer.style.display = "none";
 }
 
 async function loadJsonFiles() {

@@ -25,6 +25,10 @@
                 "DOBM": "Numeric",
                 "DOBY": "TwoDigit"
             },
+            "prerequisites": {
+                "age": 13,
+                "hardAgeRequirement": false
+            },
             "fields": ["Name", "Address", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location"]
         }, {
             "name": "Bronze Cross (2020)",
@@ -37,6 +41,11 @@
                 "PostalCode": "Formatted",
                 "DOBM": "Numeric",
                 "DOBY": "TwoDigit"
+            },
+            "prerequisites": {
+                "courses": [["Bronze Medallion", "Emergency First Aid"], ["Bronze Medallion", "Standard First Aid"]],
+                "age": 13,
+                "hardAgeRequirement": false
             },
             "fields": ["Name", "Address", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location", "Prereq2Date", "Prereq2Location"]
         }, {
@@ -51,6 +60,11 @@
                 "DOBM": "Numeric",
                 "DOBY": "TwoDigit"
             },
+            "prerequisites": {
+                "courses": [["Bronze Cross", "Standard First Aid"]],
+                "age": 15,
+                "hardAgeRequirement": true
+            },
             "fields": ["FirstName", "LastName", "Address", "Province", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location", "Prereq2Date", "Prereq2Location"]
         }, {
             "name": "National Lifeguard (2022)",
@@ -63,6 +77,11 @@
                 "PostalCode": "Formatted",
                 "DOBM": "Numeric",
                 "DOBY": "TwoDigit"
+            },
+            "prerequisites": {
+                "courses": [["National Lifeguard - Pool"]],
+                "age": 15,
+                "hardAgeRequirement": true
             },
             "fields": ["FirstName", "LastName", "Address", "Province", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location"]
         }
@@ -97,7 +116,27 @@
         }
     ],
     "leadership": [
-
+        {
+            "name": "Master Sheet",
+            "descriptionText": "New Leadership Program",
+            "documentUrl": "MasterSheetNew.pdf",
+            "pageSlotCounts": [3, 6],
+            "repeatingPages": [1],
+            "DividablesToInclude": [],
+            "ModificationsToApply": {
+                "Phone": "Formatted",
+                "PostalCode": "Formatted",
+                "DOBM": "Numeric",
+                "DOBY": "TwoDigit",
+                "DOB": ["ShortYear", "Spaced"]
+            },
+            "prerequisites": {
+                "courses": [["Bronze Cross"]],
+                "age": 15,
+                "hardAgeRequirement": true
+            },
+            "fields": ["Name", "FullAddress", "Email", "Phone", "DOB", "LSSId", "Prereq1Name", "Prereq1Date", "Prereq1Location", "Prereq2Name", "Prereq2Date", "Prereq2Location"]
+        }
     ],
     "other": [
     ]
