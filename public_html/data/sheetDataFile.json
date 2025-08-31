@@ -27,7 +27,8 @@
             },
             "prerequisites": {
                 "age": 13,
-                "hardAgeRequirement": false
+                "hardAgeRequirement": false,
+                "ageRequirementAlternativeText": "have their Bronze Star certification"
             },
             "fields": ["Name", "Address", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location"]
         }, {
@@ -43,9 +44,7 @@
                 "DOBY": "TwoDigit"
             },
             "prerequisites": {
-                "courses": [["Bronze Medallion", "Emergency First Aid"], ["Bronze Medallion", "Standard First Aid"]],
-                "age": 13,
-                "hardAgeRequirement": false
+                "courses": [["Bronze Medallion", "Emergency First Aid"], ["Bronze Medallion", "Standard First Aid"]]
             },
             "fields": ["Name", "Address", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location", "Prereq2Date", "Prereq2Location"]
         }, {
@@ -123,6 +122,7 @@
             "pageSlotCounts": [3, 6],
             "repeatingPages": [1],
             "DividablesToInclude": [],
+            "CombinablesToInclude":["FullAddress"],
             "ModificationsToApply": {
                 "Phone": "Formatted",
                 "PostalCode": "Formatted",

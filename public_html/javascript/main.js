@@ -29,7 +29,11 @@ const jsFieldValueModifications = {
         //Formats a postal code into uppercase with a space
         Formatted: function (value) {
             var matchInfo = value.toUpperCase().match(/(\w{3})[ -]?(\w{3})/);
-            return matchInfo[1] + " " + matchInfo[2];
+            if (matchInfo && matchInfo.length >= 3) {
+                return matchInfo[1] + " " + matchInfo[2];
+            } else {
+                return value;
+            }
         }
     },
     DOBM: {
@@ -125,7 +129,7 @@ function initializeListings() {
                     return;
                 }
                 dataContainer.matchQuestionFields();
-                showMatchingScreen(dataContainer, selectedSheet).catch((e) => {
+                showMatchingScreen(dataContainer, selectedSheet, null).catch((e) => {
                     console.log("Error on matching screen:", e);
                     hideMatchingScreen();
                 });
@@ -229,45 +233,26 @@ function generatePdfFile(sheetData, dataContainer, selectedResponses, courseInfo
         var isFirstRun = true; //If this is the first PDF file, boolean
         var formObject = loadedPdfDoc.getForm();
         while (count <= numberOfSelectedResponses) {
-//Handle a single page
+            //Handle a single page
             for (x = 0; x < sheetData.pageSlotCounts[currentPage] && count <= numberOfSelectedResponses; x++) {
-//Fill in fields for a response
+                //Fill in fields for a response
                 let responseObj = dataContainer.getResponse(selectedResponses[count - 1]);
                 //Fill in number box if it exists
                 try {
                     let field = formObject.getTextField("NumberBox" + currentDocSlot);
                     field.setText(count.toString());
                 } catch (e) {
-                    console.log(e);
+                    //Error occurs if PDF does not have a numberBox
                 }
                 Object.keys(dataContainer.matching).forEach((fieldName) => {
                     try {
-//Try to fill in the given field
-                        var answerText = responseObj.getAnswer(dataContainer.matching[fieldName]).answerContent;
+                        //Try to fill in the given field
                         let field = formObject.getTextField(fieldName + "" + currentDocSlot);
-                        if (sheetData['ModificationsToApply'] && sheetData['ModificationsToApply'][fieldName]) {
-                            var isMultipleModifications = Array.isArray(sheetData['ModificationsToApply'][fieldName]);
-                            for (var i = 0; i < (isMultipleModifications ? sheetData['ModificationsToApply'][fieldName].length : 1); i++) {
-                                //Pick either the whole text if single, or the ith element in the modifcations array if multiple apply
-                                let modificationName = isMultipleModifications ? sheetData['ModificationsToApply'][fieldName][i] : sheetData['ModificationsToApply'][fieldName];
-                                if (fieldData[fieldName]['FieldValueModifications'] && fieldData[fieldName]['FieldValueModifications'][modificationName]) {
-                                    if (fieldData[fieldName]['FieldValueModifications'][modificationName].length === 2) {
-                                        //Encoded JSON modification
-                                        let modificationDetails = fieldData[fieldName]['FieldValueModifications'][modificationName];
-                                        answerText = answerText.replaceAll(new RegExp(modificationDetails[0], "g"), modificationDetails[1]);
-                                    } else {
-                                        //Reference JSON modification
-                                        console.log("Handling modification for " + answerText);
-                                        console.log(jsFieldValueModifications[fieldName][modificationName](answerText));
-                                        answerText = jsFieldValueModifications[fieldName][modificationName](answerText);
-                                    }
-                                }
-                            }
-                        }
+                        let answerText = responseObj.getAnswer(dataContainer.matching[fieldName]).getFormattedAnswer(fieldName, sheetData);
                         field.setText(answerText);
                     } catch (e) {
                         //No field exists, or a split field did not have a value
-                        console.log(e);
+                        //console.log(e);
                     }
                 });
                 //Increment counters
@@ -323,7 +308,7 @@ function generatePdfFile(sheetData, dataContainer, selectedResponses, courseInfo
                                 }
                                 formObject.getTextField(fieldName).setText(val);
                             } catch (e) {
-                                console.log("Error occured when filling field " + fieldName, e);
+                                console.log("Error occured when filling field " + fieldName);
                             }
                         } else {
                             console.log("Info field missing when adding to PDF", fieldName);
@@ -351,7 +336,6 @@ function generatePdfFile(sheetData, dataContainer, selectedResponses, courseInfo
                     //currentPage is always 1 higher than actual
                     pagesToInclude = sheetData['repeatingPages'].slice(0, sheetData['repeatingPages'].indexOf(currentPage - 1) + 1);
                 }
-                console.log(pagesToInclude, currentPage);
                 let copiedPages = await pdfDoc.copyPages(loadedPdfDoc, pagesToInclude);
                 copiedPages.forEach((page) => {
                     pdfDoc.addPage(page);
@@ -390,6 +374,7 @@ function generatePdfFile(sheetData, dataContainer, selectedResponses, courseInfo
 
 const downloadSheetLabel = document.getElementById("downloadSheetName");
 const downloadList = document.getElementById("downloadList");
+
 function showDownloadPage(pdfFiles, selectedSheet) {
     courseInfoDialogButton.textContent = "Close";
     courseInfoDialogButton.style.display = "block";
@@ -496,7 +481,6 @@ function getCourseInformation() {
 
 const autofillCourseInfoButton = document.getElementById("autofillCourseInfoButton");
 autofillCourseInfoButton.onclick = function () {
-    console.log(courseInfoObj);
     if (courseInfoObj) {
         examinerIsInstructorCheckbox.checked = courseInfoObj["SameAsInstructor"];
         handleInstructorExaminerCheckboxClick();
@@ -512,8 +496,19 @@ const matchingTable = document.getElementById("mainSelectionTable");
 const matchingConfirmBtn = document.getElementById("confirmSelectionTableBtn");
 const matchingSelectedCountLabel = document.getElementById("mainSelectionCountLabel");
 const matchingSheetInfoLabel = document.getElementById("mainSelectionSheetLabel");
-function showMatchingScreen(dataContainer, selectedSheet) {
+
+const warningBar = document.getElementById("mainSelectionWarningBar");
+const warningPreviousBtn = document.getElementById("warningPreviousBtn");
+const warningPageLabel = document.getElementById("warningPageLabel");
+const warningNextBtn = document.getElementById("warningNextBtn");
+
+function showMatchingScreen(dataContainer, selectedSheet, existingSelectedResponses) {
     console.log(dataContainer);
+    var verificationModules = [new ageVerificationModule()];
+    //Run an inital verification
+    verificationModules.forEach((module) => {
+        module.runVerification(dataContainer, selectedSheet);
+    });
     matchingSheetInfoLabel.textContent = selectedSheet.name + " - " + selectedSheet.descriptionText;
     listScreen.style.display = "none";
     tableScreen.style.display = "flex";
@@ -525,7 +520,8 @@ function showMatchingScreen(dataContainer, selectedSheet) {
     //Master "check all"
     let allSelectCheckbox = createElement("input", allSelectBox, "", "");
     allSelectCheckbox.id = "matchingSelectAll";
-    allSelectCheckbox.checked = true;
+    //Set proper state if re-rendering
+    allSelectCheckbox.checked = existingSelectedResponses ? existingSelectedResponses.length === dataContainer.getNumberOfResponses() : true;
     allSelectCheckbox.type = "checkbox";
     allSelectCheckbox.onchange = handleSelectAllCheckboxChanged;
     let allLbl = createElement("label", allSelectBox, "Select All", "");
@@ -537,11 +533,13 @@ function showMatchingScreen(dataContainer, selectedSheet) {
         questionSelector.setAttribute("data-question", questionId);
         questionSelector.className = "matchingSelect";
         questionSelector.onchange = handleSelectChanged;
-        let matchResult = Object.entries(dataContainer.matching).find(match => match[1] === questionId);
+        let matchResult = dataContainer.getFieldNameFromQuestionId(questionId);
         if (matchResult) {
-            questionSelector.value = matchResult[0];
+            questionSelector.value = matchResult;
+            questionSelector.setAttribute("data-val", matchResult);
         } else {
             questionSelector.value = "";
+            questionSelector.setAttribute("data-val", "");
         }
     });
     //Call function to disable options as required
@@ -563,7 +561,7 @@ function showMatchingScreen(dataContainer, selectedSheet) {
         questionSelector.setAttribute("data-question", newQuestionId);
         questionSelector.className = "matchingSelect";
         questionSelector.onchange = handleSelectChanged;
-        //Call function so that options are properly disabled
+        questionSelector.setAttribute("data-val", "");
         handleSelectChanged();
         //Create the new input boxes
         for (const [responseId, response] of Object.entries(dataContainer.getResponses())) {
@@ -580,6 +578,9 @@ function showMatchingScreen(dataContainer, selectedSheet) {
     //Create main table
     var currentCount = 1;
     for (const [responseId, response] of Object.entries(dataContainer.getResponses())) {
+        if (!existingSelectedResponses || (existingSelectedResponses && existingSelectedResponses.includes(responseId))) {
+            selectedResponses.push(responseId);
+        }
         createRow(responseId, response, currentCount);
         currentCount++;
     }
@@ -587,12 +588,17 @@ function showMatchingScreen(dataContainer, selectedSheet) {
     updateCountLabel();
     //Show the autofill buttons as needed
     handleAutofillButtons();
+    //Show warnings (verification ran at top of function)
+    showWarningBar(null);
+    //Call function so that select options are properly disabled
+    handleSelectChanged();
     //Create new response button
     let manualButton = createElement("Button", matchingTable, "Manually Add Response", "");
     manualButton.id = "mainSelectionTableManualResponseBtn";
     manualButton.onclick = function () {
         let responseId = dataContainer.addEmptyResponse();
         let response = dataContainer.getResponse(responseId);
+        selectedResponses.push(responseId);
         let createdRow = createRow(responseId, response, currentCount);
         matchingTable.insertBefore(createdRow, manualButton);
         currentCount++;
@@ -609,6 +615,7 @@ function showMatchingScreen(dataContainer, selectedSheet) {
                 return containerResponseKeys.indexOf(a) - containerResponseKeys.indexOf(b);
             });
             dataContainer.splitDividedFields();
+            dataContainer.mergeCombinedFields();
             getCourseInformation().then((courseInfo) => {
                 courseInfoObj = courseInfo;
                 clearChildren(downloadList);
@@ -616,10 +623,10 @@ function showMatchingScreen(dataContainer, selectedSheet) {
                 generatePdfFile(selectedSheet, dataContainer, selectedResponses, courseInfo).then((files) => {
                     courseInfoDialogPages.style.right = "200%";
                     showDownloadPage(files, selectedSheet);
-                    resolve();
-                    showMatchingScreen(dataContainer, selectedSheet).catch((err) => {
-                        hideMatchingScreen();
-                    });
+                    //resolve();
+                    //showMatchingScreen(dataContainer, selectedSheet, selectedResponses).catch((err) => {
+                    //hideMatchingScreen();
+                    //});
                 }).catch((e) => {
                     dialogContainer.style.display = "none";
                     alert("Error generating Pdf files, please try again later");
@@ -628,7 +635,7 @@ function showMatchingScreen(dataContainer, selectedSheet) {
         };
     });
     function createRow(responseId, response, currentCount) {
-        selectedResponses.push(responseId);
+        var excludedFields = dataContainer.excludedFields;
         let row = createElement("tr", matchingTable, "", "");
         row.id = "matchingTableRow" + responseId;
         row.setAttribute("data-response", responseId);
@@ -637,7 +644,7 @@ function showMatchingScreen(dataContainer, selectedSheet) {
         let controlBoxCheckbox = createElement("input", controlBox, "", "");
         controlBoxCheckbox.setAttribute("data-response", responseId);
         controlBoxCheckbox.type = "checkbox";
-        controlBoxCheckbox.checked = true;
+        controlBoxCheckbox.checked = selectedResponses.includes(responseId);
         controlBoxCheckbox.setAttribute("data-response", responseId);
         controlBoxCheckbox.id = "matchingSelect-" + responseId;
         controlBoxCheckbox.onchange = handleCheckboxChanged;
@@ -646,14 +653,17 @@ function showMatchingScreen(dataContainer, selectedSheet) {
         lbl.setAttribute('for', "matchingSelect-" + responseId);
         //Create question boxes
         dataContainer.includedQuestions.forEach((questionId) => {
-            let answerObj = response.getAnswer(questionId);
-            //Create a td and span to contain the input
-            let tdHolder = createElement("td", row, "", "");
-            let answerInput = createElement("input", createElement("span", tdHolder, "", ""), "", "");
-            answerInput.setAttribute("data-response", responseId);
-            answerInput.setAttribute("data-question", questionId);
-            answerInput.onchange = handleInputUpdate;
-            answerInput.value = answerObj.answerContent;
+            //Don't show any fields that are used for split/combine
+            if (excludedFields.indexOf(dataContainer.getFieldNameFromQuestionId(questionId)) === -1) {
+                let answerObj = response.getAnswer(questionId);
+                //Create a td and span to contain the input
+                let tdHolder = createElement("td", row, "", "");
+                let answerInput = createElement("input", createElement("span", tdHolder, "", ""), "", "");
+                answerInput.setAttribute("data-response", responseId);
+                answerInput.setAttribute("data-question", questionId);
+                answerInput.onchange = handleInputUpdate;
+                answerInput.value = answerObj.answerContent;
+            }
         });
         //Create blank box for new column button col
         createElement("td", row, "", "").id = "matchingTableEmpty" + responseId;
@@ -664,13 +674,21 @@ function showMatchingScreen(dataContainer, selectedSheet) {
         let selectors = Array.from(document.getElementsByClassName("matchingSelect"));
         //Updating matching table
         if (e) {
-            let newMatching = {};
             selectors.forEach((el) => {
-                if (el.value !== "") {
-                    newMatching[el.value] = el.getAttribute("data-question");
+                var originalValue = el.getAttribute("data-val");
+                if (el.value !== originalValue) {
+                    if (originalValue) {//Had an old value, clear it from matching
+                        delete dataContainer.matching[originalValue];
+                    }
+                    //If the select has a value, set it in the matching object
+                    if (el.value) {
+                        dataContainer.matching[el.value] = el.getAttribute("data-question");
+                    }
+                    //Set the "new" current value for future runs
+                    el.setAttribute("data-val",el.value);
                 }
             });
-            dataContainer.matching = newMatching;
+            console.log(dataContainer.matching);
         }
         //Enable/disable options
         let selectedFields = Object.keys(dataContainer.matching);
@@ -684,6 +702,7 @@ function showMatchingScreen(dataContainer, selectedSheet) {
             }
         });
         handleAutofillButtons();
+        showWarningBar();
     }
 
     //Handle when user updates a value
@@ -693,6 +712,12 @@ function showMatchingScreen(dataContainer, selectedSheet) {
         let questionId = target.getAttribute("data-question");
         dataContainer.getResponse(responseId).getAnswer(questionId).answerContent = target.value;
         handleAutofillButtons();
+        //Re-run each verification module if affected
+        //Determine the name of the field being modified
+        var selectedFieldMatching = dataContainer.getFieldNameFromQuestionId(questionId);
+        if (selectedFieldMatching) {
+            showWarningBar(selectedFieldMatching);
+        }
     }
 
     //Handle when the user clicks the "Select All" checkbox
@@ -740,10 +765,7 @@ function showMatchingScreen(dataContainer, selectedSheet) {
 
     //Helper function to fill question field selectors
     function fillSelector(selector, questionId) {
-        let fields = selectedSheet.fields;
-        if (selectedSheet["DividablesToInclude"]) {
-            fields = fields.concat(selectedSheet.DividablesToInclude);
-        }
+        fields = dataContainer.getFullFieldsList();
         createElement("option", selector, "", "").value = "";
         fields.forEach((fieldName) => {
             let opt = createElement("option", selector, fieldData[fieldName]['Display']['English'], "");
@@ -757,7 +779,7 @@ function showMatchingScreen(dataContainer, selectedSheet) {
             btn.remove();
         });
         //Go through each field, find if it has autocomplete options
-        selectedSheet.fields.forEach((field) => {
+        dataContainer.getFullFieldsList().forEach((field) => {
             if (fieldData[field].Autofill) {
                 var responsesWithAutofill = [];
                 //For each autofill combination, check if fields are assigned
@@ -769,8 +791,8 @@ function showMatchingScreen(dataContainer, selectedSheet) {
                         //For each response, check if the field to autocomplete is empty
                         for (const [responseId, response] of Object.entries(dataContainer.getResponses())) {
                             let autofillFieldQuestionId = dataContainer.matching[field];
-                            let answer = response.getAnswer(autofillFieldQuestionId).answerContent;
-                            if (!answer || answer.length === 0 || answer === "") {
+                            let answer = response.getAnswer(autofillFieldQuestionId);
+                            if (!answer || answer.answerContent.length === 0 || answer.answerContent === "") {
                                 //The field to autocomplete is empty, check if the required fields have content
                                 var isValid = true;
                                 autofillCombination.forEach((combinationField) => {
@@ -845,12 +867,52 @@ function showMatchingScreen(dataContainer, selectedSheet) {
             return btn;
         }
     }
+
+    //restrictedField will only run verification modules tied to a field name. Useful when processing updates to data
+    function showWarningBar(restrictedField) {
+        document.querySelectorAll("input.warningActive").forEach((el) => {
+            el.classList.remove("warningActive");
+        });
+        verificationModules.forEach((module) => {
+            //Check if the verifier is responsible for this field
+            if (!restrictedField || (restrictedField && module.getFieldName() === restrictedField)) {
+                //Run verifier
+                module.runVerification(dataContainer, selectedSheet);
+                //Highlight inputs
+                var fieldId = dataContainer.matching[module.getFieldName()];
+                module.activeWarnings.forEach((responseId) => {
+                    let input = document.querySelector('input[data-response="' + responseId + '"][data-question="' + fieldId + '"]');
+                    if (input) {
+                        input.classList.add("warningActive");
+                    }
+                });
+            }
+        });
+        let numberOfWarnings = verificationModules.reduce((acc, module) => acc + module.activeWarnings.length === 0 ? 0 : 1, 0);
+        if (numberOfWarnings > 0) {
+            if (!warningBar.hasAttribute("data-module")) {
+                let firstModule = verificationModules.find((module) => module.activeWarnings.length > 0);
+                warningBar.setAttribute("data-module", firstModule.constructor.name);
+            }
+            warningBar.style.display = "flex";
+            //Pick the appropriate module and display it
+            let module = verificationModules.find((module) => module.constructor.name === warningBar.getAttribute("data-module"));
+            module.setWarningBar(selectedSheet);
+            let currentIndex = verificationModules.indexOf(module);
+            warningPageLabel.textContent = (currentIndex + 1) + " / " + numberOfWarnings;
+            warningPreviousBtn.disabled = numberOfWarnings === 1;
+            warningNextBtn.disabled = numberOfWarnings === 1;
+        } else {
+            warningBar.style.display = "none";
+        }
+    }
 }
 
 function hideMatchingScreen() {
     listScreen.style.display = "flex";
     tableScreen.style.display = "none";
     dialogContainer.style.display = "none";
+    warningBar.removeAttribute("data-module");
 }
 
 async function loadJsonFiles() {

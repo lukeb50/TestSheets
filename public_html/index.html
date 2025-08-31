@@ -44,14 +44,25 @@
             <div id="mainSelectionTableHolder">
                 <table id="mainSelectionTable"></table>
             </div>
-            <div id="mainSelectionButtonContainer">
-                <div id="mainSelectionLabelContainer">
-                    <label id="mainSelectionSheetLabel"></label>
+            <div id="mainSelectionBottomBar">
+                <div id="mainSelectionWarningBar">
+                    <span id="warningBarMessageHolderSpan">
+                        <p id="warningBarTopLine"></p>
+                        <p id="warningBarBottomLine"></p>
+                    </span>
+                    <button id="warningPreviousBtn"><</button>
+                    <label id="warningPageLabel"></label>
+                    <button id="warningNextBtn">></button>
                 </div>
-                <div>
-                    <label id="mainSelectionCountLabel">0 Responses Selected</label>
-                    <button id="cancelSelectionTableBtn">Cancel</button>
-                    <button id="confirmSelectionTableBtn">Confirm</button>
+                <div id="mainSelectionButtonContainer">
+                    <div id="mainSelectionLabelContainer">
+                        <label id="mainSelectionSheetLabel"></label>
+                    </div>
+                    <div>
+                        <label id="mainSelectionCountLabel">0 Responses Selected</label>
+                        <button id="cancelSelectionTableBtn">Cancel</button>
+                        <button id="confirmSelectionTableBtn">Confirm</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -213,6 +224,8 @@
         <script src="dataSources/TestSource.js"></script>
         <script src="dataSources/ResponseContainer.js"></script>
         <script src="javascript/AuthProvider.js"></script>
+        <script src="verificationModules/baseVerificationModule.js"></script>
+        <script src="verificationModules/ageVerificationModule.js"></script>
         <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
         <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
         <script src="javascript/main.js"></script>

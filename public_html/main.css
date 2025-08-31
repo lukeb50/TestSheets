@@ -461,6 +461,10 @@ div.courseInfoDialogInputHolder label{
     transition: 0.5s;
 }
 
+#mainSelectionTable tr input.warningActive{
+    background: rgba(230,230,0,0.3);
+}
+
 #mainSelectionTable tr span button.autofillButton{
     font-size: 20px;
     border:none;
@@ -546,6 +550,53 @@ div.courseInfoDialogInputHolder label{
     height: 100%;
     display: block;
     align-content: center;
+}
+
+#mainSelectionWarningBar{
+    background:rgba(230,200,0,0.3);
+    display: flex;
+    border-radius: 5px 5px 0 0;
+    align-items: center;
+}
+
+#mainSelectionWarningBar p{
+    margin: 0;
+    padding-top: 2px;
+    padding-left: 5px;
+}
+
+#warningBarTopLine{
+    font-weight: bold;
+}
+
+#warningBarBottomLine{
+    font-style:italic;
+}
+
+#ageWarningDateInput{
+    margin-left: 5px;
+    border-radius: 5px;
+    border-width: 1px;
+}
+
+#warningBarMessageHolderSpan{
+    display: flex;
+    flex-direction: column;
+    flex:1;
+}
+
+#ageWarningExamDateLabel{
+    align-content: center;
+}
+
+#warningPreviousBtn, #warningNextBtn{
+    margin-right: 5px;
+    margin-left: 5px;
+    padding:5px;
+}
+
+#warningPreviousBtn:not(:disabled):hover, #warningNextBtn:not(:disabled):hover{
+    background:rgba(230,230,230,1);
 }
 
 label.hint{

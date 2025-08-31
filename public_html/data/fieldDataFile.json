@@ -1,11 +1,9 @@
 {
     "Name": {
         "RegexMatch": "^(?<first>[A-Za-z-]+) (?<last>[A-Za-z- ]*)$",
-        "FieldDivision": {
-            "DivisibleFields": {
-                "FirstName": "first",
-                "LastName": "last"
-            }
+        "DivisibleFields": {
+            "FirstName": "first",
+            "LastName": "last"
         },
         "Display": {
             "English": "Name"
@@ -30,10 +28,14 @@
             "English": "Street Address"
         }
     },
-    
+
     "FullAddress": {
         "Display": {
             "English": "Full Address"
+        },
+        "CombinedFormatting": {
+            "FormattedString": "<Address>, <City> <PostalCode>",
+            "FieldsToInclude": ["City", "Address", "PostalCode"]
         }
     },
 
@@ -89,14 +91,12 @@
         "RegexMatch": "^(?<year>\\d{2,4})-(?<month>\\d{2})-(?<day>\\d{2})$",
         "FieldValueModifications": {
             "ShortYear": [],
-            "Spaced": ["-"," "]
+            "Spaced": ["-", "  "]
         },
-        "FieldDivision": {
-            "DivisibleFields": {
-                "DOBY": "year",
-                "DOBM": "month",
-                "DOBD": "day"
-            }
+        "DivisibleFields": {
+            "DOBY": "year",
+            "DOBM": "month",
+            "DOBD": "day"
         },
         "Display": {
             "English": "Date of Birth"
