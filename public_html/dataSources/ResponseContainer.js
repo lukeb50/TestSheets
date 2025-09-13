@@ -134,13 +134,49 @@ class ResponseContainer {
                 }
             });
         }
-        matchingMatrix.forEach((arr, i) => {
+        //Remove any entries that conflict with the unique flag
+        for (var f = 0; f < usedFields.length; f++) {
+            let fieldData = this.fieldData[usedFields[f]];
+            //Unique Flag Present
+            if (Object.hasOwn(fieldData, "isUniqueMatch") && fieldData['isUniqueMatch'] === true) {
+                //Go through each non-zero value and check for compliance
+                for (var a = 0; a < usedQuestions.length; a++) {
+                    if (matchingMatrix[a][f] > 0) {
+                        var questionId = usedQuestions[a];
+                        //No value can appear more than 4 times || (represent more than 15% or entries with 20 or more responses)
+                        let valueCounts = {};
+                        //Loop each answer and count how many times each value occurs
+                        for (const [responseId, response] of Object.entries(this.getResponses())) {
+                            let respValue = response.getAnswer(questionId).answerContent.trim().toUpperCase();
+                            if (respValue && respValue !== "") {
+                                //Tally non-empty values
+                                if (valueCounts[respValue]) {
+                                    valueCounts[respValue]++;
+                                } else {
+                                    valueCounts[respValue] = 1;
+                                }
+                            }
+                        }
+                        ;
+                        let entryCounts = Object.values(valueCounts);
+                        if (entryCounts.some((count) => count > 4) || (this.getNumberOfResponses >= 20 &&
+                                entryCounts.some((count) => count / this.getNumberOfResponses() >= 0.15))) {
+                            matchingMatrix[a][f] = 0;
+                        }
+                    }
+                }
+            }
+        }
+        //Go through each field and find which QuestionId fits best
+        for (var i = 0; i < usedFields.length; i++) {
+            //Get 2and dimention of the 2d matching array
+            let arr = matchingMatrix.reduce((acc, currentVal) => {acc.push(currentVal[i]);return acc;}, []);
             let index = findMaximumUniqueIndex(arr);
             if (index !== -1) {
-                clearDuplicativeEntry(usedQuestions[i], this.matching);
-                this.matching[usedFields[index]] = usedQuestions[i];
+                clearDuplicativeEntry(usedQuestions[index], this.matching);
+                this.matching[usedFields[i]] = usedQuestions[index];
             }
-        });
+        };
         return this.matching;
 
         //Removes any entries that would duplicate the new matching (such as from Google Forms text matching)
@@ -165,6 +201,7 @@ class ResponseContainer {
                     index = -1;
                 }
             });
+            console.log(arr, index);
             return index;
         }
     }
@@ -348,7 +385,7 @@ class Answer {
     getFormattedAnswer(fieldBeingApplied, sheetInformation) {
         if (sheetInformation['ModificationsToApply'] && sheetInformation['ModificationsToApply'][fieldBeingApplied]) {
             var isMultipleModifications = Array.isArray(sheetInformation['ModificationsToApply'][fieldBeingApplied]);
-            var formattedText = this.answerContent;
+            var formattedText = this.answerContent.trim();
             for (var i = 0; i < (isMultipleModifications ? sheetInformation['ModificationsToApply'][fieldBeingApplied].length : 1); i++) {
                 //Pick either the whole text if single, or the ith element in the modifcations array if multiple apply
                 let modificationName = isMultipleModifications ? sheetInformation['ModificationsToApply'][fieldBeingApplied][i] : sheetInformation['ModificationsToApply'][fieldBeingApplied];
@@ -365,7 +402,7 @@ class Answer {
             }
             return formattedText;
         } else {
-            return this.answerContent;
+            return this.answerContent.trim();
         }
     }
 }

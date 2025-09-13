@@ -10,7 +10,10 @@
                 "Phone": "Formatted",
                 "PostalCode": "Formatted",
                 "DOBM": "Numeric",
-                "DOBY": "TwoDigit"
+                "DOBY": "TwoDigit",
+                "Name": "Uppercase",
+                "City": "Uppercase",
+                "Address": "Uppercase"
             },
             "fields": ["Name", "Address", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD"]
         }, {
@@ -23,7 +26,10 @@
                 "Phone": "Formatted",
                 "PostalCode": "Formatted",
                 "DOBM": "Numeric",
-                "DOBY": "TwoDigit"
+                "DOBY": "TwoDigit",
+                "Name": "Uppercase",
+                "City": "Uppercase",
+                "Address": "Uppercase"
             },
             "prerequisites": {
                 "age": 13,
@@ -41,7 +47,10 @@
                 "Phone": "Formatted",
                 "PostalCode": "Formatted",
                 "DOBM": "Numeric",
-                "DOBY": "TwoDigit"
+                "DOBY": "TwoDigit",
+                "Name": "Uppercase",
+                "City": "Uppercase",
+                "Address": "Uppercase"
             },
             "prerequisites": {
                 "courses": [["Bronze Medallion", "Emergency First Aid"], ["Bronze Medallion", "Standard First Aid"]]
@@ -53,11 +62,15 @@
             "documentUrl": "NL-Pool2022.pdf",
             "pageSlotCounts": [4, 4],
             "DividablesToInclude": ["DOB", "Name"],
+            "CombinablesToInclude": ["LastName"],
             "ModificationsToApply": {
                 "Phone": "Formatted",
                 "PostalCode": "Formatted",
                 "DOBM": "Numeric",
-                "DOBY": "TwoDigit"
+                "DOBY": "TwoDigit",
+                "Name": "Uppercase",
+                "City": "Uppercase",
+                "Address": "Uppercase"
             },
             "prerequisites": {
                 "courses": [["Bronze Cross", "Standard First Aid"]],
@@ -71,11 +84,15 @@
             "documentUrl": "NL-Pool-Recert2022.pdf",
             "pageSlotCounts": [4, 4],
             "DividablesToInclude": ["DOB", "Name"],
+            "CombinablesToInclude": ["LastName"],
             "ModificationsToApply": {
                 "Phone": "Formatted",
                 "PostalCode": "Formatted",
                 "DOBM": "Numeric",
-                "DOBY": "TwoDigit"
+                "DOBY": "TwoDigit",
+                "Name": "Uppercase",
+                "City": "Uppercase",
+                "Address": "Uppercase"
             },
             "prerequisites": {
                 "courses": [["National Lifeguard - Pool"]],
@@ -96,7 +113,10 @@
                 "Phone": "Formatted",
                 "PostalCode": "Formatted",
                 "DOBM": "Numeric",
-                "DOBY": "TwoDigit"
+                "DOBY": "TwoDigit",
+                "Name": "Uppercase",
+                "City": "Uppercase",
+                "Address": "Uppercase"
             },
             "fields": ["Name", "Address", "Apartment", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD"]
         }, {
@@ -109,7 +129,10 @@
                 "Phone": "Formatted",
                 "PostalCode": "Formatted",
                 "DOBM": "Numeric",
-                "DOBY": "TwoDigit"
+                "DOBY": "TwoDigit",
+                "Name": "Uppercase",
+                "City": "Uppercase",
+                "Address": "Uppercase"
             },
             "fields": ["Name", "Address", "Apartment", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location"]
         }
@@ -122,13 +145,16 @@
             "pageSlotCounts": [3, 6],
             "repeatingPages": [1],
             "DividablesToInclude": [],
-            "CombinablesToInclude":["FullAddress"],
+            "CombinablesToInclude": ["FullAddress"],
             "ModificationsToApply": {
                 "Phone": "Formatted",
                 "PostalCode": "Formatted",
                 "DOBM": "Numeric",
                 "DOBY": "TwoDigit",
-                "DOB": ["ShortYear", "Spaced"]
+                "DOB": ["ShortYear", "Spaced"],
+                "Name": "Uppercase",
+                "City": "Uppercase",
+                "Address": "Uppercase"
             },
             "prerequisites": {
                 "courses": [["Bronze Cross"]],

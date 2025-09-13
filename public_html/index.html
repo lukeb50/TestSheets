@@ -213,6 +213,23 @@
                 <button class="listingButton"></button>
             </div>
         </template>
+        <div id="filterMenu">
+            <label>Only show entries where this field is 
+                <select id="filterOptionSelect">
+                    <option value="equalTo">Equal To</option>
+                    <option value="lessThan">Less Than</option>
+                    <option value="greaterThan">Greater Than</option>
+                    <option value="contains">Contains</option>
+                </select>
+            </label>
+            <span class="flex">
+                <input id="filterInput">
+            </span>
+            <span>
+                <button id="filterCancelButton">Clear</button>
+                <button id="filterApplyButton">Apply</button>
+            </span>
+        </div>
         <script src="https://accounts.google.com/gsi/client" async defer></script>
         <script async defer src="https://apis.google.com/js/api.js"></script>
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZEUHLaA-ttIr1wtX5Wq7qGK-8bn7m5Oc&libraries=maps" defer></script>

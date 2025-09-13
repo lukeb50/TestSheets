@@ -1,12 +1,16 @@
 {
     "Name": {
         "RegexMatch": "^(?<first>[A-Za-z-]+) (?<last>[A-Za-z- ]*)$",
+        "isUniqueMatch": true,
         "DivisibleFields": {
             "FirstName": "first",
             "LastName": "last"
         },
         "Display": {
             "English": "Name"
+        },
+        "FieldValueModifications": {
+            "Uppercase": []
         }
     },
 
@@ -19,13 +23,21 @@
     "LastName": {
         "Display": {
             "English": "Last Name"
+        },
+        "CombinedFormatting": {
+            "FormattedString": "<LastName> (<LSSId>)",
+            "FieldsToInclude": ["LastName", "LSSId"]
         }
     },
 
     "Address": {
         "RegexMatch": "^[0-9]+ [\\S\\s]*$",
+        "isUniqueMatch": true,
         "Display": {
             "English": "Street Address"
+        },
+        "FieldValueModifications": {
+            "Uppercase": []
         }
     },
 
@@ -55,6 +67,9 @@
         "RegexMatch": "^(?![ -])([-]?[a-zA-Z])+$",
         "Display": {
             "English": "City"
+        },
+        "FieldValueModifications": {
+            "Uppercase": []
         }
     },
 
@@ -89,6 +104,7 @@
 
     "DOB": {
         "RegexMatch": "^(?<year>\\d{2,4})-(?<month>\\d{2})-(?<day>\\d{2})$",
+        "isUniqueMatch": true,
         "FieldValueModifications": {
             "ShortYear": [],
             "Spaced": ["-", "  "]
@@ -164,6 +180,8 @@
     },
 
     "LSSId": {
+        "RegexMatch":"^[A-z]{3} ?\\w{3}$",
+        "isUniqueMatch": true,
         "Display": {
             "English": "LSS ID"
         }

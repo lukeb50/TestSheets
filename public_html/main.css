@@ -445,6 +445,24 @@ div.courseInfoDialogInputHolder label{
     border-radius: 5px;
 }
 
+#mainSelectionTable tr th button.filterButton{
+    font-size: 1em;
+    font-weight: bold;
+    border: none;
+    padding:3px;
+    margin-left: 3px;
+    background: transparent;
+    display: none;
+}
+
+#mainSelectionTable tr th button.filterButton.active{
+    background: rgba(50,100,255,0.4);
+}
+
+#mainSelectionTable tr th button.filterButton:hover{
+    background: rgba(255,255,255,0.5);
+}
+
 #mainSelectionTable tr span{
     display: flex;
 }
@@ -605,6 +623,47 @@ label.hint{
     display: block;
     text-align: center;
     margin-top: 5px;
+}
+
+#filterMenu{
+    position: absolute;
+    width:200px;
+    background: white;
+    display: none;
+    flex-direction: column;
+    border-radius: 5px 0 5px 5px;
+    box-shadow: black 0px 3px 5px 3px;
+}
+
+#filterMenu p{
+    margin: 0;
+}
+
+.flex{
+    display: flex;
+}
+
+#filterMenu span{
+    padding-bottom: 5px;
+    text-align: center;
+}
+
+#filterMenu label{
+    text-align: center;
+}
+
+#filterOptionSelect{
+    border: 1px solid gray;
+    border-radius: 5px;
+}
+
+#filterInput{
+    flex: 1;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border:1px solid gray;
 }
 
 #googleAuthButton{

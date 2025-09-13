@@ -24,6 +24,20 @@ var sheetData;
 
 var courseInfoObj = null;
 
+//Shared Modification Functions
+var uppercaseWords = function (value) {
+    var splitString = value.toString().trim().split(" ");
+    if (splitString.length === 0) {
+        return value;
+    }
+    for (var i = 0; i < splitString.length; i++) {
+        if (splitString[i].length > 0) {
+            splitString[i] = splitString[i].charAt(0).toUpperCase() + splitString[i].substring(1);
+        }
+    }
+    return splitString.join(" ");
+};
+
 const jsFieldValueModifications = {
     PostalCode: {
         //Formats a postal code into uppercase with a space
@@ -70,6 +84,15 @@ const jsFieldValueModifications = {
                 return (yearMatch.length === 2 ? yearMatch : yearMatch.substring(2, 4)) + matchInfo[2];
             }
         }
+    },
+    Name: {
+        Uppercase: uppercaseWords
+    },
+    Address: {
+        Uppercase: uppercaseWords
+    },
+    City: {
+        Uppercase: uppercaseWords
     }
 };
 
@@ -496,13 +519,20 @@ const matchingTable = document.getElementById("mainSelectionTable");
 const matchingConfirmBtn = document.getElementById("confirmSelectionTableBtn");
 const matchingSelectedCountLabel = document.getElementById("mainSelectionCountLabel");
 const matchingSheetInfoLabel = document.getElementById("mainSelectionSheetLabel");
+const matchingTableHolder = document.getElementById("mainSelectionTableHolder");
 
 const warningBar = document.getElementById("mainSelectionWarningBar");
 const warningPreviousBtn = document.getElementById("warningPreviousBtn");
 const warningPageLabel = document.getElementById("warningPageLabel");
 const warningNextBtn = document.getElementById("warningNextBtn");
 
-function showMatchingScreen(dataContainer, selectedSheet, existingSelectedResponses) {
+const filterMenu = document.getElementById("filterMenu");
+const filterSelect = document.getElementById("filterOptionSelect");
+const filterInput = document.getElementById("filterInput");
+const filterApplyBtn = document.getElementById("filterApplyButton");
+const filterCancelBtn = document.getElementById("filterCancelButton");
+
+function showMatchingScreen(dataContainer, selectedSheet) {
     console.log(dataContainer);
     var verificationModules = [new ageVerificationModule()];
     //Run an inital verification
@@ -514,6 +544,10 @@ function showMatchingScreen(dataContainer, selectedSheet, existingSelectedRespon
     tableScreen.style.display = "flex";
     clearChildren(matchingTable);
     var selectedResponses = [];
+    var filteredResponses = Object.keys(dataContainer.getResponses());
+    var appliedFilters = {
+
+    };
     //Create header row
     let headerRow = createElement("tr", matchingTable, "", "");
     let allSelectBox = createElement("th", headerRow, "", "");
@@ -521,14 +555,16 @@ function showMatchingScreen(dataContainer, selectedSheet, existingSelectedRespon
     let allSelectCheckbox = createElement("input", allSelectBox, "", "");
     allSelectCheckbox.id = "matchingSelectAll";
     //Set proper state if re-rendering
-    allSelectCheckbox.checked = existingSelectedResponses ? existingSelectedResponses.length === dataContainer.getNumberOfResponses() : true;
+    allSelectCheckbox.checked = true;
     allSelectCheckbox.type = "checkbox";
     allSelectCheckbox.onchange = handleSelectAllCheckboxChanged;
     let allLbl = createElement("label", allSelectBox, "Select All", "");
     allLbl.setAttribute("for", "matchingSelectAll");
     //Create question dropdowns
     dataContainer.includedQuestions.forEach((questionId) => {
-        let questionSelector = createElement("select", createElement("th", headerRow, "", ""), "", "");
+        let header = createElement("th", headerRow, "", "");
+        let headerSpan = createElement("span", header, "", "");
+        let questionSelector = createElement("select", headerSpan, "", "");
         fillSelector(questionSelector, questionId);
         questionSelector.setAttribute("data-question", questionId);
         questionSelector.className = "matchingSelect";
@@ -541,6 +577,10 @@ function showMatchingScreen(dataContainer, selectedSheet, existingSelectedRespon
             questionSelector.value = "";
             questionSelector.setAttribute("data-val", "");
         }
+        //Filter button
+        let filterButton = createElement("button", headerSpan, "filter_alt", "material-symbols-outlined filterButton");
+        filterButton.setAttribute("data-question", questionId);
+        handleFilterButtonClick(filterButton);
     });
     //Call function to disable options as required
     handleSelectChanged();
@@ -553,9 +593,10 @@ function showMatchingScreen(dataContainer, selectedSheet, existingSelectedRespon
         let newQuestionId = dataContainer.addEmptyAnswer();
         //Create the select
         let newSelectHeader = createElement("th", headerRow, "", "");
+        let newSelectSpan = createElement("span", newSelectHeader, "", "");
         //Insert properly
         headerRow.insertBefore(newSelectHeader, newColumnButtonHolder);
-        let questionSelector = createElement("select", newSelectHeader, "", "");
+        let questionSelector = createElement("select", newSelectSpan, "", "");
         //Fill the select & bind
         fillSelector(questionSelector, newQuestionId);
         questionSelector.setAttribute("data-question", newQuestionId);
@@ -563,6 +604,10 @@ function showMatchingScreen(dataContainer, selectedSheet, existingSelectedRespon
         questionSelector.onchange = handleSelectChanged;
         questionSelector.setAttribute("data-val", "");
         handleSelectChanged();
+        //Filter button
+        let filterButton = createElement("button", newSelectSpan, "filter_alt", "material-symbols-outlined filterButton");
+        filterButton.setAttribute("data-question", newQuestionId);
+        handleFilterButtonClick(filterButton);
         //Create the new input boxes
         for (const [responseId, response] of Object.entries(dataContainer.getResponses())) {
             let responseRow = document.getElementById("matchingTableRow" + responseId);
@@ -578,9 +623,7 @@ function showMatchingScreen(dataContainer, selectedSheet, existingSelectedRespon
     //Create main table
     var currentCount = 1;
     for (const [responseId, response] of Object.entries(dataContainer.getResponses())) {
-        if (!existingSelectedResponses || (existingSelectedResponses && existingSelectedResponses.includes(responseId))) {
-            selectedResponses.push(responseId);
-        }
+        selectedResponses.push(responseId);
         createRow(responseId, response, currentCount);
         currentCount++;
     }
@@ -592,6 +635,8 @@ function showMatchingScreen(dataContainer, selectedSheet, existingSelectedRespon
     showWarningBar(null);
     //Call function so that select options are properly disabled
     handleSelectChanged();
+    //Show filter buttons
+    handleShowFilterButtons();
     //Create new response button
     let manualButton = createElement("Button", matchingTable, "Manually Add Response", "");
     manualButton.id = "mainSelectionTableManualResponseBtn";
@@ -599,10 +644,12 @@ function showMatchingScreen(dataContainer, selectedSheet, existingSelectedRespon
         let responseId = dataContainer.addEmptyResponse();
         let response = dataContainer.getResponse(responseId);
         selectedResponses.push(responseId);
+        filteredResponses.push(responseId);//Update so that Select All works properly
         let createdRow = createRow(responseId, response, currentCount);
         matchingTable.insertBefore(createdRow, manualButton);
         currentCount++;
         updateCountLabel();
+        handleShowFilterButtons();
     };
     return new Promise((resolve, reject) => {
         document.getElementById("cancelSelectionTableBtn").onclick = function () {
@@ -685,7 +732,7 @@ function showMatchingScreen(dataContainer, selectedSheet, existingSelectedRespon
                         dataContainer.matching[el.value] = el.getAttribute("data-question");
                     }
                     //Set the "new" current value for future runs
-                    el.setAttribute("data-val",el.value);
+                    el.setAttribute("data-val", el.value);
                 }
             });
             console.log(dataContainer.matching);
@@ -718,17 +765,22 @@ function showMatchingScreen(dataContainer, selectedSheet, existingSelectedRespon
         if (selectedFieldMatching) {
             showWarningBar(selectedFieldMatching);
         }
+        handleShowFilterButtons();
     }
 
     //Handle when the user clicks the "Select All" checkbox
     function handleSelectAllCheckboxChanged(e) {
         let newState = e.target.checked;
-        selectedResponses = [];
-        Object.keys(dataContainer.getResponses()).forEach((responseId) => {
+        filteredResponses.forEach((responseId) => {
             let check = document.getElementById("matchingSelect-" + responseId);
             check.checked = newState;
             if (newState === true) {
-                selectedResponses.push(responseId);
+                if (!selectedResponses.includes(responseId)) {
+                    selectedResponses.push(responseId);
+                }
+            } else if (selectedResponses.includes(responseId)) {
+                //Remove if in the array
+                selectedResponses.splice(selectedResponses.indexOf(responseId), 1);
             }
         });
         updateCountLabel();
@@ -740,7 +792,9 @@ function showMatchingScreen(dataContainer, selectedSheet, existingSelectedRespon
         let target = e.target;
         let responseId = target.getAttribute("data-response");
         if (target.checked === true) {
-            selectedResponses.push(responseId);
+            if (!selectedResponses.includes(responseId)) {
+                selectedResponses.push(responseId);
+            }
         } else {
             if (selectedResponses.includes(responseId)) {
                 selectedResponses.splice(selectedResponses.indexOf(responseId), 1);
@@ -749,7 +803,11 @@ function showMatchingScreen(dataContainer, selectedSheet, existingSelectedRespon
         //Update the label
         updateCountLabel();
         //Update the select all checkbox
-        if (selectedResponses.length === dataContainer.getNumberOfResponses()) {
+        updateSelectAllCheckBox();
+    }
+
+    function updateSelectAllCheckBox() {
+        if (filteredResponses.every((el) => selectedResponses.includes(el))) {
             allSelectCheckbox.checked = true;
         } else {
             allSelectCheckbox.checked = false;
@@ -906,6 +964,155 @@ function showMatchingScreen(dataContainer, selectedSheet, existingSelectedRespon
             warningBar.style.display = "none";
         }
     }
+
+    //Handles showing or hiding filter buttons
+    function handleShowFilterButtons() {
+        //Hide all buttons
+        document.querySelectorAll(".filterButton").forEach((btn) => {
+            btn.style.display = "none";
+        });
+        if (dataContainer.getNumberOfResponses() >= 10) {
+            //var answerSets = {};
+            //var blankCounts = {};
+            dataContainer.includedQuestions.forEach((questionId) => {
+                var btn = document.querySelector('.filterButton[data-question="' + questionId + '"]');
+                if (btn) {
+                    btn.style.display = "block";
+                }
+                //answerSets[questionId] = new Set();
+                //blankCounts[questionId] = 0;
+//            });
+//            for (const [responseId, response] of Object.entries(dataContainer.getResponses())) {
+//                response.getAnswers().forEach((answer) => {
+//                    answer = answer.toString().trim();
+//                    if (answer.answerContent) {
+//                        answerSets[answer.questionIdentifier].add(answer.answerContent);
+//                    } else {
+//                        blankCounts[answer.questionIdentifier]++;
+//                    }
+//                });
+//            }
+//            //Score each question on how unique answers are. Lower score = less variability
+//            for (const [questionId, answerSet] of Object.entries(answerSets)) {
+//                let variabilityScore = answerSet.size / (dataContainer.getNumberOfResponses() - blankCounts[questionId]);
+//                if (variabilityScore < .85) {
+//
+//                }
+            });
+        }
+    }
+
+    function handleFilterButtonClick(btn) {
+        btn.onclick = function () {
+            filterMenu.style.display = "flex";
+            if (appliedFilters[btn.getAttribute("data-question")]) {
+                let filterSettings = appliedFilters[btn.getAttribute("data-question")];
+                filterSelect.value = filterSettings.method;
+                filterInput.value = filterSettings.value;
+            } else {
+                filterSelect.value = "equalTo";
+                filterInput.value = "";
+            }
+            let menuBounds = filterMenu.getBoundingClientRect();
+            positionMenu();
+            new Promise((resolve, reject) => {
+                matchingTableHolder.onscroll = function () {
+                    positionMenu();
+                };
+
+                filterApplyBtn.onclick = function () {
+                    let newConfig = {};
+                    newConfig.method = filterSelect.value;
+                    newConfig.value = filterInput.value;
+                    appliedFilters[btn.getAttribute("data-question")] = newConfig;
+                    btn.classList.add("active");
+                    hideMenu();
+                    applyFilters();
+                    resolve();
+                };
+
+                filterCancelBtn.onclick = function () {
+                    delete appliedFilters[btn.getAttribute("data-question")];
+                    btn.classList.remove("active");
+                    hideMenu();
+                    applyFilters();
+                    reject();
+                };
+
+                window.onclick = function (e) {
+                    if (!matchingTableHolder.contains(e.target) && !filterMenu.contains(e.target)) {
+                        //Click outside the table area, hide the menu
+                        hideMenu();
+                        reject();
+                    }
+                };
+
+                btn.onclick = function () {
+                    hideMenu();
+                    reject();
+                };
+            });
+
+            function hideMenu() {
+                filterMenu.style.display = "none";
+                handleFilterButtonClick(btn);
+            }
+
+            function positionMenu() {
+                let buttonBounds = btn.getBoundingClientRect();
+                filterMenu.style.top = (buttonBounds.bottom) + 10 + "px";
+                filterMenu.style.left = (buttonBounds.right - menuBounds.width) + "px";
+            }
+        };
+    }
+
+    function applyFilters() {
+        filteredResponses = Object.keys(dataContainer.getResponses());
+        var filteredFields = Object.keys(appliedFilters);
+        if (filteredFields.length > 0) {
+            for (const [responseId, response] of Object.entries(dataContainer.getResponses())) {
+                filteredFields.forEach((fieldName) => {
+                    //Go through all filtered fields in each response
+                    let answerContent = response.getAnswer(fieldName).answerContent;
+                    let filterData = appliedFilters[fieldName];
+                    if (!applyOperation(answerContent, filterData.method, filterData.value)) {
+                        //Value failed filter test
+                        var responseIndex = filteredResponses.indexOf(responseId);
+                        if (responseIndex !== -1) {
+                            //Remove from list
+                            filteredResponses.splice(responseIndex, 1);
+                        }
+                    }
+                });
+            }
+        }
+        //Update visibilities
+        Object.keys(dataContainer.getResponses()).forEach((responseId) => {
+            let rowEl = document.getElementById("matchingTableRow" + responseId);
+            rowEl.style.display = filteredResponses.indexOf(responseId) === -1 ? "none" : "table-row";
+        });
+        //Update the select all checkbox
+        updateSelectAllCheckBox();
+
+        function applyOperation(value, operation, filterValue) {
+            switch (operation) {
+                case "equalTo":
+                    return prepString(value.toString()) === prepString(filterValue.toString());
+                case "greaterThan":
+                    return value > filterValue;
+                case "lessThan":
+                    return value < filterValue;
+                case "contains":
+                    return prepString(value.toString()).includes(prepString(filterValue));
+                default:
+                    return false;
+            }
+
+            function prepString(str) {
+                return str.toUpperCase().trim();
+            }
+        }
+    }
 }
 
 function hideMatchingScreen() {
@@ -987,4 +1194,5 @@ helpButton.onclick = function () {
 
 document.getElementById("closeHelpDialogButton").onclick = function () {
     dialogContainer.style.display = "none";
-};
+}
+;
