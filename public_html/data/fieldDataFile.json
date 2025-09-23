@@ -180,10 +180,13 @@
     },
 
     "LSSId": {
-        "RegexMatch":"^[A-z]{3} ?\\w{3}$",
+        "RegexMatch": "^[A-z]{3} ?\\w{3}$",
         "isUniqueMatch": true,
         "Display": {
             "English": "LSS ID"
+        },
+        "FieldValueModifications": {
+            "UppercaseID": []
         }
     }
 }

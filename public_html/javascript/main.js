@@ -93,6 +93,12 @@ const jsFieldValueModifications = {
     },
     City: {
         Uppercase: uppercaseWords
+    },
+    LSSId: {
+        UppercaseID: function (value) {
+            console.log(value,value.toUpperCase());
+            return value ? value.toUpperCase() : "";
+        }
     }
 };
 
@@ -318,9 +324,15 @@ function generatePdfFile(sheetData, dataContainer, selectedResponses, courseInfo
                 var instructorIsExaminer = courseInfo["SameAsInstructor"];
                 for (const [fieldName, value] of Object.entries(courseInfo)) {
                     if (fieldName !== "SameAsInstructor" && !(instructorIsExaminer && fieldName.startsWith("Examiner"))) {
-                        if (formObject.getFieldMaybe(fieldName)) {
+                        var trainerFieldName = fieldName.replace("Instructor", "Trainer");
+                        if (formObject.getFieldMaybe(fieldName) || formObject.getFieldMaybe(trainerFieldName)) {
                             try {
                                 val = value;
+                                //Handle Trainers
+                                if (formObject.getFieldMaybe(trainerFieldName)) {
+                                    console.log(trainerFieldName);
+                                    formObject.getTextField(trainerFieldName).setText(val);
+                                }
                                 //Handle a space in LSS ID
                                 if (fieldName.endsWith("Id")) {
                                     val = value.replaceAll(" ", "");
@@ -735,7 +747,6 @@ function showMatchingScreen(dataContainer, selectedSheet) {
                     el.setAttribute("data-val", el.value);
                 }
             });
-            console.log(dataContainer.matching);
         }
         //Enable/disable options
         let selectedFields = Object.keys(dataContainer.matching);

@@ -143,7 +143,7 @@ class ResponseContainer {
                 for (var a = 0; a < usedQuestions.length; a++) {
                     if (matchingMatrix[a][f] > 0) {
                         var questionId = usedQuestions[a];
-                        //No value can appear more than 4 times || (represent more than 15% or entries with 20 or more responses)
+                        //No value can appear more than 3 times || (represent more than 15% or entries with 20 or more responses)
                         let valueCounts = {};
                         //Loop each answer and count how many times each value occurs
                         for (const [responseId, response] of Object.entries(this.getResponses())) {
@@ -159,7 +159,7 @@ class ResponseContainer {
                         }
                         ;
                         let entryCounts = Object.values(valueCounts);
-                        if (entryCounts.some((count) => count > 4) || (this.getNumberOfResponses >= 20 &&
+                        if (entryCounts.some((count) => count > 3) || (this.getNumberOfResponses >= 20 &&
                                 entryCounts.some((count) => count / this.getNumberOfResponses() >= 0.15))) {
                             matchingMatrix[a][f] = 0;
                         }
@@ -167,6 +167,9 @@ class ResponseContainer {
                 }
             }
         }
+        console.log(matchingMatrix);
+        console.log(usedFields);
+        console.log(usedQuestions);
         //Go through each field and find which QuestionId fits best
         for (var i = 0; i < usedFields.length; i++) {
             //Get 2and dimention of the 2d matching array
@@ -201,7 +204,6 @@ class ResponseContainer {
                     index = -1;
                 }
             });
-            console.log(arr, index);
             return index;
         }
     }

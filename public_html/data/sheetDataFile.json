@@ -70,7 +70,8 @@
                 "DOBY": "TwoDigit",
                 "Name": "Uppercase",
                 "City": "Uppercase",
-                "Address": "Uppercase"
+                "Address": "Uppercase",
+                "LSSId" : "UppercaseID"
             },
             "prerequisites": {
                 "courses": [["Bronze Cross", "Standard First Aid"]],
@@ -92,7 +93,8 @@
                 "DOBY": "TwoDigit",
                 "Name": "Uppercase",
                 "City": "Uppercase",
-                "Address": "Uppercase"
+                "Address": "Uppercase",
+                "LSSId" : "UppercaseID"
             },
             "prerequisites": {
                 "courses": [["National Lifeguard - Pool"]],
@@ -154,7 +156,8 @@
                 "DOB": ["ShortYear", "Spaced"],
                 "Name": "Uppercase",
                 "City": "Uppercase",
-                "Address": "Uppercase"
+                "Address": "Uppercase",
+                "LSSId" : "UppercaseID"
             },
             "prerequisites": {
                 "courses": [["Bronze Cross"]],
