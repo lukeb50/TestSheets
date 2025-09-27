@@ -3,7 +3,8 @@
 class ResponseContainer {
     responses = {};
     includedQuestions = new Set();
-    matching = {};
+    sourceHeaders = {};//FieldName: QuestionId
+    matching = {}; //FieldName: QuestionId
     isForcedMatch = false;
     excludedFields = [];
 
@@ -49,6 +50,10 @@ class ResponseContainer {
 
     setMatching(matching) {
         this.matching = matching;
+    }
+
+    setHeaders(headerInfo) {
+        this.sourceHeaders = headerInfo;
     }
 
     makeForcedMatch() {
@@ -99,6 +104,7 @@ class ResponseContainer {
             alert("No responses found.");
             return;
         }
+        this.matching = {};
         var usedFields = this.sheetInformation.fields;
         //Include any dividable fields
         if (this.sheetInformation['DividablesToInclude']) {
@@ -111,6 +117,7 @@ class ResponseContainer {
             });
         }
         let usedQuestions = Array.from(this.includedQuestions);
+        var prerequisiteMatching = matchPrerequisiteFields(this);
         const matchingMatrix = Array(usedQuestions.length).fill().map(() => Array(usedFields.length).fill(0));
         let fieldRegexes = {};
         usedFields.forEach((field) => {
@@ -167,20 +174,21 @@ class ResponseContainer {
                 }
             }
         }
-        console.log(matchingMatrix);
-        console.log(usedFields);
-        console.log(usedQuestions);
         //Go through each field and find which QuestionId fits best
         for (var i = 0; i < usedFields.length; i++) {
             //Get 2and dimention of the 2d matching array
-            let arr = matchingMatrix.reduce((acc, currentVal) => {acc.push(currentVal[i]);return acc;}, []);
+            let arr = matchingMatrix.reduce((acc, currentVal) => {
+                acc.push(currentVal[i]);
+                return acc;
+            }, []);
             let index = findMaximumUniqueIndex(arr);
             if (index !== -1) {
                 clearDuplicativeEntry(usedQuestions[index], this.matching);
                 this.matching[usedFields[i]] = usedQuestions[index];
             }
-        };
-        return this.matching;
+        }
+        //Combine with prereqs
+        this.matching = {...this.matching, ...prerequisiteMatching};
 
         //Removes any entries that would duplicate the new matching (such as from Google Forms text matching)
         function clearDuplicativeEntry(questionId, matchingObj) {
@@ -205,6 +213,96 @@ class ResponseContainer {
                 }
             });
             return index;
+        }
+
+
+        function matchPrerequisiteFields(ctx) {
+            var matchedPairs = {};
+            const dateRegex = new RegExp(/^(?<year>\d{2,4})-(?<month>\d{2})-(?<day>\d{2})$/);
+            const prereqFields = [{Name: "Date", MatchingFunction: function (val) {
+                        return dateRegex.test(val.toString().trim());
+                    }}, {Name: "Location", MatchingFunction: function (val) {
+                        return !dateRegex.test(val.toString().trim());
+                    }}];
+            //Check if needed
+            if (!ctx.sheetInformation.prerequisites || !ctx.sheetInformation.prerequisites.courses) {
+                return null;
+            }
+            var prerequisites = ctx.sheetInformation.prerequisites.courses;
+            //Create a matching table, each header has a slot for each possible prerequisite field option (date,location,etc)
+            var matchingArr = Array(ctx.includedQuestions.size).fill().map(() => Array(prereqFields.length).fill(0));
+            //Go over each answer value and check it against each prerequisite check function
+            for (const [responseId, response] of Object.entries(ctx.responses)) {
+                response.getAnswers().forEach((answer) => {
+                    var answerI = [...ctx.includedQuestions].indexOf(answer.questionIdentifier);
+                    var answerTxt = answer.answerContent;
+                    //Short-circuit if no content
+                    if (answerTxt && answerTxt !== "") {
+                        prereqFields.forEach((prereqFieldInfo, prereqI) => {
+                            if (prereqFieldInfo.MatchingFunction(answerTxt)) {
+                                //Matches, increment counter
+                                matchingArr[answerI][prereqI]++;
+                            } else {
+                                //Has a value that matches, decrement counter
+                                matchingArr[answerI][prereqI]--;
+                            }
+                        });
+                    }
+                });
+            }
+            //check each header for a name match
+            var eligibleHeaders = [];
+            var eligibleHeadersIds = [];
+            for (const [questionId, headerText] of Object.entries(ctx.sourceHeaders)) {
+                //Find any prerequisites name match with the headers
+                var viablePrerequisites = prerequisites.filter((prereqName) => trimCaseName(headerText).includes(trimCaseName(prereqName)));
+                viablePrerequisites = viablePrerequisites.length === 1 ? viablePrerequisites : [];
+                //Only consider a single match
+                if (viablePrerequisites.length === 1) {
+                    //This header is viable
+                    eligibleHeadersIds.push(questionId);
+                    eligibleHeaders.push({questionId: questionId, prerequisiteIndex: prerequisites.indexOf(viablePrerequisites[0])});
+                }
+            }
+            console.log(eligibleHeaders, eligibleHeadersIds);
+            console.log(matchingArr);
+            console.log(ctx.includedQuestions);
+            //perform final matching
+            //Get a list of sheet prerequisites that have a header match
+            let eligiblePrereqs = prerequisites.filter((n, prerequisiteIndex) => eligibleHeaders.some((entry) => entry.prerequisiteIndex === prerequisiteIndex));
+            eligiblePrereqs.forEach((eligiblePrereqName) => {
+                var prereqI = prerequisites.indexOf(eligiblePrereqName);
+                //For each field type, find the best match and assign
+                prereqFields.forEach((prereqFieldInfo, prereqFieldI) => {
+                    //Find the highest unique index that meets the minimum where the header name matches
+                    var foundRowQuestionId = null;
+                    var maxValue = 0;
+                    matchingArr.forEach((rowEntry, rowI) => {
+                        //Check if this row is a header match for this prereq
+                        let rowQuestionId = [...ctx.includedQuestions][rowI];
+                        //This row has already been flagged as having an appropriate header
+                        if (eligibleHeaders.some((headerInfo) => headerInfo.prerequisiteIndex === prereqI && headerInfo.questionId === rowQuestionId)) {
+                            let val = rowEntry[prereqFieldI];
+                            //New highest value with a positive score
+                            //This function is non-determinisitc if two rows have the same score for the same prerequisite name
+                            if (val > maxValue) {
+                                maxValue = val;
+                                foundRowQuestionId = rowQuestionId;
+                            }
+                        }
+                    });
+                    //If the check turned up an entry, mark it
+                    if (foundRowQuestionId) {
+                        matchedPairs["Prereq" + (prereqI + 1) + prereqFieldInfo.Name] = foundRowQuestionId;
+                    }
+                });
+            });
+            console.log(matchedPairs);
+            return matchedPairs;
+        }
+
+        function trimCaseName(value) {
+            return value.toUpperCase().trim().replaceAll(" ", "");
         }
     }
 
@@ -330,6 +428,13 @@ class ResponseContainer {
                 fields.splice(fields.indexOf(combinable), 1);
                 this.excludedFields.push(combinable);
             });
+        }
+        //Prerequisite fields
+        if (this.sheetInformation.prerequisites && this.sheetInformation.prerequisites.courses) {
+            for (var i = 1; i <= this.sheetInformation.prerequisites.courses.length; i++) {
+                fields.push("Prereq" + i + "Location");
+                fields.push("Prereq" + i + "Date");
+            }
         }
         return fields;
     }

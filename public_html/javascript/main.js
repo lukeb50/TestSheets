@@ -96,7 +96,6 @@ const jsFieldValueModifications = {
     },
     LSSId: {
         UppercaseID: function (value) {
-            console.log(value,value.toUpperCase());
             return value ? value.toUpperCase() : "";
         }
     }
@@ -837,7 +836,13 @@ function showMatchingScreen(dataContainer, selectedSheet) {
         fields = dataContainer.getFullFieldsList();
         createElement("option", selector, "", "").value = "";
         fields.forEach((fieldName) => {
-            let opt = createElement("option", selector, fieldData[fieldName]['Display']['English'], "");
+            var txt = fieldData[fieldName]['Display']['English'];
+            //If a field is flagged as being a prereq date/location, swap in the name of the prereq
+            if(fieldData[fieldName]['Display']['prerequisiteDisplayFlag']){
+                let prereqIndex = parseInt(fieldName.match(/[0-9]/)[0]) - 1;
+                txt = txt.replace("<name>",selectedSheet['prerequisites']['courses'][prereqIndex]);
+            }
+            let opt = createElement("option", selector, txt, "");
             opt.value = fieldName;
         });
     }

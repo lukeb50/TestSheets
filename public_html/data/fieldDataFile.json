@@ -153,12 +153,14 @@
 
     "Prereq1Date": {
         "Display": {
-            "English": "Prerequisite 1 Date"
+            "prerequisiteDisplayFlag": true,
+            "English": "<name> Date"
         }
     },
     "Prereq1Location": {
         "Display": {
-            "English": "Prerequisite 1 Location"
+            "prerequisiteDisplayFlag": true,
+            "English": "<name> Location"
         }
     },
 
@@ -170,12 +172,14 @@
 
     "Prereq2Date": {
         "Display": {
-            "English": "Prerequisite 2 Date"
+            "prerequisiteDisplayFlag": true,
+            "English": "<name> Date"
         }
     },
     "Prereq2Location": {
         "Display": {
-            "English": "Prerequisite 2 Location"
+            "prerequisiteDisplayFlag": true,
+            "English": "<name> Location"
         }
     },
 

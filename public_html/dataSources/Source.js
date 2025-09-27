@@ -40,7 +40,7 @@ class Source {
     }
     
     stripFieldName(name){
-        return name.toLowerCase().replaceAll(" ","");
+        return name.trim().toLowerCase().replaceAll(" ","");
     }
 
     //Default execution order

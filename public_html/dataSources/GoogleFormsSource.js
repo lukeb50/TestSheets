@@ -5,6 +5,7 @@ class GoogleFormsSource extends Source {
     JsonResults = null;
     tokenClient;
     internalMatching = {};
+    headerNameMapping = {};
 
     init() {
         return new Promise((resolve, reject) => {
@@ -110,6 +111,7 @@ class GoogleFormsSource extends Source {
                 if (formItem['questionItem'] && formItem['questionItem']['question']) {
                     let questionText = formItem['title'];
                     let questionIdentifier = formItem['questionItem']['question']['questionId'];
+                    this.headerNameMapping[questionIdentifier] = questionText;
                     //Go over each potential field and look for a match
                     let matchedFieldName = null;
                     this.sheetInformation.fields.forEach((fieldName) => {
@@ -143,6 +145,7 @@ class GoogleFormsSource extends Source {
     getResponseContainer() {
         let container = super.getResponseContainer();
         container.setMatching(this.internalMatching);
+        container.setHeaders(this.headerNameMapping);
         if (this.JsonResults['responses']) {
             this.JsonResults['responses'].forEach((entry) => {
                 let timestamp = new Date(entry['lastSubmittedTime']).getTime();

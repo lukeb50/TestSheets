@@ -36,7 +36,7 @@
                 "hardAgeRequirement": false,
                 "ageRequirementAlternativeText": "have their Bronze Star certification"
             },
-            "fields": ["Name", "Address", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location"]
+            "fields": ["Name", "Address", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD"]
         }, {
             "name": "Bronze Cross (2020)",
             "descriptionText": "Original Exam",
@@ -53,9 +53,9 @@
                 "Address": "Uppercase"
             },
             "prerequisites": {
-                "courses": [["Bronze Medallion", "Emergency First Aid"], ["Bronze Medallion", "Standard First Aid"]]
+                "courses": ["Bronze Medallion", "Emergency First Aid"]
             },
-            "fields": ["Name", "Address", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location", "Prereq2Date", "Prereq2Location"]
+            "fields": ["Name", "Address", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD"]
         }, {
             "name": "National Lifeguard (2022)",
             "descriptionText": "Original Exam - Pool",
@@ -71,14 +71,14 @@
                 "Name": "Uppercase",
                 "City": "Uppercase",
                 "Address": "Uppercase",
-                "LSSId" : "UppercaseID"
+                "LSSId": "UppercaseID"
             },
             "prerequisites": {
-                "courses": [["Bronze Cross", "Standard First Aid"]],
+                "courses": ["Bronze Cross", "Standard First Aid"],
                 "age": 15,
                 "hardAgeRequirement": true
             },
-            "fields": ["FirstName", "LastName", "Address", "Province", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location", "Prereq2Date", "Prereq2Location"]
+            "fields": ["FirstName", "LastName", "Address", "Province", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD"]
         }, {
             "name": "National Lifeguard (2022)",
             "descriptionText": "Recertification Exam - Pool",
@@ -94,14 +94,14 @@
                 "Name": "Uppercase",
                 "City": "Uppercase",
                 "Address": "Uppercase",
-                "LSSId" : "UppercaseID"
+                "LSSId": "UppercaseID"
             },
             "prerequisites": {
-                "courses": [["National Lifeguard - Pool"]],
+                "courses": ["National Lifeguard"],
                 "age": 15,
                 "hardAgeRequirement": true
             },
-            "fields": ["FirstName", "LastName", "Address", "Province", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location"]
+            "fields": ["FirstName", "LastName", "Address", "Province", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD"]
         }
     ],
     "firstAid": [
@@ -136,7 +136,10 @@
                 "City": "Uppercase",
                 "Address": "Uppercase"
             },
-            "fields": ["Name", "Address", "Apartment", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD", "Prereq1Date", "Prereq1Location"]
+            "prerequisites": {
+                "courses": ["Standard First Aid"]
+            },
+            "fields": ["Name", "Address", "Apartment", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD"]
         }
     ],
     "leadership": [
@@ -157,14 +160,14 @@
                 "Name": "Uppercase",
                 "City": "Uppercase",
                 "Address": "Uppercase",
-                "LSSId" : "UppercaseID"
+                "LSSId": "UppercaseID"
             },
             "prerequisites": {
-                "courses": [["Bronze Cross"]],
+                "courses": ["Bronze Cross"],
                 "age": 15,
                 "hardAgeRequirement": true
             },
-            "fields": ["Name", "FullAddress", "Email", "Phone", "DOB", "LSSId", "Prereq1Name", "Prereq1Date", "Prereq1Location", "Prereq2Name", "Prereq2Date", "Prereq2Location"]
+            "fields": ["Name", "FullAddress", "Email", "Phone", "DOB", "LSSId"]
         }
     ],
     "other": [

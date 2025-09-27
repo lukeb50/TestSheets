@@ -7,6 +7,7 @@ class CsvSource extends Source {
     internalMatching = {};
     internalColumnNumberMatching = {};
     columnIdMapping = [];
+    headerNameMapping = {};
 
     init() {
         return new Promise((resolve) => {
@@ -51,8 +52,13 @@ class CsvSource extends Source {
                             });
                             this.responses.push(responseObj);
                         }
+                        for (var i = 0; i < headerRow.length; i++) {
+                            this.headerNameMapping[this.columnIdMapping[i]] = headerRow[i];
+                        }
+                        
                         resolve();
                     } catch (e) {
+                        console.log(e);
                         this.movePageBackwards();
                         alert("Unable to process file");
                     }
@@ -78,6 +84,7 @@ class CsvSource extends Source {
     getResponseContainer() {
         var container = super.getResponseContainer();
         container.setMatching(this.internalMatching);
+        container.setHeaders(this.headerNameMapping);
         this.responses.forEach((response) => {
             container.addResponse(response);
         });
