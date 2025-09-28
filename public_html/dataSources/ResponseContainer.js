@@ -174,6 +174,14 @@ class ResponseContainer {
                 }
             }
         }
+        //Remove any entries that conflict with prerequisite matching
+        console.log(matchingMatrix);
+        for (const [prereqFieldName, questionId] of Object.entries(prerequisiteMatching)) {
+            var questionRow = matchingMatrix[usedQuestions.indexOf(questionId)];
+            for (var i = 0; i < questionRow.length; i++) {
+                questionRow[i] = 0;
+            }
+        }
         //Go through each field and find which QuestionId fits best
         for (var i = 0; i < usedFields.length; i++) {
             //Get 2and dimention of the 2d matching array
@@ -264,9 +272,6 @@ class ResponseContainer {
                     eligibleHeaders.push({questionId: questionId, prerequisiteIndex: prerequisites.indexOf(viablePrerequisites[0])});
                 }
             }
-            console.log(eligibleHeaders, eligibleHeadersIds);
-            console.log(matchingArr);
-            console.log(ctx.includedQuestions);
             //perform final matching
             //Get a list of sheet prerequisites that have a header match
             let eligiblePrereqs = prerequisites.filter((n, prerequisiteIndex) => eligibleHeaders.some((entry) => entry.prerequisiteIndex === prerequisiteIndex));
@@ -297,7 +302,6 @@ class ResponseContainer {
                     }
                 });
             });
-            console.log(matchedPairs);
             return matchedPairs;
         }
 
