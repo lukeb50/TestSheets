@@ -232,9 +232,9 @@ class ResponseContainer {
                     }}, {Name: "Location", MatchingFunction: function (val) {
                         return !dateRegex.test(val.toString().trim());
                     }}];
-            //Check if needed
+            //Check if needed, otherwise return an empty matching object
             if (!ctx.sheetInformation.prerequisites || !ctx.sheetInformation.prerequisites.courses) {
-                return null;
+                return {};
             }
             var prerequisites = ctx.sheetInformation.prerequisites.courses;
             //Create a matching table, each header has a slot for each possible prerequisite field option (date,location,etc)
