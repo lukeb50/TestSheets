@@ -23,60 +23,60 @@ class GoogleFormsSource extends Source {
 
     promptUser() {
         return new Promise((resolve, reject) => {
-            document.getElementById("googleAuthButton").onclick = (() => {
+            document.getElementById("googleAuthButton").onclick = (async () => {
                 var accessToken;
                 // Create and render a Google Picker object for selecting from Drive.
                 const showPicker = () => {
                     let viewConfig = new google.picker.DocsView(google.picker.ViewId.FORMS);
                     const picker = new google.picker.PickerBuilder()
-                            .addView(viewConfig)
-                            .disableFeature(google.picker.Feature.MULTISELECT_ENABLED)
-                            .enableFeature(google.picker.Feature.NAV_HIDDEN)
-                            .enableFeature(google.picker.Feature.MINE_ONLY)
-                            .setOAuthToken(accessToken)
-                            .setDeveloperKey('AIzaSyDZEUHLaA-ttIr1wtX5Wq7qGK-8bn7m5Oc')
-                            .setAppId("812050814842")
-                            .setCallback(async (result) => {
-                                if (result.action === "picked") {
-                                    let resultingFiles = result['docs'];
-                                    if (resultingFiles && resultingFiles.length === 1 && resultingFiles[0].serviceId === "form") {
-                                        //Load form with Google Form API
-                                        let formId = resultingFiles[0].id;
-                                        let responsesQuery = fetch("https://forms.googleapis.com/v1/forms/" + formId + "/responses", {
-                                            method: "GET",
-                                            headers: {
-                                                "Authorization": "Bearer " + accessToken
-                                            }
-                                        });
+                        .addView(viewConfig)
+                        .disableFeature(google.picker.Feature.MULTISELECT_ENABLED)
+                        .enableFeature(google.picker.Feature.NAV_HIDDEN)
+                        .enableFeature(google.picker.Feature.MINE_ONLY)
+                        .setOAuthToken(accessToken)
+                        .setDeveloperKey('AIzaSyDZEUHLaA-ttIr1wtX5Wq7qGK-8bn7m5Oc')
+                        .setAppId("812050814842")
+                        .setCallback(async (result) => {
+                            if (result.action === "picked") {
+                                let resultingFiles = result['docs'];
+                                if (resultingFiles && resultingFiles.length === 1 && resultingFiles[0].serviceId === "form") {
+                                    //Load form with Google Form API
+                                    let formId = resultingFiles[0].id;
+                                    let responsesQuery = fetch("https://forms.googleapis.com/v1/forms/" + formId + "/responses", {
+                                        method: "GET",
+                                        headers: {
+                                            "Authorization": "Bearer " + accessToken
+                                        }
+                                    });
 
-                                        let formQuery = fetch("https://forms.googleapis.com/v1/forms/" + formId, {
-                                            method: "GET",
-                                            headers: {
-                                                "Authorization": "Bearer " + accessToken
-                                            }
-                                        });
-                                        this.movePageForwards();
-                                        let apiResults = Promise.all([formQuery, responsesQuery]).then((values) => {
-                                            return Promise.all(values.map((response) => response.json()));
-                                        });
-                                        apiResults.then((res) => {
-                                            this.JsonResults = res[1];
-                                            //Pass form info into matching function
-                                            this.internalMatching = this.performGoogleFormsMatching(res[0]);
-                                            resolve();
-                                        }).catch((e) => {
-                                            this.movePageBackwards();
-                                            console.log(e);
-                                            this.authenticationProvider.clearCredential(this);
-                                            alert("An error occured, please try again");
-                                        });
+                                    let formQuery = fetch("https://forms.googleapis.com/v1/forms/" + formId, {
+                                        method: "GET",
+                                        headers: {
+                                            "Authorization": "Bearer " + accessToken
+                                        }
+                                    });
+                                    this.movePageForwards();
+                                    let apiResults = Promise.all([formQuery, responsesQuery]).then((values) => {
+                                        return Promise.all(values.map((response) => response.json()));
+                                    });
+                                    apiResults.then((res) => {
+                                        this.JsonResults = res[1];
+                                        //Pass form info into matching function
+                                        this.internalMatching = this.performGoogleFormsMatching(res[0]);
+                                        resolve();
+                                    }).catch((e) => {
+                                        this.movePageBackwards();
+                                        console.log(e);
+                                        this.authenticationProvider.clearCredential(this);
+                                        alert("An error occured, please try again");
+                                    });
 
-                                    } else {
-                                        reject("Error from Google");
-                                    }
+                                } else {
+                                    reject("Error from Google");
                                 }
-                            })
-                            .build();
+                            }
+                        })
+                        .build();
                     picker.setVisible(true);
                 };
                 this.tokenClient.callback = async (response) => {
@@ -90,15 +90,31 @@ class GoogleFormsSource extends Source {
                 if (!accessToken && !this.authenticationProvider.hasCredential(this)) {
                     // Prompt the user to select a Google Account and ask for consent to share their data
                     // when establishing a new session.
-                    this.tokenClient.requestAccessToken({prompt: 'consent'});
+                    this.tokenClient.requestAccessToken({ prompt: 'consent' });
                 } else {
                     // Skip display of account chooser and consent dialog for an existing session.
                     accessToken = this.authenticationProvider.getCredential(this);
-                    showPicker();
-                    //this.tokenClient.requestAccessToken({prompt: ''});
+                    //Query the google API to see if the token is still valid since the picker cannot provide error codes
+                    let tokenIsValid = await checkAccessToken(accessToken);
+                    if (tokenIsValid) {
+                        showPicker();
+                    } else {
+                        this.authenticationProvider.clearCredential(this);
+                        this.tokenClient.requestAccessToken({ prompt: 'consent' });
+                    }
                 }
             });
         });
+
+        async function checkAccessToken(accessToken) {
+            let checkQuery = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + accessToken
+                }
+            });
+            return checkQuery.status === 200;
+        }
     }
 
     //A forms-specific method to match based on field names
@@ -151,7 +167,7 @@ class GoogleFormsSource extends Source {
                 let timestamp = new Date(entry['lastSubmittedTime']).getTime();
                 let responseObj = new Response(timestamp);
                 let answerListing = entry['answers'];
-                for (const[key, answer] of Object.entries(answerListing)) {
+                for (const [key, answer] of Object.entries(answerListing)) {
                     responseObj.addAnswer(new Answer(answer['textAnswers']['answers'][0]['value'], answer['questionId']));
                 }
                 container.addResponse(responseObj);

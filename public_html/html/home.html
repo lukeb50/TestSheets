@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test Sheets</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../stylesheets/root.css">
+    <link rel="stylesheet" href="../stylesheets/home.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,300,0,0">
+</head>
+
+<body>
+    <div id="mainContainer">
+        <div class="topbar">
+            <span class="topbarSpacer"></span>
+            <h1>Test Sheets</h1>
+            <span class="topbarButtonSection">
+                <span id="topbarAccountLogOutHolder">
+                    <button id="signOutButton">Sign Out</button>
+                </span>
+            </span>
+        </div>
+        <div id="sortBar">
+            <label>Order By: <select id="sortSelect">
+                    <option value="modified-at">Modified Date</option>
+                    <option value="created-at">Created Date</option>
+                    <option value="course">Course</option>
+                </select></label>
+        </div>
+        <div id="homeContentSection">
+            <div id="homeMainListCentered">
+                <div id="homeMainList">
+                </div>
+            </div>
+        </div>
+        <div id="mainBottomBar">Bottom Bar Content</div>
+    </div>
+    <template id="cardTemplate">
+        <div class="card">
+            <label class="cardTitleText"></label>
+            <p class="cardTitleDescriptor"></p>
+            <input class="cardLabelInput" placeholder="Label">
+            <div class="cardButtonHolder skeleton-exempt">
+                <button class="cardButton cardView">View Sheet</button>
+                <button class="cardButton cardToolkit">Exam Toolkit</button>
+                <button class="cardButton cardDelete">Delete</button>
+            </div>
+        </div>
+    </template>
+    <template id="newSheetCardTemplate">
+        <div class="card newSheetCard">
+            <label class="cardTitleText">New</label>
+            <p class="cardTitleDescriptor">Create a New Sheet</p>
+            <button onclick="redirectToCreate()" class="cardNewSheetButton">+</button>
+            <p class="cardMaxSavesWarning">Maximum number of saves reached. You will not be able to save more sheets.
+            </p>
+        </div>
+    </template>
+    <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-functions-compat.js"></script>
+    <script src="../dataSources/ResponseContainer.js"></script>
+    <script src="../javascript/utility/utility.js"></script>
+    <script src="../javascript/utility/connectionManager.js"></script>
+    <script src="../javascript/utility/dataManager.js"></script>
+    <script src="../javascript/home.js"></script>
+</body>
+
+</html>

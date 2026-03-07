@@ -242,7 +242,7 @@ class TestSource extends Source {
 
     //Convert JSON into a ResponseContainer & Return
     getResponseContainer() {
-        let container = new ResponseContainer(this.sheetInformation, this.fieldData);
+        let container = new ResponseContainer(this.sheetInformation, this.fieldData).markNewCreation();
         this.JsonResults['responses'].forEach((entry) => {
             let timestamp = new Date(entry['lastSubmittedTime']).getTime();
             let responseObj = new Response(timestamp);

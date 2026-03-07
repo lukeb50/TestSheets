@@ -36,7 +36,7 @@ class Source {
 
     //Returns a ResponseContainer
     getResponseContainer() {
-        return new ResponseContainer(this.sheetInformation, this.fieldData);
+        return new ResponseContainer(this.sheetInformation, this.fieldData).markNewCreation();
     }
     
     stripFieldName(name){

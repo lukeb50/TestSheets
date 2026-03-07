@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test Sheets</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../stylesheets/root.css">
+    <link rel="stylesheet" href="../stylesheets/sheet.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,300,0,0">
+</head>
+
+<body>
+    <div id="MainSelectionContainer">
+        <div class="topbar">
+            <span class="topbarSpacer"></span>
+            <h1>Test Sheets</h1>
+            <span class="topbarButtonSection">
+                <span id="topbarAccountSignUpHolder">
+                    <button onclick="showLoginPopup()">Sign Up</button>
+                    <button onclick="showLoginPopup()">Log In</button>
+                </span>
+                <span id="topbarAccountLoggedInHolder">
+                    <button id="signOutButton" onclick="signOut()">Sign Out</button>
+                    <button onclick="redirectToHome()">Home</button>
+                    <div id="saveHolder" class="verticalCentering">
+                        <span id="isSavedHolder">
+                            <label id="saveNameLabel" for="saveNameInput">Saved As:</label>
+                            <input id="saveNameInput">
+                            <button id="saveShortformButton"><span
+                                    class="material-symbols-outlined">save_as</span></button>
+                        </span>
+                        <span id="notSavedHolder"><label id="notSavedLabel">Not Saved</label><button
+                                id="notSavedSaveButton">Save</button></span>
+                    </div>
+                </span>
+        </div>
+        <div id="mainSelectionTableHolder">
+            <table id="mainSelectionTable"></table>
+        </div>
+        <div id="mainSelectionBottomBar">
+            <div id="mainSelectionWarningBar">
+                <span id="warningBarMessageHolderSpan">
+                    <p id="warningBarTopLine"></p>
+                    <p id="warningBarBottomLine"></p>
+                </span>
+                <button id="warningPreviousBtn">&lt;</button>
+                <label id="warningPageLabel"></label>
+                <button id="warningNextBtn">&gt;</button>
+            </div>
+            <div id="mainSelectionButtonContainer">
+                <div id="mainSelectionLabelContainer">
+                    <label id="mainSelectionSheetLabel"></label>
+                </div>
+                <div>
+                    <label id="mainSelectionCountLabel">0 Responses Selected</label>
+                    <button id="cancelSelectionTableBtn">Cancel</button>
+                    <button id="confirmSelectionTableBtn">Generate</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="dialogContainer">
+        <div id="courseInfoDialog" class="dialog">
+            <div id="courseInfoDialogSwipeDivHolder" class="dialogSwipeHolder">
+                <div id="courseInfoDialogSwipeDiv" class="dialogSwipeDiv">
+                    <div class="swipeScreen scrollbar">
+                        <label style="text-align: center;display: block">Fill in information about the host, exam,
+                            instructor and examiner, or leave blank.</label>
+                        <button id="autofillCourseInfoButton" style="margin: auto">Fill in From Previous Sheet</button>
+                        <div class="swipeScreenScrollContainer">
+                            <div class="courseInfoDialogInputHolder">
+                                <h3>Host Information</h3>
+                                <form>
+                                    <label class="inputLabelFlex">Host Name:<input id="infoHostName"
+                                            placeholder="Affiliate Name"></label>
+                                    <label class="inputLabelPhoneFlex">Phone: (<input id="infoHostAreaPhone"
+                                            placeholder="647">)<input id="infoHostPhone" placeholder="111-2222"></label>
+                                    <label class="inputLabelFlex">Street Address:<input id="infoHostAddress"
+                                            placeholder="123 Main St"></label>
+                                    <label class="inputLabelFlex">City:<input id="infoHostCity"
+                                            placeholder="Toronto"></label>
+                                    <label class="inputLabelFlex">Province:<select id="infoHostProvince">
+                                            <option value=""></option>
+                                            <option value="AB">Alberta</option>
+                                            <option value="BC">British Colombia</option>
+                                            <option value="MB">Manitoba</option>
+                                            <option value="NB">New Brunswick</option>
+                                            <option value="NL">Newfoundland and Labrador</option>
+                                            <option value="NS">Nova Scotia</option>
+                                            <option value="NT">Northwest Territories</option>
+                                            <option value="NU">Nunavut</option>
+                                            <option value="ON">Ontario</option>
+                                            <option value="PEI">Prince Edward Island</option>
+                                            <option value="QC">Québec</option>
+                                            <option value="SK">Saskatchewan</option>
+                                            <option value="YK">Yukon</option>
+                                        </select>
+                                    </label>
+                                    <label class="inputLabelFlex">Postal Code:<input id="infoHostPostalCode"
+                                            placeholder="A1A 1A1"></label>
+                                </form>
+                            </div>
+                            <div class="courseInfoDialogInputHolder">
+                                <h3>Exam Information</h3>
+                                <form>
+                                    <label class="inputLabelFlex">Exam Date:<input id="infoExamDate"
+                                            type="date"></label>
+                                    <label class="inputLabelFlex">Facility Name:<input id="infoFacilityName"
+                                            placeholder="Community Pool"></label>
+                                    <label class="inputLabelPhoneFlex">Facility Phone: (<input
+                                            id="infoFacilityAreaPhone" placeholder="647">)<input id="infoFacilityPhone"
+                                            placeholder="111-2222"></label>
+                                </form>
+                            </div>
+                            <div class="courseInfoDialogInputHolder">
+                                <h3>Instructor Information</h3>
+                                <form>
+                                    <label class="inputLabelFlex">Name:<input id="infoInstructorName"
+                                            placeholder="John Smith"></label>
+                                    <label class="inputLabelFlex">ID#:<input id="infoInstructorId"
+                                            placeholder="SMJAAA"></label>
+                                    <label class="inputLabelFlex">Email:<input id="infoInstructorEmail"
+                                            type="email"></label>
+                                    <label class="inputLabelPhoneFlex">Phone: (<input id="infoInstructorAreaPhone"
+                                            placeholder="647">)<input id="infoInstructorPhone"
+                                            placeholder="111-2222"></label>
+                                </form>
+                            </div>
+                            <div class="courseInfoDialogInputHolder">
+                                <h3>Examiner Information</h3>
+                                <label><input id="infoExaminerIsInstructor" type="checkbox">Same as Instructor</label>
+                                <form>
+                                    <label class="inputLabelFlex">Name:<input id="infoExaminerName"
+                                            placeholder="John Smith"></label>
+                                    <label class="inputLabelFlex">ID#:<input id="infoExaminerId"
+                                            placeholder="SMJAAA"></label>
+                                    <label class="inputLabelFlex">Email:<input id="infoExaminerEmail"
+                                            type="email"></label>
+                                    <label class="inputLabelPhoneFlex">Phone: (<input id="infoExaminerAreaPhone"
+                                            placeholder="647">)<input id="infoExaminerPhone"
+                                            placeholder="111-2222"></label>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swipeScreen" style="overflow:hidden">
+                        <div class="spinner">
+                            <div></div>
+                            <label>Generating</label>
+                        </div>
+                    </div>
+                    <div id="downloadScreen" class="swipeScreen">
+                        <h2 id="downloadSheetName">Sheet Name</h2>
+                        <label style="display: block;text-align: center">View or Download</label>
+                        <div id="downloadList" class="scrollbar"></div>
+                    </div>
+                </div>
+            </div>
+            <button class="cancelButton" id="courseInfoDialogButton">Generate Test Sheet</button>
+        </div>
+    </div>
+    <div id="filterMenu">
+        <label>Only show entries where this field is
+            <select id="filterOptionSelect">
+                <option value="equalTo">Equal To</option>
+                <option value="lessThan">Less Than</option>
+                <option value="greaterThan">Greater Than</option>
+                <option value="contains">Contains</option>
+            </select>
+        </label>
+        <span class="flex">
+            <input id="filterInput">
+        </span>
+        <span>
+            <button id="filterCancelButton">Clear</button>
+            <button id="filterApplyButton">Apply</button>
+        </span>
+    </div>
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-functions-compat.js"></script>
+    <script src="../dataSources/ResponseContainer.js"></script>
+    <script src="../verificationModules/baseVerificationModule.js"></script>
+    <script src="../verificationModules/ageVerificationModule.js"></script>
+    <script async defer src="https://apis.google.com/js/api.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZEUHLaA-ttIr1wtX5Wq7qGK-8bn7m5Oc&libraries=maps"
+        defer></script>
+    <script src="../javascript/utility/autofillCodes.js"></script>
+    <script src="../javascript/utility/utility.js"></script>
+    <script src="../javascript/utility/connectionManager.js"></script>
+    <script src="../javascript/utility/dataManager.js"></script>
+    <script src="../javascript/sheet.js"></script>
+</body>
+
+</html>

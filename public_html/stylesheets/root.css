@@ -1,0 +1,303 @@
+/*Base styles*/
+:not(.material-symbols-outlined) {
+    font-family: Roboto;
+}
+
+select {
+    border-radius: 5px;
+    border: 1px solid black;
+}
+
+button {
+    background: white;
+    border: 2px solid grey;
+    border-radius: 5px;
+    transition: 0.25s;
+}
+
+button:not(:disabled):hover {
+    background: rgba(200, 200, 200, 0.3);
+}
+
+:root {
+    --lifesaving: purple;
+    --firstAid: darkorchid;
+    --leadership: orange;
+    --other: darkgreen;
+}
+
+body,
+html {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+
+h2,
+h3 {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin: 5px 0px;
+}
+
+input:disabled {
+    background: rgb(240, 240, 240);
+}
+
+*.columnFlex {
+    flex-direction: column;
+}
+
+*.rowFlex {
+    flex-direction: row;
+}
+
+
+.hidden {
+    display: none;
+}
+
+/*Scrollbar*/
+.scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    border-radius: 5px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+.scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/*Common utility classes*/
+*.centeringDiv {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+button.cancelButton {
+    font-size: 1.25em;
+    font-weight: bold;
+    border-width: 3px;
+}
+
+*.verticalCentering {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+/*Spinner*/
+div.spinner {
+    width: 150px;
+    height: 150px;
+    margin: auto;
+    position: relative;
+}
+
+div.spinner div {
+    height: 100%;
+    width: 100%;
+    animation: spin 1.5s linear infinite;
+    border-radius: 50%;
+    box-sizing: border-box;
+    border: 15px solid rgba(100, 100, 100, 0.1);
+    border-left: 15px solid rgba(50, 100, 255, 0.75);
+}
+
+div.spinner label {
+    top: 0%;
+    position: absolute;
+    display: block;
+    line-height: 150px;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+}
+
+/*Skeletons*/
+.skeleton,
+.skeleton-container *:not(.skeleton-exempt) {
+    background: rgba(200, 200, 200, 0.5);
+    border-color: rgba(200, 200, 200, 0.75);
+    animation: 3s shimmer ease-in-out infinite;
+}
+
+/*Keyframes*/
+
+@keyframes shimmer {
+    0% {
+        background: rgba(200, 200, 200, 0.5);
+    }
+
+    30% {
+        background: rgba(150, 150, 150, 0.5);
+    }
+
+    60% {
+        background: rgba(200, 200, 200, 0.5);
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/*Dialog*/
+
+div.dialog {
+    width: 50%;
+    max-width: 500px;
+    min-width: 200px;
+    height: 80%;
+    min-height: 200px;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    background: white;
+    position: relative;
+    top: 10%;
+    margin: auto;
+}
+
+#dialogContainer {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+div.dialogSwipeHolder {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+div.dialogSwipeDiv {
+    display: flex;
+    overflow-x: hidden;
+    transition: 0.55s;
+    width: 300%;
+    right: 0%;
+    position: relative;
+    transition-timing-function: cubic-bezier(.16, 0, .33, 1.59);
+}
+
+div.swipeScreen {
+    flex: 1;
+    overflow-y: auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+@media(max-width: 700px) {
+    div.dialog {
+        width: 80%;
+        max-width: 80%;
+    }
+}
+
+/*oAuth Styling*/
+span.oAuthPromptBtn {
+    display: flex;
+    background: white;
+    border: 2px solid darkgray;
+    width: fit-content;
+    padding: 5px 12px;
+    align-items: center;
+    border-radius: 8px;
+    transition: 0.5s;
+}
+
+span.oAuthPromptBtn:hover {
+    background: rgba(155, 155, 155, 0.2);
+}
+
+span.oAuthPromptBtn img {
+    height: 30px;
+    width: 30px;
+}
+
+span.oAuthPromptBtn label {
+    margin-left: 10px;
+    font-size: 15px;
+}
+
+/*Topbar styles*/
+
+div.topbar {
+    display: flex;
+    height: 30px;
+    padding: 5px 0px 5px 0;
+    flex-direction: row;
+    background: rgba(200, 200, 200, 0.6);
+    box-shadow: rgba(200, 200, 200, 0.6) 0px 0px 5px 5px;
+    align-items: center;
+}
+
+span.topbarSpacer {
+    flex: 3;
+}
+
+div.topbar h1 {
+    margin: 0;
+    flex: 1 1 fit-content;
+    height: 25px;
+    font-size: 25px;
+    line-height: 100%;
+    text-align: center;
+}
+
+span.topbarButtonSection {
+    flex: 3 0;
+    min-width: fit-content;
+    height: 100%;
+}
+
+span.topbarButtonSection span {
+    float: right;
+    height: 100%;
+}
+
+span.topbarButtonSection button {
+    all: inherit;
+    height: 100%;
+    padding: 0px 5px 0px 5px;
+    border-left: 1px solid;
+    border-image: linear-gradient(0deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.3) 30%, rgba(0, 0, 0, 0.3) 70%, rgba(255, 255, 255, 0) 100%) 1;
+    font-weight: bold;
+    transition: 0.5s;
+}
+
+span.topbarButtonSection button:hover {
+    background-color: rgba(150, 150, 150, 0.3);
+    border-image: linear-gradient(90deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.3) 100%) 1;
+}
+
+@media(max-width:750px) {
+    .topbar h1 {
+        display: none;
+    }
+}

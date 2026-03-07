@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test Sheets</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../stylesheets/root.css">
+    <link rel="stylesheet" href="../stylesheets/create.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,300,0,0">
+</head>
+
+<body>
+    <div id="mainListContainer">
+        <div class="topbar">
+            <span class="topbarSpacer"></span>
+            <h1>Test Sheets</h1>
+            <span class="topbarButtonSection">
+                <span id="topbarAccountSignUpHolder">
+                    <button onclick="redirectToLogin()">Sign Up</button>
+                    <button onclick="redirectToLogin()">Log In</button>
+                </span>
+                <span id="topbarAccountLoggedInHolder">
+                    <button id="signOutButton">Sign Out</button>
+                    <button onclick="redirectToHome()">Home</button>
+                </span>
+            </span>
+        </div>
+        <div id="mainListDiv">
+            <div id="mainLifesavingListHolder" class="mainlistholder">
+                <h1>Lifesaving & Lifeguarding</h1>
+                <div id="mainLifesavingList" class="list scrollbar"></div>
+            </div>
+            <div id="mainFirstAidListHolder" class="mainlistholder">
+                <h1>First Aid</h1>
+                <div id="mainFirstAidList" class="list scrollbar"></div>
+            </div>
+            <div id="mainLeadershipListHolder" class="mainlistholder">
+                <h1>Leadership</h1>
+                <div id="mainLeadershipList" class="list scrollbar"></div>
+            </div>
+            <div id="mainOtherListHolder" class="mainlistholder">
+                <h1>Other</h1>
+                <div id="mainOtherList" class="list scrollbar"></div>
+            </div>
+        </div>
+        <h2>Supported Sources</h2>
+        <div id="supportedSources">
+            <div>
+                <img
+                    src="https://storage.googleapis.com/assets_workspace/uploads/7uffzv9dk4sn-7xWvh4uZdi5Gm7fu8xC33c-1d132d3cdfa2407ed1435f5e1ead9ce0-Forms-title-logo.svg">
+                <label>Google Forms</label>
+            </div>
+            <div>
+                <label id="csvIcon">CSV</label>
+                <label>.CSV files</label>
+            </div>
+        </div>
+        <a href="javascript:void(0)" id="helpButton">Contact Us</a>
+    </div>
+    <div id="dialogContainer">
+        <div id="sourceDialog" class="dialog">
+            <h2>Select Data Source</h2>
+            <div id="sourceDialogSwipeDivHolder" class="dialogSwipeHolder">
+                <div id="sourceDialogSwipeDiv" class="dialogSwipeDiv">
+                    <div class="swipeScreen">
+                        <div id="sourceDialogListing" class="swipeScreenScrollContainer">
+                            <div id="googleFormsSource" class="sourceDialogListOption">
+                                <img
+                                    src="https://storage.googleapis.com/assets_workspace/uploads/7uffzv9dk4sn-7xWvh4uZdi5Gm7fu8xC33c-1d132d3cdfa2407ed1435f5e1ead9ce0-Forms-title-logo.svg">
+                                <label>Google Forms</label>
+                            </div>
+                            <div id="csvSource" class="sourceDialogListOption">
+                                <label id="csvIcon">CSV</label>
+                                <label>.CSV file</label>
+                            </div>
+                            <div id="testSource" class="sourceDialogListOption">
+                                <label id="csvIcon">Test</label>
+                                <label>Hardcoded Test Entry</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swipeScreen">
+                        <div id="GoogleFormsInputPage">
+                            <div class="centeringDiv">
+                                <span id="googleAuthButton" class="oAuthPromptBtn">
+                                    <img
+                                        src="https://fonts.gstatic.com/s/i/productlogos/drive_2020q4/v8/web-64dp/logo_drive_2020q4_color_2x_web_64dp.png">
+                                    <label>Select from Google Drive</label>
+                                </span>
+                            </div>
+                        </div>
+                        <div id="csvInputPage">
+                            <div id="csvFilePicker">
+                                <button id="csvFilePickerButton"
+                                    onclick="document.getElementById('csvUpload').click()">Choose File</button>
+                                <div id="csvFilePickerNameHolder">
+                                    <label id="csvFilePickerFileName">No file selected</label>
+                                </div>
+                            </div>
+                            <div id="csvConfirmButtonHolder">
+                                <button id="csvConfirmButton" disabled>Use</button>
+                            </div>
+                            <input type="file" id="csvUpload" style="display: none" accept=".csv" />
+                        </div>
+                        <div id="testInputPage"></div>
+                    </div>
+                    <div class="swipeScreen" style="overflow:hidden">
+                        <div class="spinner">
+                            <div></div>
+                            <label>Fetching Data</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="cancelButton" id="cancelSourceDialogButton">Cancel</button>
+        </div>
+        <div id="helpDialog" class="dialog">
+            <iframe id="contactForm"
+                src="https://docs.google.com/forms/d/e/1FAIpQLSfmawXLGiONxwWdfTEdk-wb8MxjxhFbbu4_dmtv9UGZ5CZ5ng/viewform?embedded=true"
+                frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+            <button class="cancelButton" id="closeHelpDialogButton">Close</button>
+        </div>
+        <dialog id="loadingDialog"><label>Loading...</label></dialog>
+    </div>
+    <iframe id="matchingIFrame" src="sheet.html"></iframe>
+    <template id="listSkeleton">
+        <div class="listing skeleton-container">
+            <div class="skeleton-exempt">
+                <label class="listingTitle skeleton"></label>
+                <label class="listingInfo skeleton"></label>
+            </div>
+            <button class="listingButton skeleton"></button>
+        </div>
+    </template>
+
+    <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-auth-compat.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script async defer src="https://apis.google.com/js/api.js"></script>
+    <script src="../dataSources/Source.js"></script>
+    <script src="../dataSources/SourceFactory.js"></script>
+    <script src="../dataSources/GoogleFormsSource.js"></script>
+    <script src="../dataSources/CsvSource.js"></script>
+    <script src="../dataSources/TestSource.js"></script>
+    <script src="../dataSources/ResponseContainer.js"></script>
+    <script src="../dataSources/AuthProvider.js"></script>
+    <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+    <script src="../javascript/utility/utility.js"></script>
+    <script src="../javascript/create.js"></script>
+</body>
+
+</html>

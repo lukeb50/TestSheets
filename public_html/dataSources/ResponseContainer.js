@@ -1,19 +1,35 @@
 /* global jsFieldValueModifications, fieldData */
 
 class ResponseContainer {
+    version = 1;
+    dbKey = null;
+    label = "";
     responses = {};
     includedQuestions = new Set();
     sourceHeaders = {};//FieldName: QuestionId
     matching = {}; //FieldName: QuestionId
-    isForcedMatch = false;
     excludedFields = [];
+
+    modifiedAt;
+    createdAt;
 
     sheetInformation;
     fieldData;
 
-    constructor(sheetInformation, fieldData) {
+    constructor(sheetInformation, fieldData, dbKey = null) {
         this.sheetInformation = sheetInformation;
         this.fieldData = fieldData;
+        this.dbKey = dbKey;
+    }
+
+    setLabel(lbl) {
+        this.label = lbl;
+    }
+
+    markNewCreation(){
+        this.createdAt = Date.now();
+        this.modifiedAt = Date.now();
+        return this;
     }
 
     getFieldNameFromQuestionId(questionId) {
@@ -21,9 +37,9 @@ class ResponseContainer {
     }
 
     addResponse(response) {
-        let responseId = this.generateUniqueId((potentialId) => Object.keys(this.responses).includes(potentialId));
+        let responseId = ResponseContainer.generateUniqueId((potentialId) => Object.keys(this.responses).includes(potentialId));
         this.responses[responseId] = response;
-        this.includedQuestions = this.includedQuestions.union(response.questionsIncluded);
+        this.includedQuestions = this.includedQuestions.union(response.getQuestionsIncluded());
         return responseId;
     }
 
@@ -39,7 +55,7 @@ class ResponseContainer {
 
     //Add an empty answer to each existing response (for new column button)
     addEmptyAnswer() {
-        let questionId = this.generateUniqueId((potentialId) => this.includedQuestions.has(potentialId));
+        let questionId = ResponseContainer.generateUniqueId((potentialId) => this.includedQuestions.has(potentialId));
         this.includedQuestions.add(questionId);
         for (const [responseId, response] of Object.entries(this.responses)) {
             let newQuestionObj = new Answer("", questionId);
@@ -56,10 +72,6 @@ class ResponseContainer {
         this.sourceHeaders = headerInfo;
     }
 
-    makeForcedMatch() {
-        this.isForcedMatch = true;
-    }
-
     getNumberOfResponses() {
         return Object.keys(this.responses).length;
     }
@@ -72,7 +84,7 @@ class ResponseContainer {
         for (const [responseId, response] of Object.entries(this.responses)) {
             if (response.answers.length !== this.includedQuestions.size) {
                 //Add missing questions
-                let missingQuestions = this.includedQuestions.difference(response.questionsIncluded);
+                let missingQuestions = this.includedQuestions.difference(response.getQuestionsIncluded());
                 missingQuestions.forEach((question) => {
                     response.addAnswer(new Answer("", question));
                 });
@@ -167,7 +179,7 @@ class ResponseContainer {
                         ;
                         let entryCounts = Object.values(valueCounts);
                         if (entryCounts.some((count) => count > 3) || (this.getNumberOfResponses >= 20 &&
-                                entryCounts.some((count) => count / this.getNumberOfResponses() >= 0.15))) {
+                            entryCounts.some((count) => count / this.getNumberOfResponses() >= 0.15))) {
                             matchingMatrix[a][f] = 0;
                         }
                     }
@@ -175,7 +187,6 @@ class ResponseContainer {
             }
         }
         //Remove any entries that conflict with prerequisite matching
-        console.log(matchingMatrix);
         for (const [prereqFieldName, questionId] of Object.entries(prerequisiteMatching)) {
             var questionRow = matchingMatrix[usedQuestions.indexOf(questionId)];
             for (var i = 0; i < questionRow.length; i++) {
@@ -196,7 +207,7 @@ class ResponseContainer {
             }
         }
         //Combine with prereqs
-        this.matching = {...this.matching, ...prerequisiteMatching};
+        this.matching = { ...this.matching, ...prerequisiteMatching };
 
         //Removes any entries that would duplicate the new matching (such as from Google Forms text matching)
         function clearDuplicativeEntry(questionId, matchingObj) {
@@ -227,11 +238,15 @@ class ResponseContainer {
         function matchPrerequisiteFields(ctx) {
             var matchedPairs = {};
             const dateRegex = new RegExp(/^(?<year>\d{2,4})-(?<month>\d{2})-(?<day>\d{2})$/);
-            const prereqFields = [{Name: "Date", MatchingFunction: function (val) {
-                        return dateRegex.test(val.toString().trim());
-                    }}, {Name: "Location", MatchingFunction: function (val) {
-                        return !dateRegex.test(val.toString().trim());
-                    }}];
+            const prereqFields = [{
+                Name: "Date", MatchingFunction: function (val) {
+                    return dateRegex.test(val.toString().trim());
+                }
+            }, {
+                Name: "Location", MatchingFunction: function (val) {
+                    return !dateRegex.test(val.toString().trim());
+                }
+            }];
             //Check if needed, otherwise return an empty matching object
             if (!ctx.sheetInformation.prerequisites || !ctx.sheetInformation.prerequisites.courses) {
                 return {};
@@ -269,7 +284,7 @@ class ResponseContainer {
                 if (viablePrerequisites.length === 1) {
                     //This header is viable
                     eligibleHeadersIds.push(questionId);
-                    eligibleHeaders.push({questionId: questionId, prerequisiteIndex: prerequisites.indexOf(viablePrerequisites[0])});
+                    eligibleHeaders.push({ questionId: questionId, prerequisiteIndex: prerequisites.indexOf(viablePrerequisites[0]) });
                 }
             }
             //perform final matching
@@ -347,7 +362,7 @@ class ResponseContainer {
                                 }
                             } else {
                                 //Create a new answer & Integrate it in the container
-                                let questionId = this.generateUniqueId((generatedId) => {
+                                let questionId = ResponseContainer.generateUniqueId((generatedId) => {
                                     return this.includedQuestions.has(generatedId);
                                 });
                                 this.includedQuestions.add(questionId);
@@ -395,7 +410,7 @@ class ResponseContainer {
                             }
                         } else {
                             //Create a new answer id & integrate it
-                            let questionId = this.generateUniqueId((generatedId) => {
+                            let questionId = ResponseContainer.generateUniqueId((generatedId) => {
                                 return this.includedQuestions.has(generatedId);
                             });
                             this.includedQuestions.add(questionId);
@@ -445,21 +460,57 @@ class ResponseContainer {
 
     //Generates a random ID that is unique. Requires a function that takes in the generated ID
     //and returns whether it is a duplicate
-    generateUniqueId(isDuplicateFunction) {
+    static generateUniqueId(isDuplicateFunction) {
         let generatedId = Math.random().toString(36).slice(2);
         //If the ID already exists, recursively generate a new one until unique
         if (isDuplicateFunction(generatedId) || generatedId.length === 0) {
-            return this.generateUniqueId(isDuplicateFunction);
+            return ResponseContainer.generateUniqueId(isDuplicateFunction);
         } else {
             return generatedId;
         }
+    }
+
+    responses = {};
+
+    toJson() {
+        return {
+            key: this.dbKey, data: {
+                version: this.version,
+                label: this.label,
+                sheetId: this.sheetInformation.identifier,
+                createdAt: this.createdAt,
+                modifiedAt: this.modifiedAt,
+                matching: this.matching,
+                excludedFields: this.excludedFields,
+                includedQuestions: [...this.includedQuestions],
+                responses: Object.fromEntries(Object.entries(this.responses).map(([k, v]) => [k, v.toJson()]))
+            }
+        }
+    }
+
+    static fromJson(dbKey, { version, label, sheetId, matching, excludedFields, includedQuestions, responses, createdAt, modifiedAt } = {}, sheetData, fieldData) {
+        //TODO: Get the sheet and field information
+        //Find Sheet Information
+        var sheetInfo = Object.entries(sheetData)
+            .flatMap(([categoryName, categoryContentArray]) => categoryContentArray)
+            .find(entry => entry.identifier === sheetId);
+        //Create Object
+        var result = new ResponseContainer(sheetInfo, fieldData, dbKey);
+        result.version = version;
+        result.label = label;
+        result.createdAt = createdAt;
+        result.modifiedAt = modifiedAt;
+        result.matching = matching;
+        result.excludedFields = excludedFields;
+        result.includedQuestions = new Set(includedQuestions);
+        result.responses = Object.fromEntries(Object.entries(responses).map(([k, v]) => [k, Response.fromJson(v)]));
+        return result;
     }
 }
 
 class Response {
     answers = [];
     timestamp = 0;
-    questionsIncluded = new Set();
 
     //In milliseconds
     constructor(timestamp) {
@@ -476,11 +527,27 @@ class Response {
 
     addAnswer(answer) {
         this.answers.push(answer);
-        this.questionsIncluded.add(answer.questionIdentifier);
+    }
+
+    getQuestionsIncluded() {
+        return new Set(this.answers.map((answer) => answer.questionIdentifier));
     }
 
     getTimestamp() {
         return this.timestamp;
+    }
+
+    toJson() {
+        return {
+            timestamp: this.timestamp,
+            answers: this.answers.map((answer) => answer.toJson())
+        }
+    }
+
+    static fromJson({ timestamp, answers } = {}) {
+        var result = new Response(timestamp);
+        result.answers = answers.map((answerJson) => Answer.fromJson(answerJson));
+        return result;
     }
 }
 
@@ -515,5 +582,16 @@ class Answer {
         } else {
             return this.answerContent.trim();
         }
+    }
+
+    toJson() {
+        return {
+            answerContent: this.answerContent,
+            questionIdentifier: this.questionIdentifier
+        }
+    }
+
+    static fromJson({ answerContent, questionIdentifier } = {}) {
+        return new Answer(answerContent, questionIdentifier);
     }
 }

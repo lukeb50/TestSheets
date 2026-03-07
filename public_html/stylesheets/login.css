@@ -1,0 +1,127 @@
+#loginSuperContainer{
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+#loginMainContainer{
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    width: 400px;
+    margin: auto;
+    background: white;
+    box-shadow: gray 0px 0px 10px 5px;
+    padding: 0px 20px 10px 20px;
+    border-radius: 5px;
+}
+
+div.loginSectionHolder{
+    border-bottom: 3px solid;
+    border-image: linear-gradient(90deg,rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.3) 30%, rgba(0, 0, 0, 0.3) 70%, rgba(255, 255, 255, 0) 100%) 1;
+}
+
+#loginFeaturesHolder{
+    flex:1;
+}
+
+label.loginFormLabel{
+    width:100%;
+    display: block;
+    text-align: center;
+}
+
+div.loginFormRow{
+    display: flex;
+}
+
+/*login/oauth button centering & margins*/
+div.loginFormRow button, div.loginFormRow span.oAuthPromptBtn{
+    margin: 0px auto 10px auto;
+}
+
+div.loginFormRow input{
+    flex: 1;
+    margin: 5px 10px;
+    border: 2px solid darkgray;
+    border-radius: 5px;
+    height: 25px;
+    font-size: 15px;
+}
+
+/*Forgot password/create account button*/
+div.loginFormRow a{
+    margin-top: 5px;
+    text-decoration: none;
+    transition: 0.2s;
+    font-size: 15px;
+}
+
+div.loginFormRow a:active{
+    color: transparent;
+}
+
+#loginForgotPasswordButton{
+    color: lightcoral;
+}
+
+#loginCreateAccountButton, #signupLoginAccountButton, #forgotPasswordSignInAccountButton{
+    color:blue;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/*Modifies the standard oAuth button label to stretch so that all buttons are the same width*/
+span.oAuthPromptBtn label{
+    flex: 1;
+    text-align: center;
+}
+
+button.loginExecuteButton{
+    font-size: 15px;
+    border-radius: 8px;
+    width: 250px;
+    height: 30px;
+    padding: 5px 12px;
+    box-sizing: content-box;
+    border-color: darkgray;
+    margin-top: 0px;
+}
+
+/*Common spacing for login & oauth buttons*/
+#button.loginExecuteButton, span.oAuthPromptBtn{
+    max-width: 250px;
+    flex: 1;
+    margin-top: 10px;
+}
+
+/*No bottom margin on last oauth button, or the sign up button*/
+div.loginButtonHolder div:nth-last-child(1) span, div.loginButtonHolder div:nth-last-child(1) button{
+    margin-bottom: 0px;
+}
+
+p.loginErrorMessage{
+    color: red;
+    font-size: 10px;
+    text-align: center;
+    margin: 0;
+    margin-bottom: 5px;
+    display: none;
+}
+
+#loginFeaturesHolder ul{
+    margin: 0;
+    margin-top: 5px;
+    padding-left: 0px;
+    list-style: none;
+    text-align: center;
+}
+
+/*Media Query*/
+@media(max-width: 450px) {
+    #loginMainContainer{
+        border: none;
+        box-shadow: none;
+        width: 100%;
+    }
+}

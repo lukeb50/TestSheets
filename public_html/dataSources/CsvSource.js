@@ -42,7 +42,7 @@ class CsvSource extends Source {
                             currentRow.forEach((cellData, columnI) => {
                                 //Get an Id for the column if not already (first row)
                                 if (!this.columnIdMapping[columnI]) {
-                                    this.columnIdMapping[columnI] = new ResponseContainer().generateUniqueId((potentialId) => Object.values(this.columnIdMapping).includes(potentialId));
+                                    this.columnIdMapping[columnI] = ResponseContainer.generateUniqueId((potentialId) => Object.values(this.columnIdMapping).includes(potentialId));
                                 }
                                 //Add an answer to the response
                                 if (cellData) {
