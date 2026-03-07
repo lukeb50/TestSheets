@@ -95,7 +95,9 @@ function logoutUser() {
 
 function getRemoteFirebaseFunctions() {
     var fns = app.functions("northamerica-northeast1");
-    fns.useEmulator("127.0.0.1", 5001);
+    if (location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.hostname === "") {
+        fns.useEmulator("127.0.0.1", 5001);
+    }
     return fns;
 }
 
