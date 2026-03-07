@@ -114,7 +114,7 @@ function awaitUserLoad() {
             }
             else {
                 unsubFn();
-                reject();
+                resolve(null);
             }
         })
     })
