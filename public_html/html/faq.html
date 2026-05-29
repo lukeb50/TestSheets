@@ -1,168 +1,218 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>FAQ</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="../stylesheets/root.css">
-        <link rel="stylesheet" href="../stylesheets//faq.css">
-        <link href="https://fonts.googleapis.com/css?family=Roboto&amp;display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,300,0,0">
-    </head>
-    <body>
-        <div id='mainContainer'>
-            <nav id='navBar'>
-                <h3>Navigation</h3>
-                <a href="#overview">Overview</a>
+
+<head>
+    <title>FAQ</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/public_html/manifest.json">
+    <link rel="stylesheet" href="../stylesheets/root.css">
+    <link rel="stylesheet" href="../stylesheets//faq.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,300,0,0">
+    <link rel="apple-touch-icon" sizes="180x180" href="/public_html/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/public_html/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/public_html/icons/favicon-16x16.png">
+</head>
+
+<body>
+    <div id='mainContainer'>
+        <nav id='navBar'>
+            <h3>Navigation</h3>
+            <a href="#overview">Overview</a>
+            <span>
+                <a href='#overviewAutomaticFormatting'>Automatic Formatting</a>
+            </span>
+            <a href='#usage'>Usage</a>
+            <span>
+                <a href='#usageHomePage'>Home Page</a>
+                <a href='#usageMatchingPage'>Matching Page</a>
                 <span>
-                    <a href='#overviewAutomaticFormatting'>Automatic Formatting</a>
+                    <a href='#matchingSelection'>Selection</a>
+                    <a href="#matchingFiltering">Filtering</a>
+                    <a href='#matchingFieldMatching'>Field Matching</a>
+                    <a href='#matchingEditingData'>Editing Data</a>
+                    <a href='#matchingAgePrerequisites'>Age Prerequisite</a>
                 </span>
-                <a href='#usage'>Usage</a>
-                <span>
-                    <a href='#usageHomePage'>Home Page</a>
-                    <a href='#usageMatchingPage'>Matching Page</a>
-                    <span>
-                        <a href='#matchingSelection'>Selection</a>
-                        <a href="#matchingFiltering">Filtering</a>
-                        <a href='#matchingFieldMatching'>Field Matching</a>
-                        <a href='#matchingEditingData'>Editing Data</a>
-                        <a href='#matchingAgePrerequisites'>Age Prerequisite</a>
-                    </span>
-                    <a href='#usageInformationPage'>Information Page</a>
-                </span>
-                <a href="#sources">Sources</a>
-                <span>
-                    <a href='#sourcesGoogleForms'>Google Forms</a>
-                    <a href='#sourcesCsvFiles'>CSV Files</a>
-                    <a href='#sourcesOtherSources'>Other Sources</a>
-                    <a href='#sourcesSetup'>Setup</a>
-                </span>
-            </nav>
-            <div id='mainDiv'>
-                <h1>Frequently Asked Questions</h1>
-                <h2 id='overview'>Overview</h2>
-                <h3 id='overviewAutomaticFormatting'>Automatic Formatting</h3>
-                <span>
-                    <p>When a test sheet is generated, the following changes are performed automatically:</p>
-                    <ul>
-                        <li>Extra spaces are removed</li>
-                        <li>Capitalization is fixed</li>
-                        <li>Phone numbers are formatted</li>
-                        <li>Postal codes are formatted</li>
-                        <li>LSS IDs are formatted and added in parentheses (when applicable)</li>
-                        <li>Fields are formatted together</li>
-                    </ul>
-                </span>
-                <h2 id='usage'>Usage</h2>
-                <h3 id='usageHomePage'>Home Page</h3>
-                <span>
-                    <p>The home page allows you to select which test sheet you wish to use and where your data will <a href="#sources">come from</a>.</p>
-                    <p>Test sheets are separated into four categories:</p>
-                    <ul>
-                        <li>Lifesaving & Lifeguarding (Bronzes & NL)</li>
-                        <li>First Aid (Emergency & Standard First Aid)</li>
-                        <li>Leadership (Master Sheets)</li>
-                        <li>Other (Other Streams)</li>
-                    </ul>
-                    <p>Press the "<b>Use</b>" button next to an entry in these lists to proceed.</p>
-                    <p>You will be given the choice of which source your candidate data will come from.</p>
-                    <p>Select a source and follow the prompts to be directed to the matching page.</p>
-                </span>
-                <h3 id='usageMatchingPage'>Matching Page</h3>
-                <span>
-                    <p>The matching page allows you to see the candidate responses that have been submitted, pick which ones to include, filter responses and edit responses before generating a test sheet.</p>
-                    <p>The row at the top of the screen allows you to <a href="#matchingFieldMatching">match</a> questions to test sheet fields.</p>
-                    <p>The left edge of the screen allows you to <a href="#matchingSelection">select</a> which responses to include.</p>
-                    <p>The bottom of the screen provides information on which test sheet you have selected and options to <b>Cancel</b> or <b>Continue</b> to sheet generation.</p>
-                    <p>If you want to manually add a response, an <b>Add Response</b> button can be found below the last entry.</p>
-                    <p>If you want to add a field entry to every response, a <b>+</b> button can be found in the top row at the right of the last column.</p>
-                </span>
-                <h4 id='matchingSelection'>Selection</h4>
-                <span>
-                    <p>You can choose which responses are included on a test sheet.</p>
-                    <p>A count of how many responses are to be included on the test sheet is displayed in the bottom right of the screen.</p>
-                    <p>You can include or exclude a response using the checkbox <input checked="true" type="checkbox"> on the left next to each response.</p>
-                </span>
-                <h4 id="matchingFiltering">Filtering</h4>
-                    <span>
-                        <p>When 10 or more responses exist, a filter button <button style="font-size: 1em; padding:0px" class="material-symbols-outlined">filter_alt</button> will exist in the top row for each column.</p>
-                        <p>The filter button for a column will be highlighted when a condition has been set.</p>
-                        <p>The filter menu allows you to only see responses that meet the specified criteria.</p>
-                        <p>Multiple filters can be active at the same time. All filters must be satisfied for an entry to be shown.</p>
-                    </span>
-                <h4 id='matchingFieldMatching'>Field Matching</h4>
-                <span>
-                    <p>The top row of the matching screen is composed of multiple dropdowns <select style='border-radius: 5px'><option>Example</option></select> that allow you to assign a question to a field (Name, Address, Date of Birth, etc) on the test sheet.</p>
-                    <p>For example, if you set a dropdown to "Name", the information for each response in that column will fill the "Name" field on the test sheet.</p>
-                    <p>The dropdowns will be set automatically when you first start. They are automatically assigned to their most likely option when loading a source.</p>
-                    <p>This automatic process is based on the titles of each question as well as the response content.</p>
-                    <p>If a dropdown is left blank, the response data in that column will not be included on the test sheet).</p>
-                    <p>The same field cannot be set twice, so you cannot assign the "Name" field to two separate columns.</p>
-                </span>
-                <h4 id='matchingEditingData'>Editing Data</h4>
-                <span>
-                    <p>Every box containing candidate data can be manually edited. Simply click the box and change the information.</p>
-                    <p>See <a href='#overviewAutomaticFormatting'>Automatic Formatting</a> for information on what edits will be performed automatically when generating sheets.</p>
-                    <p>It may be required to perform some minor edits if incorrect information is supplied by candidates.</p>
-                </span>
-                <h4 id='matchingAgePrerequisites'>Age Prerequisites</h4>
-                <span>
-                    <p>For any courses that have an age prerequisite, the <i>Date of Birth</i> field will be used to calculate the candidate's current age.</p>
-                    <p>If the candidate is younger than the age prerequisite, their Date of Birth will be highlighted and a notice will appear at the bottom of the screen.</p>
-                    <p>The notice will contain information on whether the age prerequisite has alternatives or not.</p>
-                    <p>Age is calculated based on the present day. If the exam date is in the future, check any highlighted candidates to ensure they will meet the age prerequisite by the exam date.</p>
-                    <br>
-                    <p>For more information on age prerequisites, consult the Lifesaving Society website.</p>
-                </span>
-                <h3 id='usageInformationPage'>Information Page</h3>
-                <span>
-                    <p>After pressing the 'Confirm' button, you will be asked to fill in the course information.</p>
-                    <p>This section is not required, but does offer three advantages:</p>
-                    <ul>
-                        <li>With larger classes, the information will be filled in on all test sheets at the same time</li>
-                        <li>If you are filling out multiple test sheets (such as a combined Bronze Medallion and Emergency First Aid), your information is saved and a "Fill in From Previous Sheet" button will appear after the first time.</li>
-                        <li>Your browser autofill functionality is available, making it quicker to fill in your information.</li>
-                    </ul>
-                    <p>When you are done filling in the course information (or wish to skip it), press the "Generate Test Sheet" button. After a brief moment, your test sheet(s) will be available for download.</p>
-                </span>
-                <h2 id='sources'>Sources</h2>
-                <h3 id='sourcesGoogleForms'>Google Forms</h3>
-                <span>
-                    <p><img src="https://storage.googleapis.com/assets_workspace/uploads/7uffzv9dk4sn-7xWvh4uZdi5Gm7fu8xC33c-1d132d3cdfa2407ed1435f5e1ead9ce0-Forms-title-logo.svg" style='width:15px;height:15px'>
-                        Google Forms can be used as a source, allowing for quick collection of candidate information.</p>
-                    <p>When you select Google Forms, you will be asked to connect to your Google account.</p>
-                    <p>Only the form you select is readable by this site, and all data is processed locally on your computer.
-                </span>
-                <h3 id='sourcesCsvFiles'>CSV Files</h3>
-                <span>
-                    <p>Comma-Separated Value (<label id='csvIcon'>CSV</label>) files can used as a source.</p>
-                    <p>These files are a common export format from many survey tools.</p>
-                    <p>The first row should contain header values.</p>
-                </span>
-                <h3 id='sourcesOtherSources'>Other Sources</h3>
-                <span>
-                    <p>Other data sources can be requested by clicking the '<b>Contact Us</b>' link on the home page.</p>
-                    <p><img src="https://forms.static.microsoft/images/app-loading.png" style='width:15px;height:15px'>
-                        Microsoft Forms are not available due to a technical limitation on the part of Microsoft.</p>
-                </span>
-                <h3 id='sourcesSetup'>Setup</h3>
-                <span>
-                    <p>When setting up your information collection form, these are some best practices to keep in mind:</p>
-                    <ul>
-                        <li>Sections or dividers have no impact. You can use any navigation features provided without issue.</li>
-                        <li>The title of questions are used to help match them correctly. Try to include the name of the field in the title (Name, Date of Birth, Address, etc).</li>
-                        <li>The date format used is <b>YYYY-MM-DD</b>. Most tools convert to this format automatically, but manual data sources (like registration reports) may need to be manually edited.</li>
-                        <li>It can be helpful to include a dropdown question asking what course a candidate is taking. This makes filtering the data easier when selected entries.</li>
-                        <li>Some tools allow for input validation (such as ensuring a value is an email address, phone number, a specific length, etc). Using these options can help ensure you receive the proper information.</li>
-                    </ul>
-                    <p>If you intend to use prerequisite information fields:</p>
-                    <ul>
-                        <li>Prerequisite fields are detected based on their names. They must include the name of the prerequisite must be included in the title. Example: "Where did you take your <b>Bronze Cross?</b></li>
-                        <li>Date and Location fields for each prerequisite are matched automatically based on the response content. You do not need to include any specific words to differentiate them.</li>
-                        <li>If you have the same prerequisite question multiple times (i.e. Bronze Cross for National Lifeguard and Leadership), you may need to manually pick the correct data.</li>
-                    </ul>
-                </span>
-            </div>
+                <a href='#usageInformationPage'>Information Page</a>
+            </span>
+            <a href="#sources">Sources</a>
+            <span>
+                <a href='#sourcesGoogleForms'>Google Forms</a>
+                <a href='#sourcesCsvFiles'>CSV Files</a>
+                <a href='#sourcesOtherSources'>Other Sources</a>
+                <a href='#sourcesSetup'>Setup</a>
+            </span>
+        </nav>
+        <div id='mainDiv'>
+            <h1>Frequently Asked Questions</h1>
+            <h2 id='overview'>Overview</h2>
+            <h3 id='overviewAutomaticFormatting'>Automatic Formatting</h3>
+            <span>
+                <p>When a test sheet is generated, the following changes are performed automatically:</p>
+                <ul>
+                    <li>Extra spaces are removed</li>
+                    <li>Capitalization is fixed</li>
+                    <li>Phone numbers are formatted</li>
+                    <li>Postal codes are formatted</li>
+                    <li>LSS IDs are formatted and added in parentheses (when applicable)</li>
+                    <li>Fields are formatted together</li>
+                </ul>
+            </span>
+            <h2 id='usage'>Usage</h2>
+            <h3 id='usageHomePage'>Home Page</h3>
+            <span>
+                <p>The home page allows you to select which test sheet you wish to use and where your data will <a
+                        href="#sources">come from</a>.</p>
+                <p>Test sheets are separated into four categories:</p>
+                <ul>
+                    <li>Lifesaving & Lifeguarding (Bronzes & NL)</li>
+                    <li>First Aid (Emergency & Standard First Aid)</li>
+                    <li>Leadership (Master Sheets)</li>
+                    <li>Other (Other Streams)</li>
+                </ul>
+                <p>Press the "<b>Use</b>" button next to an entry in these lists to proceed.</p>
+                <p>You will be given the choice of which source your candidate data will come from.</p>
+                <p>Select a source and follow the prompts to be directed to the matching page.</p>
+            </span>
+            <h3 id='usageMatchingPage'>Matching Page</h3>
+            <span>
+                <p>The matching page allows you to see the candidate responses that have been submitted, pick which ones
+                    to include, filter responses and edit responses before generating a test sheet.</p>
+                <p>The row at the top of the screen allows you to <a href="#matchingFieldMatching">match</a> questions
+                    to test sheet fields.</p>
+                <p>The left edge of the screen allows you to <a href="#matchingSelection">select</a> which responses to
+                    include.</p>
+                <p>The bottom of the screen provides information on which test sheet you have selected and options to
+                    <b>Cancel</b> or <b>Continue</b> to sheet generation.</p>
+                <p>If you want to manually add a response, an <b>Add Response</b> button can be found below the last
+                    entry.</p>
+                <p>If you want to add a field entry to every response, a <b>+</b> button can be found in the top row at
+                    the right of the last column.</p>
+            </span>
+            <h4 id='matchingSelection'>Selection</h4>
+            <span>
+                <p>You can choose which responses are included on a test sheet.</p>
+                <p>A count of how many responses are to be included on the test sheet is displayed in the bottom right
+                    of the screen.</p>
+                <p>You can include or exclude a response using the checkbox <input checked="true" type="checkbox"> on
+                    the left next to each response.</p>
+            </span>
+            <h4 id="matchingFiltering">Filtering</h4>
+            <span>
+                <p>When 10 or more responses exist, a filter button <button style="font-size: 1em; padding:0px"
+                        class="material-symbols-outlined">filter_alt</button> will exist in the top row for each column.
+                </p>
+                <p>The filter button for a column will be highlighted when a condition has been set.</p>
+                <p>The filter menu allows you to only see responses that meet the specified criteria.</p>
+                <p>Multiple filters can be active at the same time. All filters must be satisfied for an entry to be
+                    shown.</p>
+            </span>
+            <h4 id='matchingFieldMatching'>Field Matching</h4>
+            <span>
+                <p>The top row of the matching screen is composed of multiple dropdowns <select
+                        style='border-radius: 5px'>
+                        <option>Example</option>
+                    </select> that allow you to assign a question to a field (Name, Address, Date of Birth, etc) on the
+                    test sheet.</p>
+                <p>For example, if you set a dropdown to "Name", the information for each response in that column will
+                    fill the "Name" field on the test sheet.</p>
+                <p>The dropdowns will be set automatically when you first start. They are automatically assigned to
+                    their most likely option when loading a source.</p>
+                <p>This automatic process is based on the titles of each question as well as the response content.</p>
+                <p>If a dropdown is left blank, the response data in that column will not be included on the test
+                    sheet).</p>
+                <p>The same field cannot be set twice, so you cannot assign the "Name" field to two separate columns.
+                </p>
+            </span>
+            <h4 id='matchingEditingData'>Editing Data</h4>
+            <span>
+                <p>Every box containing candidate data can be manually edited. Simply click the box and change the
+                    information.</p>
+                <p>See <a href='#overviewAutomaticFormatting'>Automatic Formatting</a> for information on what edits
+                    will be performed automatically when generating sheets.</p>
+                <p>It may be required to perform some minor edits if incorrect information is supplied by candidates.
+                </p>
+            </span>
+            <h4 id='matchingAgePrerequisites'>Age Prerequisites</h4>
+            <span>
+                <p>For any courses that have an age prerequisite, the <i>Date of Birth</i> field will be used to
+                    calculate the candidate's current age.</p>
+                <p>If the candidate is younger than the age prerequisite, their Date of Birth will be highlighted and a
+                    notice will appear at the bottom of the screen.</p>
+                <p>The notice will contain information on whether the age prerequisite has alternatives or not.</p>
+                <p>Age is calculated based on the present day. If the exam date is in the future, check any highlighted
+                    candidates to ensure they will meet the age prerequisite by the exam date.</p>
+                <br>
+                <p>For more information on age prerequisites, consult the Lifesaving Society website.</p>
+            </span>
+            <h3 id='usageInformationPage'>Information Page</h3>
+            <span>
+                <p>After pressing the 'Confirm' button, you will be asked to fill in the course information.</p>
+                <p>This section is not required, but does offer three advantages:</p>
+                <ul>
+                    <li>With larger classes, the information will be filled in on all test sheets at the same time</li>
+                    <li>If you are filling out multiple test sheets (such as a combined Bronze Medallion and Emergency
+                        First Aid), your information is saved and a "Fill in From Previous Sheet" button will appear
+                        after the first time.</li>
+                    <li>Your browser autofill functionality is available, making it quicker to fill in your information.
+                    </li>
+                </ul>
+                <p>When you are done filling in the course information (or wish to skip it), press the "Generate Test
+                    Sheet" button. After a brief moment, your test sheet(s) will be available for download.</p>
+            </span>
+            <h2 id='sources'>Sources</h2>
+            <h3 id='sourcesGoogleForms'>Google Forms</h3>
+            <span>
+                <p><img src="https://storage.googleapis.com/assets_workspace/uploads/7uffzv9dk4sn-7xWvh4uZdi5Gm7fu8xC33c-1d132d3cdfa2407ed1435f5e1ead9ce0-Forms-title-logo.svg"
+                        style='width:15px;height:15px'>
+                    Google Forms can be used as a source, allowing for quick collection of candidate information.</p>
+                <p>When you select Google Forms, you will be asked to connect to your Google account.</p>
+                <p>Only the form you select is readable by this site, and all data is processed locally on your
+                    computer.
+            </span>
+            <h3 id='sourcesCsvFiles'>CSV Files</h3>
+            <span>
+                <p>Comma-Separated Value (<label id='csvIcon'>CSV</label>) files can used as a source.</p>
+                <p>These files are a common export format from many survey tools.</p>
+                <p>The first row should contain header values.</p>
+            </span>
+            <h3 id='sourcesOtherSources'>Other Sources</h3>
+            <span>
+                <p>Other data sources can be requested by clicking the '<b>Contact Us</b>' link on the home page.</p>
+                <p><img src="https://forms.static.microsoft/images/app-loading.png" style='width:15px;height:15px'>
+                    Microsoft Forms are not available due to a technical limitation on the part of Microsoft.</p>
+            </span>
+            <h3 id='sourcesSetup'>Setup</h3>
+            <span>
+                <p>When setting up your information collection form, these are some best practices to keep in mind:</p>
+                <ul>
+                    <li>Sections or dividers have no impact. You can use any navigation features provided without issue.
+                    </li>
+                    <li>The title of questions are used to help match them correctly. Try to include the name of the
+                        field in the title (Name, Date of Birth, Address, etc).</li>
+                    <li>The date format used is <b>YYYY-MM-DD</b>. Most tools convert to this format automatically, but
+                        manual data sources (like registration reports) may need to be manually edited.</li>
+                    <li>It can be helpful to include a dropdown question asking what course a candidate is taking. This
+                        makes filtering the data easier when selected entries.</li>
+                    <li>Some tools allow for input validation (such as ensuring a value is an email address, phone
+                        number, a specific length, etc). Using these options can help ensure you receive the proper
+                        information.</li>
+                </ul>
+                <p>If you intend to use prerequisite information fields:</p>
+                <ul>
+                    <li>Prerequisite fields are detected based on their names. They must include the name of the
+                        prerequisite must be included in the title. Example: "Where did you take your <b>Bronze
+                            Cross?</b></li>
+                    <li>Date and Location fields for each prerequisite are matched automatically based on the response
+                        content. You do not need to include any specific words to differentiate them.</li>
+                    <li>If you have the same prerequisite question multiple times (i.e. Bronze Cross for National
+                        Lifeguard and Leadership), you may need to manually pick the correct data.</li>
+                </ul>
+            </span>
         </div>
-    </body>
+    </div>
+</body>
+
 </html>

@@ -4,20 +4,28 @@ class Source {
     fieldData;
     authenticationProvider;
 
+    allowEmpty = false;
+
+    getAllowEmpty() {
+        return this.allowEmpty;
+    }
+
     //Initializes any required functionality
     init() {
         return new Promise((resolve) => {
             resolve();
         });
     }
-    
-    setAuthenticationProvider(authProvider){
+
+    setAuthenticationProvider(authProvider) {
         this.authenticationProvider = authProvider;
     }
 
     //Prompts the user to provide raw data in the appropriate format
     promptUser() {
-
+        return new Promise((resolve, reject) => {
+            resolve();
+        });
     }
 
     movePageForwards() {
@@ -36,11 +44,11 @@ class Source {
 
     //Returns a ResponseContainer
     getResponseContainer() {
-        return new ResponseContainer(this.sheetInformation, this.fieldData).markNewCreation();
+        return new ResponseContainerBuilder().setSheetInformation(this.sheetInformation).setFieldData(this.fieldData).buildNewEmpty();
     }
-    
-    stripFieldName(name){
-        return name.trim().toLowerCase().replaceAll(" ","");
+
+    stripFieldName(name) {
+        return name.trim().toLowerCase().replaceAll(" ", "");
     }
 
     //Default execution order

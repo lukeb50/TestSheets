@@ -1,39 +1,143 @@
 /* global jsFieldValueModifications, fieldData */
 
+class ResponseContainerBuilder {
+    sheetInformation;
+    fieldData;
+
+    dbKey;
+    saveStatus;
+
+    jsonData;
+
+    setSheetInformation(sheetInformation) { this.sheetInformation = sheetInformation; return this; }
+    setFieldData(fieldData) { this.fieldData = fieldData; return this; };
+    setDbKey(dbKey) { this.dbKey = dbKey; return this; };
+    setSaveStatus(saveStatus) { this.saveStatus = saveStatus; return this; };
+    setJsonData(jsonData) { this.jsonData = jsonData; return this; };
+
+    build() {
+        if (this.sheetInformation && this.fieldData && this.dbKey !== undefined && this.saveStatus && this.jsonData) {
+            let container = new ResponseContainer(this.sheetInformation, this.fieldData, this.saveStatus, this.dbKey);
+            this._loadJsonValues(container, this.jsonData);
+            return container;
+        }
+        throw new Error("Build parameters not set");
+    }
+
+    _loadJsonValues(responseObj, { version, label, candidateCount, sheetId, matching, excludedFields, includedQuestions, responses, createdAt, modifiedAt, toolkitModifiedAt, toolkitMapping } = {}) {
+        this._extractSheetInfo(responseObj, sheetId);
+        responseObj.version = version;
+        responseObj.label = label;
+        responseObj.candidateCount = candidateCount;
+        responseObj.createdAt = createdAt;
+        responseObj.modifiedAt = modifiedAt;
+        responseObj.toolkitModifiedAt = toolkitModifiedAt;
+        responseObj.matching = matching;
+        responseObj.excludedFields = excludedFields;
+        responseObj.includedQuestions = new Set(includedQuestions);
+        responseObj.responses = Object.fromEntries(Object.entries(responses).map(([k, v]) => [k, Response.fromJson(v)]));
+        responseObj.toolkitMapping = toolkitMapping ?? {};
+    }
+
+    _extractSheetInfo(responseObj, sheetId) {
+        var sheetInfo = Object.entries(this.sheetInformation)
+            .flatMap(([categoryName, categoryContentArray]) => categoryContentArray)
+            .find(entry => entry.identifier === sheetId);
+        responseObj.sheetInformation = sheetInfo;
+    }
+
+    buildNewEmpty() {
+        if (this.sheetInformation && this.fieldData) {
+            let container = new ResponseContainer(this.sheetInformation, this.fieldData, SAVE_STATUS.INITIAL_UNSAVED, null);
+            container.markNewCreation();
+            return container;
+        }
+        throw new Error("Build parameters not set");
+    }
+
+}
+
 class ResponseContainer {
     version = 1;
     dbKey = null;
     label = "";
+    candidateCount = 0;
     responses = {};
     includedQuestions = new Set();
     sourceHeaders = {};//FieldName: QuestionId
     matching = {}; //FieldName: QuestionId
     excludedFields = [];
+    toolkitMapping = {};
 
     modifiedAt;
+    toolkitModifiedAt;
     createdAt;
+    saveStatus;
 
     sheetInformation;
     fieldData;
 
-    constructor(sheetInformation, fieldData, dbKey = null) {
+    timeService;
+
+    constructor(sheetInformation, fieldData, saveStatus, dbKey = null) {
         this.sheetInformation = sheetInformation;
         this.fieldData = fieldData;
         this.dbKey = dbKey;
+        this.setSaveStatus(saveStatus);
+
+        this.timeService = new ServerTimeService();
+    }
+
+    setSaveStatus(saveStatus) {
+        this.saveStatus = saveStatus;
+    }
+
+    assignKey() {
+        if (!this.dbKey) {
+            this.dbKey = self.crypto.randomUUID();
+            this.markModified();
+        }
+        return this.dbKey;
     }
 
     setLabel(lbl) {
         this.label = lbl;
     }
 
-    markNewCreation(){
-        this.createdAt = Date.now();
-        this.modifiedAt = Date.now();
+    async markModified() {
+        this.modifiedAt = await this.timeService.getActualTime();
+        this.candidateCount = Object.keys(this.responses).length;
+    }
+
+    async markToolkitModified() {
+        this.toolkitModifiedAt = await this.timeService.getActualTime();
+    }
+
+    async markNewCreation() {
+        this.createdAt = await this.timeService.getActualTime();
+        this.modifiedAt = await this.timeService.getActualTime();
+        this.markToolkitModified();
         return this;
+    }
+
+    getToolkitMapping() {
+        return this.toolkitMapping ?? {};
+    }
+
+    /**
+     * Returns the underlying identifier of the sheet this container represents, such as "NLRecert2020";
+     * @returns {String} value
+     */
+    getSheetIdentifier() {
+        return this.sheetInformation.identifier;
     }
 
     getFieldNameFromQuestionId(questionId) {
         return Object.keys(this.matching).find(key => this.matching[key] === questionId);
+    }
+
+    removeResponse(responseId) {
+        delete this.responses[responseId];
     }
 
     addResponse(response) {
@@ -44,8 +148,8 @@ class ResponseContainer {
     }
 
     //Add a new, empty response (for new response button)
-    addEmptyResponse() {
-        let newResponse = new Response(Date.now());
+   async addEmptyResponse() {
+        let newResponse = new Response(await this.timeService.getActualTime());
         this.includedQuestions.forEach((questionId) => {
             let newAnswer = new Answer("", questionId);
             newResponse.addAnswer(newAnswer);
@@ -112,10 +216,6 @@ class ResponseContainer {
     }
 
     matchQuestionFields() {
-        if (this.getNumberOfResponses() === 0) {
-            alert("No responses found.");
-            return;
-        }
         this.matching = {};
         var usedFields = this.sheetInformation.fields;
         //Include any dividable fields
@@ -477,34 +577,18 @@ class ResponseContainer {
             key: this.dbKey, data: {
                 version: this.version,
                 label: this.label,
-                sheetId: this.sheetInformation.identifier,
+                candidateCount: this.candidateCount,
+                sheetId: this.getSheetIdentifier(),
                 createdAt: this.createdAt,
                 modifiedAt: this.modifiedAt,
+                toolkitModifiedAt: this.toolkitModifiedAt,
                 matching: this.matching,
                 excludedFields: this.excludedFields,
                 includedQuestions: [...this.includedQuestions],
-                responses: Object.fromEntries(Object.entries(this.responses).map(([k, v]) => [k, v.toJson()]))
+                responses: Object.fromEntries(Object.entries(this.responses).map(([k, v]) => [k, v.toJson()])),
+                toolkitMapping: this.toolkitMapping
             }
         }
-    }
-
-    static fromJson(dbKey, { version, label, sheetId, matching, excludedFields, includedQuestions, responses, createdAt, modifiedAt } = {}, sheetData, fieldData) {
-        //TODO: Get the sheet and field information
-        //Find Sheet Information
-        var sheetInfo = Object.entries(sheetData)
-            .flatMap(([categoryName, categoryContentArray]) => categoryContentArray)
-            .find(entry => entry.identifier === sheetId);
-        //Create Object
-        var result = new ResponseContainer(sheetInfo, fieldData, dbKey);
-        result.version = version;
-        result.label = label;
-        result.createdAt = createdAt;
-        result.modifiedAt = modifiedAt;
-        result.matching = matching;
-        result.excludedFields = excludedFields;
-        result.includedQuestions = new Set(includedQuestions);
-        result.responses = Object.fromEntries(Object.entries(responses).map(([k, v]) => [k, Response.fromJson(v)]));
-        return result;
     }
 }
 

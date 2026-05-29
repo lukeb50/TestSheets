@@ -1,0 +1,20 @@
+:host {
+    height: fit-content;
+    display: inline;
+}
+
+/*Custom checkboxes*/
+
+input[type="checkbox"].markingCheckbox.oppositeShadow {
+    opacity: 0.6;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 6L18 18M18 6L6 18' fill='none' stroke='darkred' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+input[type="checkbox"].markingCheckbox.negativeMarking.oppositeShadow {
+    opacity: 0.6;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M20 6L9 17l-5-5' fill='none' stroke='darkgreen' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+segmented-select{
+    height: 100%;
+}

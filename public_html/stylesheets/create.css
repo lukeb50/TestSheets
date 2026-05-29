@@ -168,7 +168,7 @@
     font-size: 15px;
 }
 
-#csvIcon {
+.outlinedIcon {
     font-weight: bold;
     border: 2px solid green;
     border-radius: 5px;
@@ -176,11 +176,19 @@
     font-size: 15px;
 }
 
+#blankIcon {
+    padding: 3px 15px;
+    border-color: darkcyan;
+    cursor: default;
+    background-color: white;
+}
+
 #sourceDialogListing div.sourceDialogListOption {
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 5px;
+    height: 2.5em;
     transition: 0.5s;
 }
 

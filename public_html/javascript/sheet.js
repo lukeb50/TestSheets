@@ -33,11 +33,6 @@ const tableScreen = document.getElementById("MainSelectionContainer");
 var dataContainer = null;
 var selectedSheet = null;
 
-var changeTimeout;
-var safetyTimeout;
-
-var isDirty = false;
-
 var miscData = {};
 
 const app = initFirebase();
@@ -47,22 +42,93 @@ const dataManagerInstance = new DataManager(getConnectionManager());
 const loggedOutControls = document.getElementById("topbarAccountSignUpHolder");
 const loggedInControls = document.getElementById("topbarAccountLoggedInHolder");
 
+saveExecuteFn = (async () => {
+    await dataManagerInstance.saveSheetInstance(dataContainer);
+})
+
+allowSave = (() => {
+    return dataContainer && dataContainer.dbKey && firebase.auth().currentUser !== null;
+})
+
+var firstFail = true;
+onSaveFail = (() => {
+    if (firstFail) {//Only alert on first failure. A successful save will clear this flag.
+        alert("Error saving");
+        firstFail = false;
+    }
+    setSaveIndicatorInternal(SAVE_STATUS.UNSAVED);
+});
+
+onSaveSuccess = (() => {
+    setSaveIndicatorInternal(dataContainer.saveStatus);
+    firstFail = true;
+})
+
+onSaveStart = (() => {
+    setSaveIndicatorInternal(SAVE_STATUS.SAVING);
+})
+
+onChange = (() => {
+    dataContainer.markModified();
+})
+
+const saveLabelHolder = document.getElementById("isSavedHolder");
+
+function setSaveIndicatorInternal(saveStatus) {
+    setSaveIndicator(saveStatus);
+    if (!firebase.auth().currentUser) {
+        saveCommitButton.style.display = "";
+        saveLabelHolder.style.display = "";
+        return;
+    }
+    switch (saveStatus) {
+        case SAVE_STATUS.INITIAL:
+        case SAVE_STATUS.INITIAL_UNSAVED:
+            saveCommitButton.style.display = "inline";
+            saveLabelHolder.style.display = "none";
+            break;
+        case SAVE_STATUS.SAVING:
+            break;
+        case SAVE_STATUS.SERVER_SAVED:
+        case SAVE_STATUS.LOCAL_SAVED:
+        case SAVE_STATUS.UNSAVED:
+            saveCommitButton.style.display = "none";
+            saveLabelHolder.style.display = "inline";
+            break;
+    }
+}
+
+const saveBroadcastChannel = new BroadcastChannel('TEST_SHEETS/OFFLINE_SAVE_EVENT');
+saveBroadcastChannel.onmessage = ((event) => {
+    let eventInfo = event.data;
+    if (eventInfo.type !== "sheet") {
+        return;
+    }
+    if (!dataContainer) {
+        return;
+    }
+    if (!Array.isArray(eventInfo.key) && eventInfo.key === dataContainer.dbKey) {
+        //This signal is for the currently displayed toolkit
+        setSaveIndicator(SAVE_STATUS.SERVER_SAVED);
+    }
+})
+
 function showLoginPopup() {
     window.open("login.html?close=true", "_blank", "width=400,height=400");
 }
 
-function redirectToHome() {
-    executeSave();
+async function redirectToHome() {
+    forceSave();
     window.parent.location.href = "home.html"
 }
 
-function redirectToCreate() {
-    executeSave();
-    window.parent.location.href = "home.html"
+async function redirectToCreate() {
+    forceSave();
+    window.parent.location.href = "create.html"
 }
 
 async function signOut() {
-    await executeSave();
+    await forceSave();
     logoutUser();
     redirectToCreate();
 }
@@ -80,8 +146,9 @@ window.addEventListener("load", function () {
             if (params.has("id")) {
                 //Load an existing sheet 
                 var sheetId = params.get("id");
-                var loadedData = await dataManagerInstance.getSheetInstance(sheetId);
-                dataContainer = ResponseContainer.fromJson(sheetId,loadedData,sheetData,fieldData);
+                var responseBuilder = await dataManagerInstance.getSheetInstance(sheetId);
+                responseBuilder.setFieldData(fieldData).setSheetInformation(sheetData);
+                dataContainer = responseBuilder.build();
                 document.getElementById("cancelSelectionTableBtn").style.display = "none";
                 showMatchingScreen(dataContainer);
             }
@@ -92,58 +159,37 @@ window.addEventListener("load", function () {
     });
 });
 
+const saveActionsHolder = document.getElementById("saveHolder");
 //authentication handler
 firebase.auth().onAuthStateChanged(async (user) => {
+    setSaveIndicatorInternal(null);
     if (user) {
-        setSaveUI(false);
+        saveActionsHolder.style.display = "flex";
+        setSaveIndicatorInternal(dataContainer?.saveStatus ?? SAVE_STATUS.INITIAL_UNSAVED);
         loggedOutControls.style.display = "none";
         loggedInControls.style.display = "block";
     } else {
-        setSaveUI(null);
+        saveActionsHolder.style.display = "none";
         loggedOutControls.style.display = "block";
         loggedInControls.style.display = "none";
     }
 });
 
 //Save UI handlers
-
-const isSavedHolder = document.getElementById("isSavedHolder");
-const saveNameLabel = document.getElementById("saveNameLabel");
 const saveNameInput = document.getElementById("saveNameInput");
-const saveShortformButton = document.getElementById("saveShortformButton");
-const notSavedHolder = document.getElementById("notSavedHolder");
-const notSavedSaveButton = document.getElementById("notSavedSaveButton");
-const topbarTitle = document.querySelector("div.topbar h1");
+const saveCommitButton = document.getElementById("notSavedSaveButton");
 
-notSavedSaveButton.onclick = async function () {
-    setSaveUI(null);
-    if (await dataManagerInstance.saveSheetInstance(dataContainer)) {
-        setSaveUI(true);
-    } else {
-        setSaveUI(false);
-        alert("Error saving, please try again later.");
-    }
+saveCommitButton.onclick = async function () {
+    saveCommitButton.style.display = "none";
+    dataContainer.assignKey();
+    markChange();
+    forceSave();
 }
 
 saveNameInput.addEventListener("change", () => {
-    markChange(() => dataContainer.label = saveNameInput.value);
+    dataContainer.label = saveNameInput.value
+    markChange();
 });
-
-function setSaveUI(isSaved) {
-    if (isSaved === null) {
-        isSavedHolder.style.display = "none";
-        notSavedHolder.style.display = "none";
-        return;
-    }
-    isSavedHolder.style.display = isSaved ? "block" : "none";
-    notSavedHolder.style.display = isSaved ? "none" : "inline";
-}
-setSaveUI(null);
-
-saveShortformButton.onclick = function () {
-    saveNameInput.classList.toggle("visible");
-    topbarTitle.classList.toggle("collapse");
-}
 
 function showMatchingScreen(sheetContainer) {
     dataContainer = sheetContainer;
@@ -155,7 +201,7 @@ function showMatchingScreen(sheetContainer) {
         module.runVerification(dataContainer, selectedSheet);
     });
     //UI resets
-    setSaveUI(dataContainer.dbKey ? true : false);
+    setSaveIndicatorInternal(dataContainer.saveStatus)
     saveNameInput.value = dataContainer.label;
     matchingSheetInfoLabel.textContent = selectedSheet.name + " - " + selectedSheet.descriptionText;
     dialogContainer.style.display = "none";
@@ -179,25 +225,27 @@ function showMatchingScreen(sheetContainer) {
     allLbl.setAttribute("for", "matchingSelectAll");
     //Create question dropdowns
     dataContainer.includedQuestions.forEach((questionId) => {
-        let header = createElement("th", headerRow, "", "");
-        let headerSpan = createElement("span", header, "", "");
-        let questionSelector = createElement("select", headerSpan, "", "");
-        fillSelector(questionSelector, questionId);
-        questionSelector.setAttribute("data-question", questionId);
-        questionSelector.className = "matchingSelect";
-        questionSelector.onchange = handleSelectChanged;
-        let matchResult = dataContainer.getFieldNameFromQuestionId(questionId);
-        if (matchResult) {
-            questionSelector.value = matchResult;
-            questionSelector.setAttribute("data-val", matchResult);
-        } else {
-            questionSelector.value = "";
-            questionSelector.setAttribute("data-val", "");
+        if (dataContainer.excludedFields.indexOf(dataContainer.getFieldNameFromQuestionId(questionId)) === -1) {
+            let header = createElement("th", headerRow, "", "");
+            let headerSpan = createElement("span", header, "", "");
+            let questionSelector = createElement("select", headerSpan, "", "");
+            fillSelector(questionSelector, questionId);
+            questionSelector.setAttribute("data-question", questionId);
+            questionSelector.className = "matchingSelect";
+            questionSelector.onchange = handleSelectChanged;
+            let matchResult = dataContainer.getFieldNameFromQuestionId(questionId);
+            if (matchResult) {
+                questionSelector.value = matchResult;
+                questionSelector.setAttribute("data-val", matchResult);
+            } else {
+                questionSelector.value = "";
+                questionSelector.setAttribute("data-val", "");
+            }
+            //Filter button
+            let filterButton = createElement("button", headerSpan, "filter_alt", "material-symbols-outlined filterButton");
+            filterButton.setAttribute("data-question", questionId);
+            handleFilterButtonClick(filterButton);
         }
-        //Filter button
-        let filterButton = createElement("button", headerSpan, "filter_alt", "material-symbols-outlined filterButton");
-        filterButton.setAttribute("data-question", questionId);
-        handleFilterButtonClick(filterButton);
     });
     //Call function to disable options as required
     handleSelectChanged();
@@ -207,7 +255,8 @@ function showMatchingScreen(sheetContainer) {
     newColumnButton.title = "Add manual field";
     newColumnButton.onclick = function () {
         //Add the new column to the dataContainer
-        let newQuestionId = markChange(() => dataContainer.addEmptyAnswer());
+        let newQuestionId = dataContainer.addEmptyAnswer()
+        markChange();
         console.log(newQuestionId)
         //Create the select
         let newSelectHeader = createElement("th", headerRow, "", "");
@@ -256,10 +305,11 @@ function showMatchingScreen(sheetContainer) {
     //Show filter buttons
     handleShowFilterButtons();
     //Create new response button
-    let manualButton = createElement("Button", matchingTable, "Manually Add Response", "");
+    let manualButton = createElement("Button", matchingTable, "Add Response", "");
     manualButton.id = "mainSelectionTableManualResponseBtn";
-    manualButton.onclick = function () {
-        let responseId = markChange(() => dataContainer.addEmptyResponse());
+    manualButton.onclick = async function () {
+        let responseId = await dataContainer.addEmptyResponse();
+        markChange();
         let response = dataContainer.getResponse(responseId);
         miscData['selectedResponses'].push(responseId);
         miscData['filteredResponses'].push(responseId);//Update so that Select All works properly
@@ -271,12 +321,12 @@ function showMatchingScreen(sheetContainer) {
     };
     return new Promise((resolve, reject) => {
         document.getElementById("cancelSelectionTableBtn").onclick = async function () {
-            await executeSave();
-            reject("User cancelled operation");
+            await forceSave();
+            redirectToCreate();
         };
 
         matchingConfirmBtn.onclick = function () {
-            executeSave();//non-await as user is staying on page
+            forceSave();//non-await as user is staying on page
             let containerResponseKeys = Object.keys(dataContainer.getResponses());
             miscData['selectedResponses'].sort((a, b) => {
                 return containerResponseKeys.indexOf(a) - containerResponseKeys.indexOf(b);
@@ -314,8 +364,17 @@ function createRow(responseId, response, currentCount) {
     controlBoxCheckbox.id = "matchingSelect-" + responseId;
     controlBoxCheckbox.onchange = handleCheckboxChanged;
     //Create label
-    let lbl = createElement("label", controlBox, "Response " + currentCount, "");
+    let lbl = createElement("label", controlBox, `Response ${currentCount}`, "");
     lbl.setAttribute('for', "matchingSelect-" + responseId);
+    //Delete button
+    let delBtn = createElement("button", controlBox, "delete", "deleteButton material-symbols-outlined");
+    delBtn.addEventListener('click', () => {
+        if (confirm(`Delete response ${currentCount}?`)) {
+            row.remove();
+            dataContainer.removeResponse(responseId);
+            markChange();
+        }
+    })
     //Create question boxes
     dataContainer.includedQuestions.forEach((questionId) => {
         //Don't show any fields that are used for split/combine
@@ -343,11 +402,13 @@ function handleSelectChanged(e) {
             var originalValue = el.getAttribute("data-val");
             if (el.value !== originalValue) {
                 if (originalValue) {//Had an old value, clear it from matching
-                    markChange(() => delete dataContainer.matching[originalValue]);
+                    delete dataContainer.matching[originalValue];
+                    markChange();
                 }
                 //If the select has a value, set it in the matching object
                 if (el.value) {
-                    markChange(() => dataContainer.matching[el.value] = el.getAttribute("data-question"));
+                    dataContainer.matching[el.value] = el.getAttribute("data-question")
+                    markChange();
                 }
                 //Set the "new" current value for future runs
                 el.setAttribute("data-val", el.value);
@@ -374,7 +435,8 @@ function handleInputUpdate(e) {
     let target = e.target;
     let responseId = target.getAttribute("data-response");
     let questionId = target.getAttribute("data-question");
-    markChange(() => dataContainer.getResponse(responseId).getAnswer(questionId).answerContent = target.value);
+    dataContainer.getResponse(responseId).getAnswer(questionId).answerContent = target.value
+    markChange();
     handleAutofillButtons();
     //Re-run each verification module if affected
     //Determine the name of the field being modified
@@ -526,7 +588,8 @@ function handleAutofillButtons() {
                         autofills[fieldName][a].function(dataContainer, responseId).then((autofilledValue) => {
                             inputField.value = autofilledValue;
                             inputField.disabled = false;
-                            markChange(() => dataContainer.getResponse(responseId).getAnswer(questionId).answerContent = autofilledValue);
+                            dataContainer.getResponse(responseId).getAnswer(questionId).answerContent = autofilledValue
+                            markChange();
                             button.remove();
                         }).catch((err) => {
                             console.log("Error with autofill: " + err);
@@ -719,12 +782,14 @@ function applyFilters() {
     }
 }
 
+const filePath = "../pdfFiles/";
 function generatePdfFile(sheetData, dataContainer, selectedResponses, courseInfo) {
     return new Promise(async (resolve, reject) => {
         var finishedFiles = [];
         //Load the PDF file
         try {
-            var response = await fetch("../pdfFiles/" + sheetData.documentUrl);
+            console.log(sheetData.documentUrl);
+            var response = await fetch(filePath + sheetData.documentUrl);
         } catch (e) {
             reject(e);
             return;
@@ -881,7 +946,7 @@ function generatePdfFile(sheetData, dataContainer, selectedResponses, courseInfo
                 //Load a fresh copy of the file in if needed
                 if (count <= numberOfSelectedResponses) {
                     pdfDoc = await PDFLib.PDFDocument.create();
-                    loadedPdfBytes = await fetch("pdfFiles/" + sheetData.documentUrl).then(res => res.arrayBuffer());
+                    loadedPdfBytes = await fetch(filePath + sheetData.documentUrl).then(res => res.arrayBuffer());
                     loadedPdfDoc = await PDFLib.PDFDocument.load(loadedPdfBytes);
                     formObject = loadedPdfDoc.getForm();
                     //Reset counters for next page
@@ -1015,55 +1080,17 @@ function getCourseInformation() {
     });
 }
 
-var changePending = false;
+window.addEventListener("beforeunload", (ev) => {
+    console.log(allowSave(), changePending)
+    if (allowSave()) {//Signed in  & already saved, just execute a final save request
+        forceSave();
+    } else if (changePending) {//Signed out and a change has been made, request leave confirmation
+        ev.preventDefault();
+    }
 
-async function executeSave() {
-    console.log("Saving");
-    if (changeTimeout) {
-        clearTimeout(changeTimeout);
-        changeTimeout = null;
-    }
-    if (safetyTimeout) {
-        clearTimeout(safetyTimeout);
-        safetyTimeout = null;
-    }
-    if (!dataContainer || !dataContainer.dbKey) {
-        return;
-    }
-    if (!changePending) {
-        return;
-    }
-    try {
-        var result = await dataManagerInstance.saveSheetInstance(dataContainer);
-        changePending = false;
-        return result;
-    }
-    catch (err) {
-        console.warn(err);
-        if (safetyTimeout) {
-            clearTimeout(safetyTimeout);
-            safetyTimeout = null;
-        }
-        safetyTimeout = setTimeout(executeSave, 10000);
-        return null;
-    }
-}
-
-function markChange(changeFn) {
-    if (changeTimeout) {
-        clearTimeout(changeTimeout);
-    }
-    changeTimeout = setTimeout(executeSave, 10000);
-    if (!safetyTimeout) {
-        safetyTimeout = setTimeout(executeSave, 40000);
-    }
-    changePending = true;
-    return changeFn();
-}
-
-window.addEventListener("beforeunload", executeSave);
-document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") executeSave();
+});
+document.addEventListener("visibilitychange", () => {//Save when the user tabs out
+    if (document.visibilityState === "hidden") forceSave();
 });
 function hideMatchingScreen() {
     dialogContainer.style.display = "none";

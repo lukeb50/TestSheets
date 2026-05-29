@@ -15,7 +15,7 @@ const autofills = {
                             //Combine address and city with "Canada" to form a Geocodable address
                             addressFormattedQuery = addressAnswer.answerContent + " " + cityAnswer.answerContent + ", Canada";
                             geocoder = new google.maps.Geocoder();
-                            geocoder.geocode({'address': addressFormattedQuery}, function (responses, status) {
+                            geocoder.geocode({'address': addressFormattedQuery,"region": "ca"}, function (responses, status) {
                                 if (status === 'OK' && responses.length > 0) {
                                     //Process the first response
                                     var result = responses[0];

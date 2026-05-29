@@ -1,0 +1,58 @@
+:host {
+    box-sizing: border-box;
+    height: fit-content;
+    display: inline-flex;
+    overflow: hidden;
+    align-items: center;
+}
+
+div.segmentContainer {
+    border-radius: 5px;
+    display: flex;
+    background-color: white;
+    height: 100%;
+}
+
+button.segmentOption {
+    background-color: rgb(var(--color) / 0.15);
+    cursor: default;
+    padding: 5px 10px;
+    display: inline-block;
+    transition: 0.5s;
+    transition-property: background-color;
+    border: none;
+    height: 100%;
+    align-items: center
+}
+
+button.segmentOption:has(img) {
+    padding: 0px;
+    display: flex;
+}
+
+button.segmentOption img {
+    height: 15px;
+    width: 15px;
+    padding: 7px;
+}
+
+button.segmentOption:nth-child(1) {
+    border-radius: 5px 0 0 5px;
+}
+
+button.segmentOption:nth-last-child(1) {
+    border-radius: 0 5px 5px 0;
+}
+
+button.segmentOption:not(:nth-last-child(1)) {
+    border-right: 1px solid gray;
+}
+
+
+button.segmentOption:hover {
+    background-color: rgb(var(--active-color) / 0.4);
+}
+
+button.segmentOption.selected {
+    background-color: rgb(var(--active-color) / 0.5);
+}

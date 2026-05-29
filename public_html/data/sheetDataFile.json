@@ -64,7 +64,7 @@
             "fields": ["Name", "Address", "City", "PostalCode", "Email", "Phone", "DOBY", "DOBM", "DOBD"]
         }, {
             "name": "National Lifeguard (2022)",
-            "identifier":"NLPL2022Org",
+            "identifier":"NLPL2022Or",
             "shortform": "NL",
             "descriptionText": "Original Exam - Pool",
             "documentUrl": "NL-Pool2022.pdf",
@@ -160,7 +160,7 @@
         {
             "name": "Master Sheet",
             "identifier":"MasterShtNew",
-            "shortform": "Master",
+            "shortform": "Instructors",
             "descriptionText": "New Leadership Program",
             "documentUrl": "MasterSheetNew.pdf",
             "pageSlotCounts": [3, 6],

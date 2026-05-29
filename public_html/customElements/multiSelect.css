@@ -1,0 +1,96 @@
+:host {
+    display: block;
+}
+
+
+#selection {
+    cursor: default;
+    display: flex;
+    align-items: center;
+    font-size: 1em;
+    overflow: hidden;
+    text-wrap-mode: nowrap;
+    text-overflow: ellipsis;
+    padding-left: 5px;
+}
+
+#selection label {
+    flex: 1;
+    text-wrap-mode: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 5px;
+    box-sizing: border-box;
+    padding: 2px 0px;
+}
+
+#selection:after {
+    content: "▼";
+    height: 100%;
+    align-content: center;
+    font-size: 0.5em;
+    padding-left: 4px;
+    padding-right: 4px;
+    box-sizing: border-box;
+}
+
+#listContainer {
+    position: fixed;
+    display: none;
+    max-height: 50vh;
+    overflow-y: auto;
+    box-shadow: 0px 5px 10px 4px #000000ab;;
+}
+
+#list {
+    background: white;
+    z-index: 2000;
+    box-shadow: 0px 2px 4px 1px gray;
+}
+
+#list label.heading {
+    font-weight: bold;
+    padding: 5px 5px;
+    width: 100%;
+    box-sizing: border-box;
+    background: rgba(150,150,150,0.2);
+    display: block;
+}
+
+#list span.listEntry {
+    width: 100%;
+    display: block;
+    padding: 5px 0px;
+}
+
+#list span.listEntry:hover {
+    background: lightgray;
+    transition: 0.5s;
+}
+
+#list span.listEntry label {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    width: 100%;
+    padding: 0 5px;
+    box-sizing: border-box;
+}
+
+.scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    border-radius: 5px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+.scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

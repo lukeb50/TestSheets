@@ -52,8 +52,9 @@ function redirectToHome() {
 const template = document.getElementById("listSkeleton");
 for (const [listName, listElement] of Object.entries(lists)) {
     for (var i = 0; i < 3; i++) {
-        let clone = template.content.cloneNode(true);
-        listElement.appendChild(clone);
+        //let clone = template.content.cloneNode(true);
+        //listElement.appendChild(clone);
+        createSkeleton(template, listElement);
     }
 }
 
@@ -98,8 +99,8 @@ function initializeListings() {
     function bindListingButton(button, listName, listPosition) {
         button.onclick = function () {
             let selectedSheet = sheetData[listName][listPosition];
-            getDataFromSource(selectedSheet).then((dataContainer) => {
-                if (dataContainer.getNumberOfResponses() === 0) {
+            getDataFromSource(selectedSheet).then(({ dataContainer, source }) => {
+                if (dataContainer.getNumberOfResponses() === 0 && !source.getAllowEmpty()) {
                     alert("The selection has no responses");
                     return;
                 }
@@ -122,13 +123,16 @@ function initializeListings() {
 //Source select buttons
 const googleFormsSourceBtn = document.getElementById("googleFormsSource");
 const csvSourceBtn = document.getElementById("csvSource");
+const blankSourceBtn = document.getElementById("blankSource");
 const testSourceBtn = document.getElementById("testSource");
 //Source seconday pages
 const googleFormsInputPage = document.getElementById("GoogleFormsInputPage");
 const csvInputPage = document.getElementById("csvInputPage");
+const blankInputPage = document.getElementById("blankInputPage");
 const testInputPage = document.getElementById("testInputPage");
 const sourceOptions = [{ sourceName: "GoogleForms", button: googleFormsSourceBtn, inputPage: googleFormsInputPage },
 { sourceName: "csv", button: csvSourceBtn, inputPage: csvInputPage },
+{ sourceName: "blank", button: blankSourceBtn, inputPage: blankInputPage },
 { sourceName: "test", button: testSourceBtn, inputPage: testInputPage }
 ];
 function getDataFromSource(selectedSheet) {
@@ -147,7 +151,7 @@ function getDataFromSource(selectedSheet) {
                 sourceObject.setAuthenticationProvider(authProvider);
                 sourceObject.execute().then((dataContainer) => {
                     dialogContainer.style.display = "none";
-                    resolve(dataContainer);
+                    resolve({ dataContainer: dataContainer, source: sourceObject });
                 }).catch((e) => {
                     dialogContainer.style.display = "none";
                     alert("Error: " + e);

@@ -1,8 +1,9 @@
 const loginHolder = document.getElementById("loginFormHolder");
 const signupHolder = document.getElementById("signupFormHolder");
 const forgotPasswordHolder = document.getElementById("forgotPasswordFormHolder");
+const emailSignupSuccessHolder = document.getElementById("emailSignupSuccessHolder");
 
-const scenes = [loginHolder, signupHolder, forgotPasswordHolder];
+const scenes = [loginHolder, signupHolder, forgotPasswordHolder, emailSignupSuccessHolder];
 
 //Login Section
 const loginEmailInput = document.getElementById("loginEmailInput");
@@ -50,7 +51,7 @@ function setActiveScene(sceneElement) {
 
 const app = initFirebase();
 
-signupExecuteButton.onclick = function () {
+function signup() {
     //Local checks
     setErrorMessage();
     if (!emailRegex.test(signupEmailInput.value)) {
@@ -71,8 +72,14 @@ signupExecuteButton.onclick = function () {
     }
     //Attempt creation
     firebase.auth().createUserWithEmailAndPassword(signupEmailInput.value, signupPasswordInput.value).then((user) => {
-        redirectAfterLogin();
+        firebase.auth().currentUser.sendEmailVerification().then(() => {
+            setActiveScene(emailSignupSuccessHolder);
+        }).catch((err) => {
+            console.log(err);//Could log in but could not send verification email. Bypass screen.
+            redirectAfterLogin();
+        })
     }).catch((error) => {
+        console.log(error);
         //Handle error codes
         switch (error.code) {
             case "auth/email-already-exists":
@@ -103,7 +110,15 @@ signupExecuteButton.onclick = function () {
     }
 }
 
-loginExecuteButton.onclick = function () {
+signupExecuteButton.onclick = signup();
+document.getElementById("signupForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    signup();
+});
+
+document.getElementById("emailSignupSuccessGoButton").addEventListener("click", redirectAfterLogin)
+
+function login() {
     //Local checks
     setErrorMessage();
     if (!loginEmailInput.value || !emailRegex.test(loginEmailInput.value)) {
@@ -149,6 +164,12 @@ loginExecuteButton.onclick = function () {
     }
 }
 
+loginExecuteButton.addEventListener("click", login);
+document.getElementById("loginForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    login();
+});
+
 googleOAuthButton.onclick = function () {
     firebase.auth().useDeviceLanguage();
     var googleProvider = new firebase.auth.GoogleAuthProvider();
@@ -173,7 +194,7 @@ function redirectAfterLogin() {
     }
 }
 
-forgotExecuteButton.onclick = function () {
+function forgotPassword() {
     //Local checks
     setErrorMessage();
     if (!forgotEmailInput.value || !emailRegex.test(forgotEmailInput.value)) {
@@ -205,3 +226,9 @@ forgotExecuteButton.onclick = function () {
         }
     }
 }
+
+forgotExecuteButton.onclick = forgotPassword();
+document.getElementById("forgotPasswordForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    forgotPassword();
+});

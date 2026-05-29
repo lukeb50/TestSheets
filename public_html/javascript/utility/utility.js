@@ -1,3 +1,121 @@
+const SAVE_STATUS = { SERVER_SAVED: "onlsave", LOCAL_SAVED: "workersave", UNSAVED: "unsaved", SAVING: "saving", INITIAL: "init", INITIAL_UNSAVED: "initUn" };
+const SERVICE_WORKER_CONNECTIVITY = { SYNC_IN_PROGRESS: "syncing", OFFLINE: "offline", ONLINE: "online", FAILED: "fail" };
+
+var serviceWorkerRegistration = null;
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('../serviceWorker.js')
+            .then(reg => serviceWorkerRegistration = reg)
+            .catch(err => console.log('Registration failed:', err));
+    });
+}
+
+function registerOfflineSync(tag) {
+    if ('sync' in serviceWorkerRegistration) {
+        serviceWorkerRegistration.sync.register(tag);
+    }
+}
+
+if (typeof window !== 'undefined' && navigator.serviceWorker?.controller && document.getElementById("networkSyncIndicator")) {
+    const connectivityBroadcastChannel = new BroadcastChannel('TEST_SHEETS/SW_CONNECTIVITY');
+    const networkSyncIndicator = document.getElementById("networkSyncIndicator");
+    const networkSyncIndicatorIcon = document.getElementById("networkSyncIndicatorIcon");
+    const networkSyncIndicatorText = document.getElementById("networkSyncIndicatorText");
+    connectivityBroadcastChannel.onmessage = ((event) => {
+        let status = event.data;
+        setNetworkStatus(status);
+    });
+
+    function setNetworkStatus(status) {
+        networkSyncIndicator.style.display = "flex";
+        networkSyncIndicator.classList.value = "";
+        networkSyncIndicatorButton.style.display = "none";
+        switch (status) {
+            case SERVICE_WORKER_CONNECTIVITY.SYNC_IN_PROGRESS:
+                networkSyncIndicator.classList.add("sync");
+                networkSyncIndicatorText.textContent = "Syncing";
+                networkSyncIndicatorIcon.textContent = "sync";
+                break;
+            case SERVICE_WORKER_CONNECTIVITY.OFFLINE:
+                networkSyncIndicator.classList.add("offline");
+                networkSyncIndicatorText.textContent = "Offline";
+                networkSyncIndicatorIcon.textContent = "globe_2_cancel";
+                break;
+            case SERVICE_WORKER_CONNECTIVITY.ONLINE:
+                networkSyncIndicator.classList.add("online");
+                networkSyncIndicatorText.textContent = "Online";
+                networkSyncIndicatorIcon.textContent = "public";
+                break;
+            case SERVICE_WORKER_CONNECTIVITY.FAILED:
+                networkSyncIndicator.classList.add("fail");
+                networkSyncIndicatorText.textContent = "Sync Failure";
+                networkSyncIndicatorIcon.textContent = "warning";
+                networkSyncIndicatorButton.style.display = "inline";
+                break;
+            case null:
+                networkSyncIndicator.style.display = "none";
+                break;
+        }
+    }
+    setNetworkStatus(null);
+
+    window.addEventListener("online", () => {
+        navigator.serviceWorker.controller.postMessage({ type: "TEST_SHEETS/CONNECTIVITY_PING" })
+    })
+
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.controller.postMessage({ type: "TEST_SHEETS/CONNECTIVITY_PING" })
+    })
+}
+
+//Console command
+function manualServiceDatabaseSync() {
+    navigator.serviceWorker.controller.postMessage({ type: "TEST_SHEETS/CONNECTIVITY_PING" })
+}
+
+if (typeof window !== 'undefined' && document.getElementById("objectSaveIndicatorHolder")) {
+    const markingSubSaveSpan = document.getElementById("objectSaveIndicatorHolder");
+    const markingSubSaveIndicatorText = document.getElementById("objectSaveIndicator");
+    const markingSubSaveIcon = document.getElementById("objectSaveIcon");
+    function setSaveIndicator(status) {
+        markingSubSaveSpan.classList.value = "";
+        markingSubSaveSpan.style.display = "flex";
+        markingSubSaveIndicatorText.textContent = "Saved";
+        switch (status) {
+            case SAVE_STATUS.INITIAL:
+            case null:
+                markingSubSaveSpan.style.display = "none";
+                break;
+            case SAVE_STATUS.INITIAL_UNSAVED:
+                markingSubSaveIndicatorText.textContent = "Not Saved";
+                markingSubSaveIcon.textContent = "cloud_off";
+                break;
+            case SAVE_STATUS.SAVING:
+                markingSubSaveIndicatorText.textContent = "Saving";
+                markingSubSaveIcon.textContent = "sync";
+                markingSubSaveSpan.classList.add("saving");
+                break;
+            case SAVE_STATUS.SERVER_SAVED:
+                markingSubSaveIndicatorText.textContent = "Saved";
+                markingSubSaveIcon.textContent = "cloud_done";
+                break;
+            case SAVE_STATUS.LOCAL_SAVED:
+                markingSubSaveIndicatorText.textContent = "Saved Locally";
+                markingSubSaveIcon.textContent = "globe_2_cancel"
+                markingSubSaveSpan.classList.add("warning");
+                break;
+            case SAVE_STATUS.UNSAVED:
+                markingSubSaveIcon.textContent = "cloud_alert"
+                markingSubSaveIndicatorText.textContent = "Not Saved";
+                markingSubSaveSpan.classList.add("error");
+                break;
+            default:
+                markingSubSaveIndicatorText.textContent = status;
+                break;
+        }
+    }
+}
+
 //Shared Modification Functions
 var uppercaseWords = function (value) {
     var splitString = value.toString().trim().split(" ");
@@ -90,12 +208,28 @@ function initFirebase() {
 
 function logoutUser() {
     firebase.auth().signOut();
+    clearLoginSessionInfo();
+}
+
+function clearLoginSessionInfo() {
+    if (navigator.serviceWorker?.controller) {
+        navigator.serviceWorker.controller.postMessage({ type: "TEST_SHEETS/LOGOUT" });
+    }
     sessionStorage.clear();
 }
 
-function getRemoteFirebaseFunctions() {
-    var fns = app.functions("northamerica-northeast1");
-    if (location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.hostname === "") {
+if (typeof window !== 'undefined') {
+    window.addEventListener("load", async () => {
+        let user = await awaitUserLoad();
+        if (!user) {
+            clearLoginSessionInfo();
+        }
+    })
+}
+
+function getRemoteFirebaseFunctions(fbApp = app) {
+    var fns = fbApp.functions("northamerica-northeast1");
+    if (self.location.hostname === "localhost" || self.location.hostname.startsWith("127.0.") || self.location.hostname === "" || self.location.hostname.startsWith("10.0.")) {
         fns.useEmulator("127.0.0.1", 5001);
     }
     return fns;
@@ -106,6 +240,7 @@ function awaitUserLoad() {
         var user = firebase.auth().currentUser;
         if (user) {
             resolve(user);
+            return;
         }
         var unsubFn = firebase.auth().onAuthStateChanged(user => {
             if (user) {
@@ -120,16 +255,24 @@ function awaitUserLoad() {
     })
 }
 
-var connectionManager;
-function getConnectionManager() {
-    if (!connectionManager) {
-        connectionManager = new ConnectionManager(new FirebaseFunctionsConnection(getRemoteFirebaseFunctions()));
+var connection;
+function getConnectionManager(fbApp = app) {
+    if (!connection) {
+        connection = new ConnectionManager(new FirebaseFunctionsConnection(getRemoteFirebaseFunctions(fbApp)));
     }
-    return connectionManager;
+    return connection;
 }
 
-const dataUrls = { fields: '../data/fieldDataFile.json', sheets: '../data/sheetDataFile.json' };
-const dataFileNames = { fields: "fields", sheets: "sheets" }
+function padZero(inputNum) {
+    if (inputNum <= 9) {
+        return `0${inputNum}`;
+    } else {
+        return `${inputNum}`
+    }
+}
+
+const dataUrls = { fields: '../data/fieldDataFile.json', sheets: '../data/sheetDataFile.json', toolkit: '../data/toolkitDataFile.json' };
+const dataFileNames = { fields: "fields", sheets: "sheets", toolkit: "toolkit" }
 
 Object.freeze(dataUrls);
 Object.freeze(dataFileNames);
@@ -150,6 +293,13 @@ async function loadJsonFiles(...filesToLoad) {
     });
 }
 
+async function resolveAllPromises(inObject) {
+    const entries = Object.entries(inObject)
+    const results = await Promise.all(entries.map(([_, promiseVal]) => promiseVal));
+    var resultObj = Object.fromEntries(entries.map(([key, _], index) => [key, results[index]]));
+    return resultObj;
+}
+
 function hideAllChildren(el) {
     for (const child of el.children) {
         child.style.display = "none";
@@ -164,7 +314,9 @@ function clearChildren(el) {
 
 function createElement(type, appendTo, textContent, classNames) {
     var el = document.createElement(type);
-    appendTo.appendChild(el);
+    if (appendTo) {
+        appendTo.appendChild(el);
+    }
     if (textContent) {
         el.textContent = textContent;
     }
@@ -172,4 +324,61 @@ function createElement(type, appendTo, textContent, classNames) {
         el.className = classNames;
     }
     return el;
+}
+
+function createSkeleton(template, attachTo, clearText = true) {
+    var fragment = template.content.cloneNode(true);
+    var rootEl = fragment.firstElementChild;
+    attachTo.appendChild(fragment);
+    //Set Values
+    rootEl.classList.add("skeleton-container");
+    for (button of rootEl.querySelectorAll("button")) {
+        button.disabled = true;
+        if (clearText) {
+            button.textContent = "";
+        }
+    }
+    for (inputEl of rootEl.querySelectorAll("input")) {
+        inputEl.disabled = true;
+        if (clearText) {
+            inputEl.placeholder = "";
+        }
+    }
+    if (clearText) {
+        for (el of rootEl.querySelectorAll("p, label, h1, h2, h3, h4, h5, h6, span.material-symbols-outlined")) {
+            el.textContent = "";
+        }
+    }
+    return rootEl;
+}
+
+function getSheetFromIdentifier(identifier) {
+    return Object.entries(sheetData)
+        .flatMap(([categoryName, categoryContentArray]) => categoryContentArray)
+        .find(entry => entry.identifier === identifier);
+}
+
+async function getIndexDatabaseConnection() {
+    return new Promise((resolve, reject) => {
+        var openRequest = globalThis.indexedDB.open("offlineStore", 1);
+        openRequest.onsuccess = ((event) => {
+            var db = event.target.result;
+            resolve(db);
+        })
+        openRequest.onerror = ((event) => {
+            reject(null);
+        });
+        openRequest.onupgradeneeded = ((event) => {
+            console.log("Upgrade", event.oldVersion);
+            var db = event.target.result;
+            switch (event.oldVersion) {
+                case 0:
+                    console.log("Creating")
+                    db.createObjectStore("configurations");
+                    db.createObjectStore("sheet");
+                    db.createObjectStore("toolkit");
+                    db.createObjectStore("pendingOperations", { keyPath: "id", autoIncrement: true });
+            }
+        })
+    });
 }

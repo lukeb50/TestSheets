@@ -228,26 +228,14 @@ class TestSource extends Source {
         ]
     }
 
-    init() {
-        return new Promise((resolve) => {
-            resolve();
-        });
-    }
-
-    promptUser(formId) {
-        return new Promise((resolve, reject) => {
-            resolve();
-        });
-    }
-
     //Convert JSON into a ResponseContainer & Return
     getResponseContainer() {
-        let container = new ResponseContainer(this.sheetInformation, this.fieldData).markNewCreation();
+        let container = super.getResponseContainer();
         this.JsonResults['responses'].forEach((entry) => {
             let timestamp = new Date(entry['lastSubmittedTime']).getTime();
             let responseObj = new Response(timestamp);
             let answerListing = entry['answers'];
-            for (const[key, answer] of Object.entries(answerListing)) {
+            for (const [key, answer] of Object.entries(answerListing)) {
                 responseObj.addAnswer(new Answer(answer['textAnswers']['answers'][0]['value'], answer['questionId']));
             }
             container.addResponse(responseObj);
