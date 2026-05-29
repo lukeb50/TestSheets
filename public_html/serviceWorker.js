@@ -127,10 +127,8 @@ self.addEventListener("message", async (event) => {
                 for (const objectType of savedObjectTypes) {
                     await transaction.getStore(objectType).clear();
                 }
-                resolve();
             } catch (err) {
                 console.log("Failed to log out on service worker", err);
-                reject();
             }
         } else if (event.data.type === "TEST_SHEETS/CONNECTIVITY_PING") {
             replayOfflineOperations();

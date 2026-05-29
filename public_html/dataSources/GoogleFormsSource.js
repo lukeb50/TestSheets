@@ -10,12 +10,13 @@ class GoogleFormsSource extends Source {
     init() {
         return new Promise((resolve, reject) => {
             gapi.load('picker', () => {
-                const clientId = "0812050814842-cajsiupsnsntoubcb7psv52cv4bhrr58.apps.googleusercontent.com";
+                const clientId = "812050814842-cajsiupsnsntoubcb7psv52cv4bhrr58.apps.googleusercontent.com";
                 const scopes = "https://www.googleapis.com/auth/drive.file";
                 this.tokenClient = google.accounts.oauth2.initTokenClient({
                     client_id: clientId,
                     scope: scopes
                 });
+                console.log(this.tokenClient)
                 resolve();
             });
         });
@@ -80,6 +81,7 @@ class GoogleFormsSource extends Source {
                     picker.setVisible(true);
                 };
                 this.tokenClient.callback = async (response) => {
+                    console.log(response);
                     if (response.error !== undefined) {
                         reject("Failed to authenticate");
                     }
@@ -87,6 +89,9 @@ class GoogleFormsSource extends Source {
                     this.authenticationProvider.addCredential(this, accessToken);
                     showPicker();
                 };
+                this.tokenClient.error_callback = async (response) => {
+                    reject("Failed to authenticate")
+                }
                 if (!accessToken && !this.authenticationProvider.hasCredential(this)) {
                     // Prompt the user to select a Google Account and ask for consent to share their data
                     // when establishing a new session.
@@ -95,7 +100,7 @@ class GoogleFormsSource extends Source {
                     // Skip display of account chooser and consent dialog for an existing session.
                     accessToken = this.authenticationProvider.getCredential(this);
                     //Query the google API to see if the token is still valid since the picker cannot provide error codes
-                    let tokenIsValid = await checkAccessToken(accessToken);
+                    let tokenIsValid = false;//await checkAccessToken(accessToken);
                     if (tokenIsValid) {
                         showPicker();
                     } else {
