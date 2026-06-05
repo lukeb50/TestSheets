@@ -641,6 +641,7 @@ function showSituationConfigMenu(configuredEntry, sheetToolkitData, flagConfigs,
         }
         //Apply to toolkit
         configuredEntry.situationConfiguration = configObj;
+        adjustArray(configuredEntry.situationData, () => "", configObj.excludedLists.length);
         //Update each user per-situation marking array if applicable
         if (determineIfPerSituationMarking(flagConfigs)) {
             if (configuredEntry instanceof TeamEntry) {
@@ -654,19 +655,9 @@ function showSituationConfigMenu(configuredEntry, sheetToolkitData, flagConfigs,
                 team.individuals.forEach((individual) => {
                     //Equals to is explicitly left out
                     adjustArray(individual.marking, () => ({}), newSize);
-                    adjustArray(individual.rescuerRole, null, newSize);
+                    adjustArray(individual.commentData, () => "", newSize);
+                    adjustArray(individual.rescuerRole, () => null, newSize);
                 });
-                function adjustArray(array, insertValueFn, newSize) {
-                    if (array.length > newSize) {
-                        let toRemove = array.length - newSize;
-                        array.splice(newSize, toRemove);
-                    } else if ((array.length < newSize)) {
-                        let toAdd = newSize - array.length;
-                        for (let i = 0; i < toAdd; i++) {
-                            array.push(insertValueFn());
-                        }
-                    }
-                }
             }
         }
         //Apply to per-situation marking buttons
@@ -675,6 +666,18 @@ function showSituationConfigMenu(configuredEntry, sheetToolkitData, flagConfigs,
         //Propagate back to select dropdowns
         situationContainerForEvent.dispatchEvent(new CustomEvent("situationUpdate", { detail: configObj }));
         markChange();
+
+        function adjustArray(array, insertValueFn, newSize) {
+            if (array.length > newSize) {
+                let toRemove = array.length - newSize;
+                array.splice(newSize, toRemove);
+            } else if ((array.length < newSize)) {
+                let toAdd = newSize - array.length;
+                for (let i = 0; i < toAdd; i++) {
+                    array.push(insertValueFn());
+                }
+            }
+        }
     }
 }
 
@@ -766,6 +769,7 @@ function createSituationContainer(appendTo, attachedToolkitEntry, sheetToolkitDa
                 for (const team of attachedToolkitEntry.teams) {
                     for (const individual of team.individuals) {
                         let markingLocation = determineIfPerSituationMarking(flagConfigs) ? individual.marking[selectedSit] : individual.marking;
+                        console.log(individual, markingLocation)
                         isEmpty = !isEmpty ? false : Object.keys(markingLocation).length === 0;
                         if (!isEmpty) {
                             return;
