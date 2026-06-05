@@ -26,6 +26,9 @@ class IndexedDbManager {
                     db.close();
                     this.#connectionPromise = null;
                 };
+                db.onclose = () => {
+                    this.#connectionPromise = null;
+                }
                 resolve(event.target.result);
             })
             openRequest.onerror = ((event) => {
@@ -52,6 +55,7 @@ class IndexedDbManager {
 
     async closeConnection() {
         (await this.#getConnection()).close();
+        this.#connectionPromise = null;
     }
 }
 

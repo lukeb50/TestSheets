@@ -1,6 +1,9 @@
+//Used for returning the action result, and storing save status locally
 const SAVE_STATUS = { SERVER_SAVED: "onlsave", LOCAL_SAVED: "workersave", UNSAVED: "unsaved", SAVING: "saving", INITIAL: "init", INITIAL_UNSAVED: "initUn" };
+//Used to indicate the network connectivity as determined by the service worker
 const SERVICE_WORKER_CONNECTIVITY = { SYNC_IN_PROGRESS: "syncing", OFFLINE: "offline", ONLINE: "online", FAILED: "fail" };
-
+//Used for signalling what kind of save operation is requested (server or local or passthrough), and for network request results internal to the network stack
+const SERVICE_WORKER_NETWORK_RESULT = { SUCCESS: "success", FAILED: "fail", PASSTHROUGH: "passt", AUTOSYNC: "auto" }
 var serviceWorkerRegistration = null;
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -10,9 +13,9 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-function registerOfflineSync(tag) {
-    if ('sync' in serviceWorkerRegistration) {
-        serviceWorkerRegistration.sync.register(tag);
+async function registerOfflineSync(tag) {
+    if (serviceWorkerRegistration && 'sync' in serviceWorkerRegistration) {
+        await serviceWorkerRegistration.sync.register(tag);
     }
 }
 

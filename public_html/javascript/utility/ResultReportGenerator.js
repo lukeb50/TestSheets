@@ -1,5 +1,5 @@
 class ResultReportGenerator {
-    generateIndividualPdfReport(title, renderDatas) {
+    generateIndividualPdfReport(title, renderDatas, config) {
         let docDef = {
             info: {
                 title: `Report - ${title}`,
@@ -10,7 +10,7 @@ class ResultReportGenerator {
             content: [
                 { text: title, style: "header" },
                 { text: "Summary", style: "centered" },
-                renderDatas.map((renderData) => this.#generateTopLevelEntry(renderData))
+                renderDatas.map((renderData) => this.#generateTopLevelEntry(renderData, config))
             ],
             footer: (currentPage, pageCount) => {
                 return this.#generateFooter(currentPage, pageCount);
@@ -22,7 +22,7 @@ class ResultReportGenerator {
         return pdfMake.createPdf(docDef);
     }
 
-    generateOverviewPdfReport(title, compositeRenderData) {
+    generateOverviewPdfReport(title, compositeRenderData, config) {
         console.log(compositeRenderData)
         let docDef = {
             info: {
@@ -42,8 +42,8 @@ class ResultReportGenerator {
                     }
                 },
                 ...compositeRenderData.map((compositeData) => [
-                    { text: compositeData.title, style: "header", pageBreak: 'before', tocItem: true},
-                    compositeData.renderData.map((renderData) => this.#generateTopLevelEntry(renderData))])
+                    { text: compositeData.title, style: "header", pageBreak: 'before', tocItem: true },
+                    compositeData.renderData.map((renderData) => this.#generateTopLevelEntry(renderData, config))])
             ],
             footer: (currentPage, pageCount) => {
                 return this.#generateFooter(currentPage, pageCount);
@@ -109,15 +109,16 @@ class ResultReportGenerator {
         }
     }
 
-    #generateTopLevelEntry(renderData) {
+    #generateTopLevelEntry(renderData, config) {
         console.log(renderData);
         return [
             "\n",
-            { text: renderData.name, style: "subHeader", tocItem:true,tocMargin: [20, 0, 0, 0], tocStyle:{italics:true,fontSize:12} },
+            { text: renderData.name, style: "subHeader", tocItem: true, tocMargin: [20, 0, 0, 0], tocStyle: { italics: true, fontSize: 12 } },
             renderData.data.map((evalData) => generateEvaluationEntry(evalData))
         ];
 
         function generateEvaluationEntry(evaluationEntry) {
+            console.log(evaluationEntry)
             let isPerSituationMarking = Array.isArray(evaluationEntry.individual.marking);
             return [
                 { text: "\n" },
@@ -129,26 +130,45 @@ class ResultReportGenerator {
                         body: [
                             [{ text: evaluationEntry.label, bold: true, color: evaluationEntry.individual.result !== null ? (evaluationEntry.individual.result === true ? "darkgreen" : "darkred") : "black" },
                             generatePassFailIndicator(evaluationEntry.individual.result)],
-                            ...(isPerSituationMarking ? evaluationEntry.individual.marking : [evaluationEntry.individual.marking]).reduce((acc, currentMarking) => acc += Object.keys(currentMarking).length, 0) === 0 ?
+                            ...!shouldShowEntry(evaluationEntry, isPerSituationMarking) ?
                                 [[{ text: "No must sees to show", italics: true, fontSize: 10, margin: [10, 0] }, {}]] : (() => {
                                     let entries = [];
-                                    ResultReportGenerator.reportProcessSortedMustSees(sheetContainer.getSheetIdentifier(), evaluationEntry.skillId, evaluationEntry.individual,
+                                    ResultReportGenerator.reportProcessSortedMustSees(sheetContainer.getSheetIdentifier(), evaluationEntry.skillId, evaluationEntry.individual, config,
                                         (text, result) => {
                                             entries.push([{ text: text }, generatePassFailIndicator(result)])
-                                        }, (situationName) => {
+                                        }, (situationName, situationNumber) => {
+                                            //Add rescuer role labels
+                                            if (situationNumber !== null && evaluationEntry.individual.rescuerRole[situationNumber]) {
+                                                //Per-situation values
+                                                situationName += ` - ${rescuerRoles[evaluationEntry.individual.rescuerRole[situationNumber]]} Rescuer`;
+                                            }
+                                            if (situationNumber === null && evaluationEntry.individual.rescuerRole) {
+                                                //Not per-situation
+                                                situationName += ` - ${rescuerRoles[evaluationEntry.individual.rescuerRole]} Rescuer`;
+                                            }
                                             entries.push([{ text: situationName, bold: true, alignment: "center", margin: [0, 5] }, {}])
+                                        }, (commentText) => {
+                                            entries.push([[
+                                                { text: "   Comments:", italics: true },
+                                                {
+                                                    text: commentText,
+                                                    fontSize: 10
+                                                }
+                                            ], {}])
                                         })
                                     return entries;
                                 })()
                         ]
                     }
-                }, {
-                    stack: evaluationEntry.individual.commentData ? [
-                        { text: "\nComments:", italics: true },
-                        { text: evaluationEntry.individual.commentData, fontSize: 10 },
-                    ] : []
                 }
             ];
+        }
+
+        function shouldShowEntry(evaluationEntry, isPerSituationMarking) {
+            let markingCount = (isPerSituationMarking ? evaluationEntry.individual.marking : [evaluationEntry.individual.marking]).reduce((acc, currentMarking) => acc += Object.keys(currentMarking).length, 0);
+            let commentCount = isPerSituationMarking ? evaluationEntry.individual.commentData.reduce((acc, comment) => acc += comment.length, 0) : evaluationEntry.individual.commentData.length;
+
+            return markingCount + commentCount > 0;//must have a comment or some marking
         }
 
         function generatePassFailIndicator(result) {
@@ -169,18 +189,23 @@ class ResultReportGenerator {
 
     //Takes a marking instance, sorts the must-sees and outputs their names by calling a provided processing function.
     //processFunction is called with 2 arguments (text, result). Text is the string representation of the must see, and result is a boolean
-    static reportProcessSortedMustSees(sheetId, skillId, individual, mustSeeProcessFunction, skillHeaderProcessFunction) {
+    //skillHeaderProcessFunction is called with 2 arguments (situationName, situationNumber).
+    //           situationName is the decoded name, situationNumber is the sit count number if per situation marking, or null otherwise
+    //skillCommentProcessFunction is called with 1 argument (commentText) commentText is the raw comment text for that evaluation/skill
+    static reportProcessSortedMustSees(sheetId, skillId, individual, reportConfig, mustSeeProcessFunction, skillHeaderProcessFunction, skillCommentProcessFunction) {
         let toolkitSkill = toolkitData.sheets[sheetId].skills[skillId]
         let mustSeeIdOrdering = toolkitSkill.mustSees.map((mustSee) => mustSee.id);
         let situationData = individual.teamReference.situationData ?? individual.teamReference.markingReference.situationData ?? null;
         let isPerSituationMarking = Array.isArray(individual.marking);
         if (!isPerSituationMarking && situationData) {
-            skillHeaderProcessFunction(situationData.map((sit) => decodeSituationName(sit)).join(", "));
+            skillHeaderProcessFunction(situationData.map((sit) => decodeSituationName(sit)).join(", "), null);
         }
         let markingArray = isPerSituationMarking ? individual.marking : [individual.marking];
         markingArray.forEach((mustSeeEntry, i) => {
-            if (isPerSituationMarking && Object.keys(mustSeeEntry).length > 0) {
-                skillHeaderProcessFunction(decodeSituationName(situationData[i]));
+            let comment = isPerSituationMarking ? individual.commentData[i] : individual.commentData;
+            let hasComment = comment !== null && comment.length > 0;
+            if ((isPerSituationMarking && Object.keys(mustSeeEntry).length > 0) || hasComment) {
+                skillHeaderProcessFunction(decodeSituationName(situationData[i]), i);
             }
             let sortedMustSeeEntry = Object.fromEntries(Object.entries(mustSeeEntry).sort((a, b) => calcIndex(a) - calcIndex(b)));
             function calcIndex(a) {
@@ -195,7 +220,13 @@ class ResultReportGenerator {
                 } else {//The name of a must-see from this skill
                     mustSeeText = toolkitSkill.mustSees.find((skillMS) => skillMS.id === mustSeeId).text;
                 }
-                mustSeeProcessFunction(mustSeeText, result);
+                //Only call if settings allow
+                if (!reportConfig['resultOnlyFailMS'] || (reportConfig['resultOnlyFailMS'] && result === false)) {
+                    mustSeeProcessFunction(mustSeeText, result);
+                }
+            }
+            if (hasComment && reportConfig['resultShowComments']) {
+                skillCommentProcessFunction(comment);
             }
         })
 

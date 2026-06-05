@@ -1,0 +1,36 @@
+:host {
+    display: inline-block;
+    width: fit-content;
+    height: fit-content;
+    position: relative;
+}
+
+textarea {
+    font-family: Roboto;
+    resize: none;
+    box-sizing: border-box;
+    height: 100%;
+    width: 100%;
+    border-color: gray;
+    border-width: 2px;
+    border-radius: 5px;
+    background-color: transparent;
+}
+
+p {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    margin: 0;
+    font-size: 11px;
+    color: darkgray;
+}
+
+p.warning {
+    color: rgb(189 163 0);
+}
+
+p.limit {
+    color: darkred;
+    font-weight: bold;
+}

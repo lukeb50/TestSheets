@@ -75,6 +75,7 @@
             <button id="resultSearchBarExecuteButton" class="material-symbols-outlined">search</button>
             <button class="resultToolkitHomeButton">Toolkit Home<span
                     class="material-symbols-outlined">home</span></button>
+            <button id="resultSettingsButton" class="material-symbols-outlined">settings</button>
         </div>
         <div id="overviewSection" class="section">
             <div id="skillList"></div>
@@ -133,7 +134,7 @@
             <button class="cancelButton" id="situationConfigApplyButton">Apply</button>
             <button class="cancelButton cancelAction">Cancel</button>
         </div>
-        <div id="settingsDialog" class="dialog">
+        <div id="settingsDialog" class="dialog toolkitSettingDialog">
             <div class="dialogSwipeHolder">
                 <div class="dialogStaticDiv">
                     <form id="settingsForm">
@@ -162,9 +163,15 @@
                                         for each must-see.</i></span>
                             </div>
                         </div>
+                        <h3>Rescuer Roles</h3>
+                        <div>
+                            <label><input type="checkbox" name="useRescuerRoles">Use Rescuer Roles</label>
+                            <i>If enabled, supported skills will allows you to quickly note the rescuer role performed
+                                by a candidate (first rescuer, second rescuer, third rescuer).</i>
+                        </div>
                         <h3>Bronze Cross</h3>
                         <div>
-                            <label><input type="checkbox" name="bronzeCrossIncludeSFA"> Include SFA in Bronze
+                            <label><input type="checkbox" name="bronzeCrossIncludeSFA">Include SFA in Bronze
                                 Cross</label>
                             <i>If enabled, the Bronze Cross situation designer will include SFA and EFA. If disabled,
                                 only
@@ -181,6 +188,27 @@
             <button id="newEvalComplexBlankButton">Blank Evaluation<span
                     class="material-symbols-outlined">add_box</span></button>
             <div class="scrollbar" id="groupList"></div>
+            <button class="cancelButton cancelAction">Cancel</button>
+        </div>
+        <div id="resultSettingsDialog" class="dialog toolkitSettingDialog">
+            <h2>Result Settings</h2>
+            <div class="dialogSwipeHolder">
+                <div class="dialogStaticDiv">
+                    <form id="resultSettingsForm">
+                        <div>
+                            <label><input type="checkbox" name="resultShowComments">Show Comments</label>
+                            <i>If enabled, comments will be included in results</i>
+                        </div>
+                        <div>
+                            <label><input type="checkbox" name="resultOnlyFailMS">Only Include Failed Must-Sees</label>
+                            <i>If enabled, only must-sees marked as 'failed will be included' in results. Evaluations
+                                with a
+                                'pass' result will still be listed without must-sees</i>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <button class="cancelButton" id="resultSettingsApplyButton">Apply</button>
             <button class="cancelButton cancelAction">Cancel</button>
         </div>
 
@@ -225,7 +253,7 @@
         <template id="resultCardEntryTemplate">
             <div class="resultEntry skeleton-exempt">
                 <span class="resultEntrySectionTitle skeleton-exempt">
-                    <p></p><button class="sectionCollapseButton">⮝</button>
+                    <p></p><button class="sectionCollapseButton material-symbols-outlined">keyboard_arrow_up</button>
                 </span>
                 <div class="resultEntrySectionList skeleton-exempt">
                     <span class="resultEntryTitleSection skeleton-exempt">
@@ -285,6 +313,7 @@
         <script src="../customElements/MultiSelect.js"></script>
         <script src="../customElements/SegmentedSelect.js"></script>
         <script src="../customElements/CombinedResultInput.js"></script>
+        <script src="../customElements/LimitedTextArea.js"></script>
         <script src="../javascript/toolkit.js"></script>
 </body>
 

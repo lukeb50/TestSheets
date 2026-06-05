@@ -22,6 +22,7 @@ const dialogContainer = document.getElementById("dialogContainer");
 const situationModificationDialog = document.getElementById("situationModificationDialog");
 const settingsDialog = document.getElementById("settingsDialog");
 const newEvalComplexDialog = document.getElementById("newEvalComplexDialog");
+const resultSettingsDialog = document.getElementById("resultSettingsDialog");
 
 const app = initFirebase();
 
@@ -59,8 +60,8 @@ onChange = (() => {
     currentMarkingToolkit.markModified();
 })
 
-saveExecuteFn = (async () => {
-    await dataManagerInstance.saveToolkitInstance(currentMarkingToolkit, sheetContainer);
+saveExecuteFn = (async (mode) => {
+    return await dataManagerInstance.saveToolkitInstance(currentMarkingToolkit, sheetContainer, mode);
 })
 
 allowSave = (() => {
@@ -258,6 +259,7 @@ async function showMarkingSkillScreen(currentSkillEntry) {
         flagConfigs['maxTeamSize'] = 1;
         flagConfigs['maxTeamCount'] = Math.min(flag.maxCount, maxTeamCount);
     }
+    flagConfigs['rescuerRoles'] = sheetFlags['rescuerRoles'] ? true : false;
     //Situation Designer
     if (flagConfigs['situationDesigner'] && flagConfigs['globalSituations']) {
         //create the global situation config
@@ -339,13 +341,19 @@ function addMarkingData(individualEntry, flagConfigs) {
         if (determineIfPerSituationMarking(flagConfigs)) {
             let configuredEntry = flagConfigs['globalSituations'] ? individualEntry.teamReference.markingReference : individualEntry.teamReference;
             let situationData = configuredEntry.situationData;
-            individualEntry.marking = Array.from({ length: situationData.length }, () => ({}));
+            let situationCount = situationData.length
+            individualEntry.marking = Array.from({ length: situationCount }, () => ({}));
+            individualEntry.rescuerRole = new Array(situationCount);
+            individualEntry.commentData = new Array(situationCount).fill("");
         } else {
             individualEntry.marking = {};
+            individualEntry.rescuerRole = null;
+            individualEntry.commentData = "";
         }
     }
 }
 
+const rescuerRoles = { 1: "1st", 2: "2nd", 3: "3rd+" }
 function createIndividualContainer(individualEntry, sheetToolkitData, flagConfigs) {
     let individualDiv = createElement("div", null, null, "individualMarking");
     let candidateNameSelectSpan = createElement("span", individualDiv, "", "nameSelectSpan");
@@ -415,14 +423,72 @@ function createIndividualContainer(individualEntry, sheetToolkitData, flagConfig
     //Must-sees
     let mustSeeDiv = createMustSeeList(sheetToolkitData.mustSees, individualEntry, flagConfigs, sheetToolkitData);
     individualDiv.appendChild(mustSeeDiv);
+    //Rescuer Selection Selection
+    if (getToolkitSetting("useRescuerRoles") && flagConfigs['rescuerRoles'] === true) {
+        let rescuerSelectionDiv = createElement("div", individualDiv, null, "rescuerSelectionSection");
+        createElement("p", rescuerSelectionDiv, "Rescuer:", "rescuerSelectionSectionLabel");
+        function createRoleOption(positionInt, text) {
+            let lbl = createElement("label", createElement("span", rescuerSelectionDiv, null, null), null, null);
+            let checkbox = createElement("input", lbl, "", "markingCheckbox");
+            checkbox.setAttribute("data-rescuer", positionInt);
+            checkbox.type = "checkbox";
+            lbl.appendChild(document.createTextNode(text));
+            checkbox.addEventListener("change", rescuerSelectorChange);
+            return checkbox;
+        }
+        var rescuerCheckboxes = [];
+        Object.keys(rescuerRoles).forEach((roleKey) => {
+            rescuerCheckboxes.push(createRoleOption(roleKey, rescuerRoles[roleKey]));
+        })
+        function setRescuerState() {
+            rescuerCheckboxes.forEach((checkbox) => {
+                checkbox.checked = false;
+            })
+            let currentRole = determineIfPerSituationMarking(flagConfigs) ? individualEntry.rescuerRole[selectedSituation] : individualEntry.rescuerRole;
+            if (currentRole) {
+                rescuerCheckboxes[currentRole - 1].checked = true;
+            }
+        }
+        setRescuerState();
+        perSituationMarkingChannel.addListeningFunction(setRescuerState)
+
+        function rescuerSelectorChange(e) {
+            updateRoleValue(null);
+            if (e.target.checked) {
+                updateRoleValue(parseInt(e.target.getAttribute("data-rescuer")))
+            }
+            rescuerCheckboxes.forEach((checkbox) => {
+                if (e.target !== checkbox) {
+                    checkbox.checked = false;
+                }
+            })
+            function updateRoleValue(newVal) {
+                if (determineIfPerSituationMarking(flagConfigs)) {
+                    individualEntry.rescuerRole[selectedSituation] = newVal;
+                } else {
+                    individualEntry.rescuerRole = newVal;
+                }
+            }
+            markChange();
+        }
+    }
+
     //Notes section
-    let commentSection = createElement("textarea", individualDiv);
+    let commentSection = createElement("limited-textarea", individualDiv);
     commentSection.placeholder = "Notes";
-    commentSection.value = individualEntry.commentData;
+    commentSection.value = determineIfPerSituationMarking(flagConfigs) ? individualEntry.commentData[selectedSituation] : individualEntry.commentData;
     commentSection.addEventListener("change", () => {
-        individualEntry.commentData = commentSection.value;
+        if (determineIfPerSituationMarking(flagConfigs)) {
+            individualEntry.commentData[selectedSituation] = commentSection.value;
+        } else {
+            individualEntry.commentData = commentSection.value;
+        }
         markChange();
     });
+    perSituationMarkingChannel.addListeningFunction(() => {
+        commentSection.value = determineIfPerSituationMarking(flagConfigs) ? individualEntry.commentData[selectedSituation] : individualEntry.commentData;
+    })
+    commentSection.setMaxCharacterCount(determineIfPerSituationMarking(flagConfigs) ? 250 : 2000);
     //Pass-fail section
     let resultSection = createElement("div", individualDiv, null, "resultSection");
     //pass section
@@ -578,25 +644,29 @@ function showSituationConfigMenu(configuredEntry, sheetToolkitData, flagConfigs,
         //Update each user per-situation marking array if applicable
         if (determineIfPerSituationMarking(flagConfigs)) {
             if (configuredEntry instanceof TeamEntry) {
-                adjustMarkingArrayForTeam(configuredEntry, configObj.excludedLists.length);
+                adjustInformationForTeam(configuredEntry, configObj.excludedLists.length);
             } else {
                 configuredEntry.teams.forEach((team) => {
-                    adjustMarkingArrayForTeam(team, configObj.excludedLists.length);
+                    adjustInformationForTeam(team, configObj.excludedLists.length);
                 })
             }
-            function adjustMarkingArrayForTeam(team, newSize) {
+            function adjustInformationForTeam(team, newSize) {
                 team.individuals.forEach((individual) => {
                     //Equals to is explicitly left out
-                    if (individual.marking.length > newSize) {
-                        let toRemove = individual.marking.length - newSize;
-                        individual.marking.splice(newSize, toRemove);
-                    } else if ((individual.marking.length < newSize)) {
-                        let toAdd = newSize - individual.marking.length;
+                    adjustArray(individual.marking, () => ({}), newSize);
+                    adjustArray(individual.rescuerRole, null, newSize);
+                });
+                function adjustArray(array, insertValueFn, newSize) {
+                    if (array.length > newSize) {
+                        let toRemove = array.length - newSize;
+                        array.splice(newSize, toRemove);
+                    } else if ((array.length < newSize)) {
+                        let toAdd = newSize - array.length;
                         for (let i = 0; i < toAdd; i++) {
-                            individual.marking.push({});
+                            array.push(insertValueFn());
                         }
                     }
-                });
+                }
             }
         }
         //Apply to per-situation marking buttons
@@ -1056,13 +1126,15 @@ function createMustSeeList(mustSeeData, individualEntry, flagConfigs, sheetToolk
         //Handle hiding/showing
         if (individualEntry.marking.length <= selectedSituation) {
             //Per-team marking and this person's team has fewer situations. They do not have data for this situation
-            mainDiv.style.visibility = "hidden";
-            mainDiv.parentElement.querySelector("textarea").disabled = true;
+            for (const el of mainDiv.parentElement.children) {
+                el.classList.add("hide");
+            }
             return;
         } else {
             //The user does have marking data for this situation, show.
-            mainDiv.style.visibility = "visible";
-            mainDiv.parentElement.querySelector("textarea").disabled = false;
+            for (const el of mainDiv.parentElement.children) {
+                el.classList.remove("hide");
+            }
         }
     });
 
@@ -1217,7 +1289,7 @@ function createMustSeeList(mustSeeData, individualEntry, flagConfigs, sheetToolk
         let checkboxSpan = createElement("span", null, null, "markingCheckboxSpan");
         let lbl = createElement("label", checkboxSpan, null, "markingLabel");
         var checkboxInput = createElement("result-input", lbl, null, null);
-        checkboxInput.setAttribute("type", getToolkitSetting("markingMode", toolkitData.settings['markingMode'].default));
+        checkboxInput.setAttribute("type", getToolkitSetting("markingMode"));
         //value
         let userRawVal = markingLocation[path] ?? null;
         checkboxInput.value = userRawVal;
@@ -1262,7 +1334,7 @@ function resolveConfigValue(value) {
         if (toolkitData.settings[value]) {
             //Is a variable that is defined in the json
             //return the user's value, or default if not set
-            return getToolkitSetting(value, toolkitData.settings[value].default);
+            return getToolkitSetting(value);
         } else {
             return value;
         }
@@ -1271,7 +1343,7 @@ function resolveConfigValue(value) {
     }
 }
 
-function getToolkitSetting(settingName, defaultValue) {
+function getToolkitSetting(settingName, defaultValue = toolkitData.settings[settingName].default) {
     let val = userToolkitSettings[settingName];
     return val ?? defaultValue;
 }
@@ -1409,7 +1481,9 @@ async function showMarkingNavigationList() {
         } else {
             entryInterpreter.getCandidateIds().forEach((responseId) => {
                 let candidateName = getCandidateName(responseId);
-                createElement("p", mappingCandidateNameHolder, candidateName, "");
+                let result = entryInterpreter.getCandidateResult(responseId);
+                let resultClass = result === true ? "pass" : (result === false ? "fail" : null);
+                createElement("p", mappingCandidateNameHolder, candidateName, resultClass);
             })
         }
         //Buttons
@@ -1543,6 +1617,8 @@ function determineIfPerSituationMarking(flagConfigs) {
     //If not, use the sheet default value
     return flagConfigs['perSituationMarking'];
 }
+
+const resultScreenToolkitSettings = ["resultShowComments", "resultOnlyFailMS"];
 
 const resultDisplayList = document.getElementById("resultDisplayList");
 const resultSearchBar = document.getElementById("resultSearchBar");
@@ -1698,10 +1774,18 @@ function showResultsScreen() {
                             });
                             break;
                     }
-                    new ResultReportGenerator().generateIndividualPdfReport(reportTitle, renderDatas).open();
+                    new ResultReportGenerator().generateIndividualPdfReport(reportTitle, renderDatas, getResultConfig()).open();
                 });
             });
         }
+    }
+
+    function getResultConfig() {
+        var resultConfig = {};
+        resultScreenToolkitSettings.forEach((settingName) => {
+            resultConfig[settingName] = getToolkitSetting(settingName);
+        })
+        return resultConfig;
     }
 
     function generateCandidateRenderData(responseId, skillId, relatedIds) {
@@ -1777,10 +1861,10 @@ function showResultsScreen() {
             list.classList.toggle("hide");
             if (list.classList.contains("hide")) {
                 list.style.height = "0px";
-                collapseBtn.textContent = "⮟"
+                collapseBtn.textContent = "keyboard_arrow_down"
             } else {
                 list.style.height = `${totalHeight}px`;
-                collapseBtn.textContent = "⮝"
+                collapseBtn.textContent = "keyboard_arrow_up"
             }
         })
         //Render the list
@@ -1807,21 +1891,29 @@ function showResultsScreen() {
                 }
             })
             //Must-sees
-            ResultReportGenerator.reportProcessSortedMustSees(sheetContainer.getSheetIdentifier(), data.skillId, data.individual, (text, result) => {
+            ResultReportGenerator.reportProcessSortedMustSees(sheetContainer.getSheetIdentifier(), data.skillId, data.individual, getResultConfig(), (text, result) => {
                 let mustSeeEl = templateRoot.querySelector(".resultEntrySectionListItem").cloneNode(true);
                 list.appendChild(mustSeeEl);
                 mustSeeEl.querySelector("p.resultEntrySectionListText").textContent = text;
                 mustSeeEl.querySelector(".resultSectionResultIndicator").classList.add(result === true ? "pass" : "fail");
                 mustSeeEl.querySelector(".resultSectionResultIndicator p").textContent = result === true ? "Pass" : "Fail";
-            }, (situationName) => {
+            }, (situationName, situationNumber) => {
                 let mustSeeEl = templateRoot.querySelector(".resultEntrySectionSituationItem").cloneNode(true);
                 list.appendChild(mustSeeEl);
+                if (situationNumber !== null && data.individual.rescuerRole[situationNumber]) {
+                    //Per-situation values
+                    situationName += ` - ${rescuerRoles[data.individual.rescuerRole[situationNumber]]} Rescuer`;
+                }
+                if (situationNumber === null && data.individual.rescuerRole) {
+                    //Not per-situation
+                    situationName += ` - ${rescuerRoles[data.individual.rescuerRole]} Rescuer`;
+                }
                 mustSeeEl.querySelector("p.resultEntrySectionSituationText").textContent = situationName;
+            }, (commentText) => {
+                let commentEl = templateRoot.querySelector(".resultEntrySectionNoteSection").cloneNode(true);
+                list.appendChild(commentEl);
+                commentEl.querySelector("textarea").value = commentText;
             })
-            //Notes
-            let noteSection = templateRoot.querySelector(".resultEntrySectionNoteSection").cloneNode(true);
-            list.appendChild(noteSection);
-            noteSection.querySelector("textarea").value = data.individual.commentData;
         })
         //Set height
         var boundBox = list.getBoundingClientRect();
@@ -1886,7 +1978,7 @@ function showResultsScreen() {
                 });
                 break;
         }
-        new ResultReportGenerator().generateOverviewPdfReport(reportTitle, renderDatas).open();
+        new ResultReportGenerator().generateOverviewPdfReport(reportTitle, renderDatas, getResultConfig()).open();
     };
 }
 
@@ -1903,35 +1995,49 @@ function getCandidateName(responseId) {
 
 //Settings
 
-const settingsApplyButton = document.getElementById("settingsApplyButton")
+const settingsApplyButton = document.getElementById("settingsApplyButton");
+const settingsForm = document.getElementById("settingsForm");
+const resultSettingsApplyButton = document.getElementById("resultSettingsApplyButton");
+const resultSettingsForm = document.getElementById("resultSettingsForm");
 document.getElementById("markingNavigationSettingsButton").addEventListener("click", () => {
-    showSettingsScreen();
+    showSettingsScreen(settingsForm);
     hideAllChildren(dialogContainer);
     dialogContainer.style.display = "block";
     settingsDialog.style.display = "flex";
     settingsApplyButton.disabled = false;
 })
 
-// getToolkitSetting(settingName, defaultValue)
-const settingsForm = document.getElementById("settingsForm");
-function showSettingsScreen() {
+document.getElementById("resultSettingsButton").onclick = function () {
+    showSettingsScreen(resultSettingsForm);
+    hideAllChildren(dialogContainer);
+    dialogContainer.style.display = "block";
+    resultSettingsDialog.style.display = "flex";
+}
+
+function showSettingsScreen(form) {
     for (const [settingName, settingInformation] of Object.entries(toolkitData.settings)) {
+        if (!form.elements[settingName]) {
+            continue;
+        }
         if (settingInformation.type === "boolean") {
-            settingsForm.elements[settingName].checked = getToolkitSetting(settingName, settingInformation.default);
+            form.elements[settingName].checked = getToolkitSetting(settingName);
         } else {
-            settingsForm.elements[settingName].value = getToolkitSetting(settingName, settingInformation.default);
+            form.elements[settingName].value = getToolkitSetting(settingName);
         }
     }
 }
 
-async function saveSettings() {
+async function saveSettings(form) {
     for (const [settingName, settingInformation] of Object.entries(toolkitData.settings)) {
         //Get the set value
+        if (!form.elements[settingName]) {
+            continue;
+        }
         var settingValue;
         if (settingInformation.type === "boolean") {
-            settingValue = settingsForm.elements[settingName].checked;
+            settingValue = form.elements[settingName].checked;
         } else {
-            settingValue = settingsForm.elements[settingName].value;
+            settingValue = form.elements[settingName].value;
         }
         //Check if the user has set a value
         if (settingValue !== settingInformation.default) {
@@ -1945,7 +2051,7 @@ async function saveSettings() {
 
 settingsApplyButton.addEventListener("click", async () => {
     settingsApplyButton.disabled = true;
-    saveSettings().then(() => {
+    saveSettings(settingsForm).then(() => {
         showMarkingSkillScreen(currentMarkingToolkit)
     }).catch((err) => {
         console.log(err);
@@ -1954,7 +2060,18 @@ settingsApplyButton.addEventListener("click", async () => {
         settingsApplyButton.disabled = false;
         dialogContainer.style.display = "none";
     })
-})
+});
+
+resultSettingsApplyButton.addEventListener("click", async () => {
+    resultSettingsApplyButton.disabled = true;
+    saveSettings(resultSettingsForm).catch((err) => {
+        console.log(err);
+        alert("Unable to save your settings. Please try again later.");
+    }).finally(() => {
+        resultSettingsApplyButton.disabled = false;
+        dialogContainer.style.display = "none";
+    })
+});
 
 const saveBroadcastChannel = new BroadcastChannel('TEST_SHEETS/OFFLINE_SAVE_EVENT');
 saveBroadcastChannel.onmessage = ((event) => {
@@ -2017,7 +2134,6 @@ function resetMarkingScreen() {
 window.addEventListener("popstate", async (event) => {
     if (event.state) {
         let navData = event.state;
-        console.log(navData)
         switch (navData.page) {
             case "results":
                 showResultsScreen();
@@ -2044,7 +2160,7 @@ window.addEventListener("popstate", async (event) => {
     }
 })
 
-window.addEventListener("beforeunload", forceSave);
+window.addEventListener("pagehide", forceSave);
 document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") forceSave();
 });

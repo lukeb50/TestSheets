@@ -1,3 +1,5 @@
+const SAVE_MODE = { LOCAL: "local", "SERVER": "server" };
+
 class DataManager {
 
     connection;
@@ -48,16 +50,15 @@ class DataManager {
         return this.#updateUserInformationInternal(baseData);
     }
 
-    async saveSheetInstance(sheetInstance) {
+    async saveSheetInstance(sheetInstance, saveMode = SAVE_MODE.SERVER) {
         //Conversions
         var jsonData = sheetInstance.toJson();
         //Request
-        var networkResultObj = await this.connection.saveSheetInstance(jsonData.key, jsonData.data);
+        var networkResultObj = await this.connection.saveSheetInstance(saveMode, jsonData.key, jsonData.data);
         //Update sheet save status
         sheetInstance.setSaveStatus(networkResultObj.getSaveStatus());
         if (networkResultObj.getSaveStatus() !== SAVE_STATUS.UNSAVED) {
             //Save was made to some extent
-            sheetInstance.dbKey = networkResultObj.getPayload();
             return networkResultObj.getPayload();
         }
         //Failed save (network & service worker)
@@ -101,10 +102,10 @@ class DataManager {
         throw networkResultObj.getError();
     }
 
-    async saveToolkitInstance(toolkitEntry, attachedSheetEntry) {
+    async saveToolkitInstance(toolkitEntry, attachedSheetEntry, saveMode = SAVE_MODE.SERVER) {
         var jsonData = toolkitEntry.toJson();
         //Request
-        var networkResultObj = await this.connection.saveToolkitInstance(jsonData.key, jsonData.attachedSheetKey, jsonData.data);
+        var networkResultObj = await this.connection.saveToolkitInstance(saveMode, jsonData.key, jsonData.attachedSheetKey, jsonData.data);
         if (networkResultObj.getSaveStatus() === SAVE_STATUS.UNSAVED) {
             console.warn(networkResultObj.getError());
             throw networkResultObj.getError();
@@ -115,8 +116,6 @@ class DataManager {
         //Perform updates to local values to mirror server
         let key = networkResultObj.getPayload();
         if (key) {
-            //Update the toolkit with the key
-            toolkitEntry.dbKey = key;
             //Update the sheet toolkitMapping
             if (!attachedSheetEntry.toolkitMapping[toolkitEntry.skillId]) {
                 attachedSheetEntry.toolkitMapping[toolkitEntry.skillId] = [];

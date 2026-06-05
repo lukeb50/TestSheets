@@ -42,8 +42,8 @@ const dataManagerInstance = new DataManager(getConnectionManager());
 const loggedOutControls = document.getElementById("topbarAccountSignUpHolder");
 const loggedInControls = document.getElementById("topbarAccountLoggedInHolder");
 
-saveExecuteFn = (async () => {
-    await dataManagerInstance.saveSheetInstance(dataContainer);
+saveExecuteFn = (async (mode) => {
+    return await dataManagerInstance.saveSheetInstance(dataContainer, mode);
 })
 
 allowSave = (() => {
@@ -1080,8 +1080,7 @@ function getCourseInformation() {
     });
 }
 
-window.addEventListener("beforeunload", (ev) => {
-    console.log(allowSave(), changePending)
+window.addEventListener("pagehide", (ev) => {
     if (allowSave()) {//Signed in  & already saved, just execute a final save request
         forceSave();
     } else if (changePending) {//Signed out and a change has been made, request leave confirmation

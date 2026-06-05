@@ -90,27 +90,28 @@ self.addEventListener("message", async (event) => {
             return null;
         }
         if (event.data.type === "TEST_SHEETS/DATABASE_OPERATION") {
+            let eventPayload = event.data.payload;
+            let data = event.data;
             //Network indicator
             const connectivityBroadcastChannel = new BroadcastChannel('TEST_SHEETS/SW_CONNECTIVITY');
-            if (event.data.networkSuccess !== null) {
-                connectivityBroadcastChannel.postMessage(event.data.networkSuccess === true ? SERVICE_WORKER_CONNECTIVITY.ONLINE : SERVICE_WORKER_CONNECTIVITY.OFFLINE);
+            if (event.data.networkSuccess === SERVICE_WORKER_NETWORK_RESULT.SUCCESS || event.data.networkSuccess === SERVICE_WORKER_NETWORK_RESULT.FAILED) {
+                connectivityBroadcastChannel.postMessage(event.data.networkSuccess === SERVICE_WORKER_NETWORK_RESULT.SUCCESS ? SERVICE_WORKER_CONNECTIVITY.ONLINE : SERVICE_WORKER_CONNECTIVITY.OFFLINE);
             }
-            //NULL can be passed to networkSuccess in the case of a passthrough (datamanager updated a second entity 
-            // and needed it updated in storage without hitting the server)
-            wasNetworkSuccess = event.data.networkSuccess ? true : false;
+            //If a network save just occured, clear all pending operations on that object
+            if (eventPayload.method === "save" && event.data.networkSuccess === SERVICE_WORKER_NETWORK_RESULT.SUCCESS) {
+                prunePendingKey(eventPayload.objectType, eventPayload.objectKey);
+            }
             let replyPort = event.ports[0];
             if (!savedObjectTypes.includes(event.data.payload.objectType)) {
                 replyPort.postMessage({ success: false, payload: null });
                 return;
             }
-            let eventPayload = event.data.payload;
-            let data = event.data;
             let dbTransaction = await indexedDbManagerInstance.startTransaction(TRANSACTION_MODE.WRITE, [eventPayload.objectType, "pendingOperations"]);
             let objectTypeStore = dbTransaction.getStore(eventPayload.objectType);
             //Perform ops
             await Promise.all([
                 handleDbOperation(eventPayload, objectTypeStore),
-                savePendingDbOperation(eventPayload, wasNetworkSuccess, dbTransaction)
+                savePendingDbOperation(eventPayload, event.data.networkSuccess, dbTransaction)
             ]).then((results) => {
                 replyPort.postMessage({ success: true, payload: results[0] });
             }).catch((err) => {
@@ -215,17 +216,24 @@ async function handleDbOperation(eventPayload, dbObjectStore) {
     })
 }
 
-async function savePendingDbOperation(eventPayload, wasNetworkSuccess, dbTransaction) {
+async function savePendingDbOperation(eventPayload, networkSuccessEnum, dbTransaction) {
     return new Promise((resolve, reject) => {
-        if (!wasNetworkSuccess && !replayExcludedMethods.includes(eventPayload.method)) {
-            dbTransaction.getStore("pendingOperations").put(eventPayload).then(() => {
-                resolve();
-            }).catch(() => {
-                reject();
-            })
-        } else {
+        if (networkSuccessEnum === SERVICE_WORKER_NETWORK_RESULT.SUCCESS || networkSuccessEnum === SERVICE_WORKER_NETWORK_RESULT.PASSTHROUGH) {
+            //If successful or a passthrough, don't save for replay
+            //If failed or an autosave, save for replay
             resolve();
+            return;
         }
+        if (replayExcludedMethods.includes(eventPayload.method)) {
+            //Don't replay excluded operations (like gets)
+            resolve();
+            return;
+        }
+        dbTransaction.getStore("pendingOperations").put(eventPayload).then(() => {
+            resolve();
+        }).catch(() => {
+            reject();
+        })
     })
 }
 
@@ -410,6 +418,7 @@ function replayOfflineOperations() {
                     return;
                 }
             } catch (networkErr) {
+                console.log(networkErr)
                 reject("Network failure");
                 return;
             }
@@ -433,6 +442,7 @@ function replayOfflineOperations() {
         }
 
         function reject(v) {
+            console.log(v);
             connectivityBroadcastChannel.postMessage(SERVICE_WORKER_CONNECTIVITY.OFFLINE);
             rej(v);
         }
@@ -462,7 +472,15 @@ function replayOfflineOperations() {
     }
 }
 
+function prunePendingKey(type, key) {
+    return prunePendingOperationsInternal(type, key)
+}
+
 function prunePendingOperations() {
+    return prunePendingOperationsInternal(null, null);
+}
+
+function prunePendingOperationsInternal(pruneType = null, pruneKey = null) {
     return new Promise(async (resolve, reject) => {
         //Database open
         let pendingObjectStore;
@@ -476,16 +494,25 @@ function prunePendingOperations() {
         //Open the cursor, running in reverse (most recent first)
         var trackedOperations = {};
         pendingObjectStore.openCursor((operationDbEntry, key, cursor) => {
+            //Determine if this entry is to be completely pruned by request
+            if (pruneType && pruneType === operationDbEntry.objectType && pruneKey && checkKeysMatch(pruneKey, operationDbEntry.objectKey)) {
+                cursor.delete();
+                return;
+            }
             //Add entry to tracking if first time this key has been seen
-            if (!trackedOperations[operationDbEntry.objectKey]) {
-                trackedOperations[operationDbEntry.objectKey] = [];
+            if (!trackedOperations[operationDbEntry.objectType]) {
+                trackedOperations[operationDbEntry.objectType] = {};
+            }
+            if (!trackedOperations[operationDbEntry.objectType][JSON.stringify(operationDbEntry.objectKey)]) {
+                trackedOperations[operationDbEntry.objectType][JSON.stringify(operationDbEntry.objectKey)] = [];
             }
             //See if this operation has already been performed
-            let trackingEntry = trackedOperations[operationDbEntry.objectKey];
+            let trackingEntry = trackedOperations[operationDbEntry.objectType][JSON.stringify(operationDbEntry.objectKey)];
             if (trackingEntry.includes(`${operationDbEntry.method}:${operationDbEntry.extraAction}`) || trackingEntry.includes(`delete:`)) {
                 //An operation for this key and this method has already been seen, this request is stale.
                 //Or, the object has a delete request against it, so don't bother saving
                 cursor.delete();
+                return;
             } else {
                 //First time seeing this operation for this key, note it
                 trackingEntry.push(`${operationDbEntry.method}:${operationDbEntry.extraAction}`);
@@ -496,6 +523,17 @@ function prunePendingOperations() {
             reject();
         })
     })
+
+    function checkKeysMatch(key1, key2) {
+        if (Array.isArray(key1) !== Array.isArray(key2)) {
+            return false;
+        }
+        if (Array.isArray(key1)) {
+            return key1.every((val, i) => key2[i] === val)
+        } else {
+            return key1 === key2;
+        }
+    }
 }
 
 function getServiceWorkerDatabase() {

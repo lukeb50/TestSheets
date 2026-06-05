@@ -1,6 +1,7 @@
 var changePending = false;
 
-var changeTimeout;//resets after each change
+var localChangeTimeoutRef;//resets after each change
+var serverChangeTimeoutRef;//resets after each change
 var safetyTimeout;//prevents too many changes from reseting changetimout and never actually saving.
 
 var saveExecuteFn;
@@ -14,6 +15,10 @@ const backoffScaler = 1.25;
 const initialBackoff = 10000;
 const maxBackoff = 60000;
 
+const localDebounceTimeout = 500;
+const serverDebounceTimeout = 5000;
+const safetyDebounceTimeout = 15000;
+
 var currentBackoff = initialBackoff;
 
 var allowSave = (() => {
@@ -21,12 +26,16 @@ var allowSave = (() => {
 });
 
 function markChange() {
-    if (changeTimeout) {
-        clearTimeout(changeTimeout);
+    if (serverChangeTimeoutRef) {
+        clearTimeout(serverChangeTimeoutRef);
     }
-    changeTimeout = setTimeout(executeSave, 5000);
+    if (localChangeTimeoutRef) {
+        clearTimeout(localChangeTimeoutRef);
+    }
+    localChangeTimeoutRef = setTimeout(executeLocalUpdate, localDebounceTimeout);
+    serverChangeTimeoutRef = setTimeout(executeSave, serverDebounceTimeout);
     if (!safetyTimeout) {
-        safetyTimeout = setTimeout(executeSave, 30000);
+        safetyTimeout = setTimeout(executeSave, safetyDebounceTimeout);
     }
     changePending = true;
     if (onChange) {
@@ -36,14 +45,18 @@ function markChange() {
     }
 }
 
+async function executeLocalUpdate() {
+    return await saveExecuteFn(SAVE_MODE.LOCAL);
+}
+
 async function forceSave() {
     return await executeSave();
 }
 
 async function executeSave() {
-    if (changeTimeout) {
-        clearTimeout(changeTimeout);
-        changeTimeout = null;
+    if (serverChangeTimeoutRef) {
+        clearTimeout(serverChangeTimeoutRef);
+        serverChangeTimeoutRef = null;
     }
     if (safetyTimeout) {
         clearTimeout(safetyTimeout);
@@ -59,7 +72,7 @@ async function executeSave() {
         if (onSaveStart) {
             onSaveStart();
         }
-        var result = await saveExecuteFn();
+        var result = await saveExecuteFn(SAVE_MODE.SERVER);
         changePending = false;
         if (onSaveSuccess) {
             onSaveSuccess();

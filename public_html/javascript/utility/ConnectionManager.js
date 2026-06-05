@@ -16,9 +16,13 @@ class ConnectionManager {
         return this.processCall(info);
     }
 
-    async saveSheetInstance(key, data) {
+    async saveSheetInstance(saveMode, key, data) {
         let info = new DatabaseExecutionObject("save", "sheet", key, null, { key: key, data: data });
-        return this.processCall(info);
+        if (saveMode === SAVE_MODE.SERVER) {
+            return this.processCall(info);
+        } else {
+            return this.processAutosave(info);
+        }
     }
 
     async getSheetInstance(key) {
@@ -30,11 +34,10 @@ class ConnectionManager {
         let info = new DatabaseExecutionObject("query", "sheet", null, "summary", {})
         return new Promise((resolve, reject) => {
             this.processCall(info).then(async (returnedData) => {
-                console.log(returnedData)
                 resolve(returnedData);
                 if (returnedData.getSaveStatus() === SAVE_STATUS.SERVER_SAVED && navigator.serviceWorker?.controller !== null) {
                     //Remove dead entries from the database
-                    const localDbConnection = new LocalDatabaseConnection(true);
+                    const localDbConnection = new LocalDatabaseConnection(SERVICE_WORKER_NETWORK_RESULT.SUCCESS);
                     let localResult = await localDbConnection.execute(info);
                     //Get the locally saved & server sheet keys
                     let serverKeys = Object.keys(returnedData.payload)
@@ -71,9 +74,13 @@ class ConnectionManager {
         return this.processCall(info);
     }
 
-    async saveToolkitInstance(toolkitKey, attachedSheetKey, toolkitEntry) {
+    async saveToolkitInstance(saveMode, toolkitKey, attachedSheetKey, toolkitEntry) {
         let info = new DatabaseExecutionObject("save", "toolkit", ConnectionManager.createToolkitCompositeKey(toolkitKey, attachedSheetKey), null, { attachedSheetKey: attachedSheetKey, key: toolkitKey, data: toolkitEntry });
-        return this.processCall(info);
+        if (saveMode === SAVE_MODE.SERVER) {
+            return this.processCall(info);
+        } else {
+            return this.processAutosave(info);
+        }
     }
 
     async getToolkitInstance(toolkitKey, attachedSheetKey) {
@@ -92,8 +99,24 @@ class ConnectionManager {
     }
 
     async syncSheetToLocal(key, data) {
-        let info = new DatabaseExecutionObject("internal_put", "sheet", key, null, data);
-        new LocalDatabaseConnection(null).execute(info);
+        let info = new DatabaseExecutionObject("internal_put", "sheet", key, null, { data: data });
+        try {
+            let result = new LocalDatabaseConnection(SERVICE_WORKER_NETWORK_RESULT.PASSTHROUGH).execute(info);
+            return new OperationPublicResult(result, null, SAVE_STATUS.LOCAL_SAVED);
+        } catch (err) {
+            return new OperationPublicResult(null, err, SAVE_STATUS.UNSAVED);
+        }
+    }
+
+    async syncToolkitToLocal(toolkitKey, attachedSheetKey, data) {
+        let info = new DatabaseExecutionObject("internal_put", "toolkit", ConnectionManager.createToolkitCompositeKey(toolkitKey, attachedSheetKey), null, { data: data });
+        try {
+            let result = await new LocalDatabaseConnection(SERVICE_WORKER_NETWORK_RESULT.PASSTHROUGH).execute(info);
+            return new OperationPublicResult(result, null, SAVE_STATUS.LOCAL_SAVED);
+        } catch (err) {
+            console.log(err);
+            return new OperationPublicResult(null, err, SAVE_STATUS.UNSAVED);
+        }
     }
 
     static createToolkitCompositeKey(toolkitKey, attachedSheetKey) {
@@ -117,14 +140,14 @@ class ConnectionManager {
                     //Mirror to service worker
                     let localExecutionObj = DatabaseExecutionObject.fromOther(executionObj);
                     localExecutionObj.setNetworkResult(resultObj);
-                    new LocalDatabaseConnection(true).execute(localExecutionObj);
+                    new LocalDatabaseConnection(SERVICE_WORKER_NETWORK_RESULT.SUCCESS).execute(localExecutionObj);
                 } catch (err) {
                     //Could not contact service worker
                     console.log(err);
                 }
             }).catch((err) => {
                 //Network failure, use the service worker and mark it for propagation to the server later
-                new LocalDatabaseConnection(false).execute(executionObj).then((result) => {
+                new LocalDatabaseConnection(SERVICE_WORKER_NETWORK_RESULT.FAILED).execute(executionObj).then((result) => {
                     resolve(new OperationPublicResult(result, null, SAVE_STATUS.LOCAL_SAVED));
                 }).catch((err) => {
                     //Could not local save, can't contact service worker
@@ -134,6 +157,18 @@ class ConnectionManager {
         })
     }
 
+    async processAutosave(executionObj) {
+        if (executionObj.method !== "save") {
+            throw new Error("Invalid execution object (not save method)");
+        }
+        try {
+            let result = await new LocalDatabaseConnection(SERVICE_WORKER_NETWORK_RESULT.AUTOSYNC).execute(executionObj);
+            return new OperationPublicResult(result, null, SAVE_STATUS.LOCAL_SAVED);
+        } catch (err) {
+            console.log(err);
+            return new OperationPublicResult(null, err, SAVE_STATUS.UNSAVED);
+        }
+    }
 
     async processGetCall(executionObj) {
         const connectivityBroadcastChannel = new BroadcastChannel('TEST_SHEETS/SW_CONNECTIVITY');
@@ -142,12 +177,13 @@ class ConnectionManager {
         }
         return new Promise((resolve, reject) => {
             var networkPromise = this.connection.execute(executionObj);
-            var localDbPromise = new LocalDatabaseConnection(null).execute(executionObj);
+            var localDbPromise = new LocalDatabaseConnection(SERVICE_WORKER_NETWORK_RESULT.PASSTHROUGH).execute(executionObj);
             Promise.allSettled([networkPromise, localDbPromise]).then((promiseValues) => {
                 let networkResultValue = promiseValues[0];
                 let isNetworkSuccess = networkResultValue.status === "fulfilled" && networkResultValue.value.isSuccess();
                 let localDbResultValue = promiseValues[1];
-                let isLocalDbSuccess = localDbResultValue.status === "fulfilled";
+                let isLocalDbSuccess = localDbResultValue.status === "fulfilled" && localDbResultValue.value !== undefined;
+                console.log(isNetworkSuccess, isLocalDbSuccess, localDbResultValue.value)
                 if (isNetworkSuccess === false && isLocalDbSuccess === false) {
                     //Double fail, no result available
                     connectivityBroadcastChannel.postMessage(SERVICE_WORKER_CONNECTIVITY.OFFLINE);
@@ -179,6 +215,8 @@ class ConnectionManager {
                         if (isNetworkChosen) {
                             //Save to local db
                             this.syncGetResultToLocal(executionObj, selectedResult);
+                        } else {
+                            //A more recent version came from localDB, sync it back to the server
                         }
                     } else {
                         //Does not have modifiedAt value, default to server
@@ -192,7 +230,7 @@ class ConnectionManager {
 
     async syncGetResultToLocal(executionObj, resultJSON) {
         let info = new DatabaseExecutionObject("internal_put", executionObj.objectType, executionObj.objectKey, executionObj.extraAction, { data: resultJSON });
-        return new LocalDatabaseConnection(null).execute(info);
+        return new LocalDatabaseConnection(SERVICE_WORKER_NETWORK_RESULT.PASSTHROUGH).execute(info);
     }
 
     //Process a call to the server without local fallback
@@ -324,8 +362,13 @@ class LocalDatabaseConnection extends BaseConnection {
                 return;
             }
             var msgChannel = new MessageChannel();
+            const msgPortTimeout = setTimeout(() => {
+                msgChannel.port1.close();
+                reject("service worker failure");
+            }, 10000)
             //Set up response listener
             msgChannel.port1.onmessage = ((responseObj) => {
+                clearTimeout(msgPortTimeout);
                 let returnedObj = responseObj.data;
                 let isWorkerSuccess = returnedObj.success;
                 let workerPayload = returnedObj.payload;

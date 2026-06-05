@@ -72,7 +72,7 @@
                             "maxSituations": 5,
                             "defaultSituationCount": 3,
                             "perSituationMarking": true,
-                            "globalSituations": true
+                            "globalSituations": false
                         }
                     ],
                     "mustSees": [
@@ -1265,10 +1265,6 @@
                             "text": "Ability to give and receive directions"
                         },
                         {
-                            "id": "hand",
-                            "text": "Appropriate use of communication techniques: hand signals"
-                        },
-                        {
                             "id": "accurate",
                             "text": "Immediate and accurate communication with others in an emergency"
                         },
@@ -1639,6 +1635,9 @@
                             "name": "team",
                             "maxSize": 5,
                             "maxCount": 1
+                        },
+                        {
+                            "name": "rescuerRoles"
                         },
                         {
                             "name": "situationDesigner",
@@ -2242,6 +2241,18 @@
         "markingMode": {
             "type": "list",
             "default": "negative"
+        },
+        "useRescuerRoles": {
+            "type": "boolean",
+            "default": true
+        },
+        "resultShowComments": {
+            "type": "boolean",
+            "default": true
+        },
+        "resultOnlyFailMS": {
+            "type": "boolean",
+            "default": false
         }
     },
     "flagNames": {

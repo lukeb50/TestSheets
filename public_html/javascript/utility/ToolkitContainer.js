@@ -97,6 +97,7 @@ class IndividualEntry {
     responseId = null;
     marking;
     commentData = "";
+    rescuerRole = null;
     result = null;
     teamReference;
     constructor(responseId, teamReference) {
@@ -108,14 +109,16 @@ class IndividualEntry {
         return {
             responseId: this.responseId,
             marking: this.marking,
+            rescuerRole: this.rescuerRole,
             commentData: this.commentData,
             result: this.result
         }
     }
 
-    static fromJson({ responseId, marking, commentData, result } = {}, team) {
+    static fromJson({ responseId, marking, rescuerRole, commentData, result } = {}, team) {
         let individual = new IndividualEntry(responseId, team);
         individual.marking = marking;
+        individual.rescuerRole = rescuerRole;
         individual.commentData = commentData;
         individual.result = result;
         return individual;
