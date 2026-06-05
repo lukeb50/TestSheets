@@ -23,7 +23,6 @@ class ResultReportGenerator {
     }
 
     generateOverviewPdfReport(title, compositeRenderData, config) {
-        console.log(compositeRenderData)
         let docDef = {
             info: {
                 title: `Report - ${title}`,
@@ -110,7 +109,6 @@ class ResultReportGenerator {
     }
 
     #generateTopLevelEntry(renderData, config) {
-        console.log(renderData);
         return [
             "\n",
             { text: renderData.name, style: "subHeader", tocItem: true, tocMargin: [20, 0, 0, 0], tocStyle: { italics: true, fontSize: 12 } },
@@ -118,7 +116,6 @@ class ResultReportGenerator {
         ];
 
         function generateEvaluationEntry(evaluationEntry) {
-            console.log(evaluationEntry)
             let isPerSituationMarking = Array.isArray(evaluationEntry.individual.marking);
             return [
                 { text: "\n" },

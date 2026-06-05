@@ -181,9 +181,14 @@ function showSkillsListScreen() {
             }
         });
         cardRoot.querySelector(".skillCardGoButton").addEventListener("click", async () => {
-            try { await loadMostRecentOrNewToolkit(skillKey) } catch (err) {
+            try {
+                showSpinner();
+                await loadMostRecentOrNewToolkit(skillKey);
+            } catch (err) {
                 console.log(err)
                 alert("Unable to open evaluation. Please try again later");
+            } finally {
+                hideSpinner();
             }
         });
         let toolkitSkillInterpreter = new ToolkitMappingFullInterpreter(sheetContainer).getSkill(skillKey);
@@ -624,7 +629,7 @@ function showSituationConfigMenu(configuredEntry, sheetToolkitData, flagConfigs,
 
     situationConfigApplyButton.onclick = function () {
         //Hide menu
-        dialogContainer.style.display = "none";
+        hideDialog();
         //calculate new config
         situationMenuSlotHolder.querySelectorAll(`multi-select`).forEach((selector) => {
             var selectorI = parseInt(selector.getAttribute("data-situation"));
@@ -709,7 +714,7 @@ function getUserDefaultSituationConfigurationFile(flagConfigs) {
 
 document.querySelectorAll("button.cancelAction").forEach((btn) => {
     btn.addEventListener("click", () => {
-        dialogContainer.style.display = "none";
+        hideDialog();
     })
 })
 
@@ -737,9 +742,7 @@ function createSituationContainer(appendTo, attachedToolkitEntry, sheetToolkitDa
     let configLabel = createElement("label", bottomBar, "Configure", null);
     let configBtn = createElement("button", configLabel, "manufacturing", "material-symbols-outlined configureSituationsButton");
     configBtn.addEventListener("click", () => {
-        hideAllChildren(dialogContainer);
-        dialogContainer.style.display = "block";
-        situationModificationDialog.style.display = "flex";
+        showDialog(situationModificationDialog);
         showSituationConfigMenu(attachedToolkitEntry, sheetToolkitData, flagConfigs, mainSection);
     })
     markingChangeChannel.addListeningFunction((individualEntry) => {
@@ -769,7 +772,6 @@ function createSituationContainer(appendTo, attachedToolkitEntry, sheetToolkitDa
                 for (const team of attachedToolkitEntry.teams) {
                     for (const individual of team.individuals) {
                         let markingLocation = determineIfPerSituationMarking(flagConfigs) ? individual.marking[selectedSit] : individual.marking;
-                        console.log(individual, markingLocation)
                         isEmpty = !isEmpty ? false : Object.keys(markingLocation).length === 0;
                         if (!isEmpty) {
                             return;
@@ -1363,36 +1365,34 @@ document.getElementById("markingSubNavigationButton").onclick = function () {
     } else {
         closeNavigation();
     }
+}
 
-    function closeNavigation() {
-        markingNavigationBackground.classList.remove("show");
-        markingNavigationBackground.classList.add("hide");
-        markingNavigationBackground.removeEventListener("click", closeNavigation);
-    }
+function closeNavigation() {
+    markingNavigationBackground.classList.remove("show");
+    markingNavigationBackground.classList.add("hide");
+    markingNavigationBackground.removeEventListener("click", closeNavigation);
 }
 
 const markingSubNewEvalButton = document.getElementById("markingSubNewEvalButton");
 const groupList = document.getElementById("groupList");
 markingSubNewEvalButton.onclick = async function () {
-    markingSubNewEvalButton.disabled = true;
     try {
         let configStore = (await indexedDbManagerInstance.startTransaction(TRANSACTION_MODE.READONLY, "configurations")).getStore("configurations");
         let groupData = (await configStore.get(getGroupKey())) ?? [];
         if (groupData.length > 0) {
             complexCreateOperation(groupData);
         } else {
+            showSpinner();
             newEvaluationCreateOperation();
         }
     } catch (err) {
+        hideSpinner();
         newEvaluationCreateOperation();
     }
 
     function complexCreateOperation(groupingData) {
         //UI Changes
-        hideAllChildren(dialogContainer);
-        dialogContainer.style.display = "block";
-        newEvalComplexDialog.style.display = "flex";
-        markingSubNewEvalButton.disabled = false;
+        showDialog(newEvalComplexDialog);
         //Show list
         clearChildren(groupList);
         groupingData.forEach((group, i) => {
@@ -1425,7 +1425,6 @@ markingSubNewEvalButton.onclick = async function () {
             //Create button
             let createBtn = createElement("button", groupHolder, "Create", "createBtn");
             createBtn.addEventListener("click", () => {
-                createBtn.disabled = true;
                 newEvaluationCreateOperation(group);
             })
         })
@@ -1434,7 +1433,7 @@ markingSubNewEvalButton.onclick = async function () {
 
 const newEvalComplexBlankButton = document.getElementById("newEvalComplexBlankButton");
 async function newEvaluationCreateOperation(preloadedTeams = []) {
-    newEvalComplexBlankButton.disabled = true;
+    showSpinner();
     try {
         await forceSave();
         let markingEntry = new SkillMarkingEntry(null, sheetContainer.dbKey, currentMarkingToolkit.skillId, SAVE_STATUS.INITIAL);
@@ -1445,13 +1444,12 @@ async function newEvaluationCreateOperation(preloadedTeams = []) {
             })
         })
         navigateToMarkingSkillScreen(markingEntry);
-        markingSubNewEvalButton.disabled = false;
     } catch (err) {
         console.log(err);
         alert("Unable to create new evaluation. Please try again later.");
     } finally {
         newEvalComplexBlankButton.disabled = false;
-        dialogContainer.style.display = "none";
+        hideDialog();
     }
 }
 newEvalComplexBlankButton.addEventListener("click", () => { newEvaluationCreateOperation() });
@@ -1500,8 +1498,8 @@ async function showMarkingNavigationList() {
                 return;
             }
             //Disable buttons during operation
-            mappingDeleteButton.disabled = true;
-            mappingOpenButton.disabled = true;
+            showSpinner();
+            closeNavigation();
             try {
                 //attempt delete
                 await dataManagerInstance.deleteToolkitInstance(entryInterpreter.getId(), sheetContainer, currentMarkingToolkit.skillId);
@@ -1515,8 +1513,8 @@ async function showMarkingNavigationList() {
             } catch (err) {
                 console.log(err)
                 alert("Error deleting evaluation. Please try again later");
-                mappingDeleteButton.disabled = false;
-                mappingOpenButton.disabled = false;
+            } finally {
+                hideSpinner();
             }
         })
         //Group button
@@ -1544,8 +1542,8 @@ async function showMarkingNavigationList() {
             mappingOpenButton.disabled = true;
         }
         mappingOpenButton.addEventListener("click", async () => {
-            //Disable open button
-            mappingOpenButton.disabled = true;
+            showSpinner();
+            closeNavigation();
             //Save
             try {
                 await forceSave();
@@ -1556,6 +1554,8 @@ async function showMarkingNavigationList() {
             } catch (err) {
                 alert("Unable to open evaluation. Please try again later.");
                 mappingOpenButton.disabled = false;
+            } finally {
+                hideSpinner();
             }
         })
     })
@@ -1926,7 +1926,7 @@ function showResultsScreen() {
     }
 
     resultSummaryReportButton.onclick = async function () {
-        resultSummaryReportButton.disabled = true;
+        showSpinner();
         let queryType = resultSortTypeSelect.value;
         let queryRelatedIds;
         try {
@@ -1940,7 +1940,7 @@ function showResultsScreen() {
             alert("Unable to generate summary report. Check your connection and try again");
             return;
         } finally {
-            resultSummaryReportButton.disabled = false;
+            hideSpinner();
         }
         var renderDatas = [];
         reportTitle = "";
@@ -2005,17 +2005,13 @@ const resultSettingsApplyButton = document.getElementById("resultSettingsApplyBu
 const resultSettingsForm = document.getElementById("resultSettingsForm");
 document.getElementById("markingNavigationSettingsButton").addEventListener("click", () => {
     showSettingsScreen(settingsForm);
-    hideAllChildren(dialogContainer);
-    dialogContainer.style.display = "block";
-    settingsDialog.style.display = "flex";
-    settingsApplyButton.disabled = false;
+    closeNavigation();
+    showDialog(settingsDialog);
 })
 
 document.getElementById("resultSettingsButton").onclick = function () {
     showSettingsScreen(resultSettingsForm);
-    hideAllChildren(dialogContainer);
-    dialogContainer.style.display = "block";
-    resultSettingsDialog.style.display = "flex";
+    showDialog(resultSettingsDialog);
 }
 
 function showSettingsScreen(form) {
@@ -2054,26 +2050,24 @@ async function saveSettings(form) {
 }
 
 settingsApplyButton.addEventListener("click", async () => {
-    settingsApplyButton.disabled = true;
+    showSpinner();
     saveSettings(settingsForm).then(() => {
         showMarkingSkillScreen(currentMarkingToolkit)
     }).catch((err) => {
         console.log(err);
         alert("Unable to save your settings. Please try again later.");
     }).finally(() => {
-        settingsApplyButton.disabled = false;
-        dialogContainer.style.display = "none";
+        hideDialog();
     })
 });
 
 resultSettingsApplyButton.addEventListener("click", async () => {
-    resultSettingsApplyButton.disabled = true;
+    showSpinner();
     saveSettings(resultSettingsForm).catch((err) => {
         console.log(err);
         alert("Unable to save your settings. Please try again later.");
     }).finally(() => {
-        resultSettingsApplyButton.disabled = false;
-        dialogContainer.style.display = "none";
+        hideDialog();
     })
 });
 
@@ -2110,6 +2104,28 @@ function showSection(section) {
     let sectionIndex = sections.indexOf(section);
     section.style.display = "flex";
     subBars[sectionIndex].style.display = "flex";
+}
+
+function showDialog(dialogSection) {
+    hideAllChildren(dialogContainer);
+    dialogContainer.style.display = "block";
+    dialogSection.style.display = "flex";
+}
+
+function hideDialog() {
+    dialogContainer.style.display = "none";
+    hideAllChildren(dialogContainer);
+}
+
+const spinner = document.querySelector(".spinner");
+function showSpinner() {
+    hideAllChildren(dialogContainer);
+    dialogContainer.style.display = "flex";
+    spinner.style.display = "block";
+}
+
+function hideSpinner() {
+    hideDialog();
 }
 
 const markingHolder = document.getElementById("markingHolder");

@@ -1,3 +1,9 @@
+div.spinner div {
+    border-color: white;
+    border-left: 15px solid rgb(112 147 255);
+    animation-direction: reverse;
+}
+
 #mainContainer {
     height: 100%;
     width: 100%;
@@ -480,7 +486,7 @@ div.individualMarkingHolder div.individualMarking {
     overflow: hidden;
 }
 
-div.individualMarkingHolder div.individualMarking *:not(.nameSelectSpan).hide{
+div.individualMarkingHolder div.individualMarking *:not(.nameSelectSpan).hide {
     display: none;
 }
 
@@ -553,7 +559,7 @@ div.individualMarkingHolder div.rescuerSelectionSection span {
     transition: 0.5s;
 }
 
-div.individualMarkingHolder div.rescuerSelectionSection span:hover{
+div.individualMarkingHolder div.rescuerSelectionSection span:hover {
     background-color: rgba(50, 100, 255, 0.1);
 }
 
@@ -567,12 +573,13 @@ div.individualMarkingHolder div.rescuerSelectionSection span label {
     width: 100%;
 }
 
-div.individualMarkingHolder div.rescuerSelectionSection span label input[type="checkbox"].markingCheckbox{
+div.individualMarkingHolder div.rescuerSelectionSection span label input[type="checkbox"].markingCheckbox {
     border-radius: 50%;
 }
 
 div.individualMarkingHolder div.rescuerSelectionSection span label input[type="checkbox"].markingCheckbox:checked {
-background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='8' fill='%235B7FA3'/%3E%3C/svg%3E");}
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='8' fill='%235B7FA3'/%3E%3C/svg%3E");
+}
 
 
 div.individualMarkingHolder limited-textarea {
