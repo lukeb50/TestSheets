@@ -118,7 +118,8 @@ function renderSheetList(data, userInfo, offlineData) {
         var sheetCard = sheetCardFragment.firstElementChild;
         mainListHolder.appendChild(sheetCardFragment);
         //Get category & sheet information
-        var sheetInfo = getSheetFromIdentifier(sheetEntry.sheetId)
+        var sheetInfo = getSheetFromIdentifier(sheetEntry.sheetId);
+        console.log(sheetInfo, sheetEntry);
         var categoryName = Object.entries(sheetData).find(([key, value]) => value.some((entry) => entry.identifier === sheetEntry.sheetId))?.[0];
         //Set Text & Color
         sheetCard.style.setProperty("--card-color", `var(--${categoryName},black)`);
@@ -313,7 +314,6 @@ const offlineWarningBar = document.getElementById("offlineWarningBottomBar");
 var lastNetworkStatus = SERVICE_WORKER_CONNECTIVITY.ONLINE;
 connectivityBroadcastChannel.onmessage = ((event) => {
     let status = event.data;
-    console.log(status, lastNetworkStatus)
     if (lastNetworkStatus !== status) {
         runRender();
     }

@@ -99,22 +99,11 @@ class ConnectionManager {
     }
 
     async syncSheetToLocal(key, data) {
-        let info = new DatabaseExecutionObject("internal_put", "sheet", key, null, { data: data });
+        let info = new DatabaseExecutionObject("internal_put", "sheet", key, null, data);
         try {
             let result = new LocalDatabaseConnection(SERVICE_WORKER_NETWORK_RESULT.PASSTHROUGH).execute(info);
             return new OperationPublicResult(result, null, SAVE_STATUS.LOCAL_SAVED);
         } catch (err) {
-            return new OperationPublicResult(null, err, SAVE_STATUS.UNSAVED);
-        }
-    }
-
-    async syncToolkitToLocal(toolkitKey, attachedSheetKey, data) {
-        let info = new DatabaseExecutionObject("internal_put", "toolkit", ConnectionManager.createToolkitCompositeKey(toolkitKey, attachedSheetKey), null, { data: data });
-        try {
-            let result = await new LocalDatabaseConnection(SERVICE_WORKER_NETWORK_RESULT.PASSTHROUGH).execute(info);
-            return new OperationPublicResult(result, null, SAVE_STATUS.LOCAL_SAVED);
-        } catch (err) {
-            console.log(err);
             return new OperationPublicResult(null, err, SAVE_STATUS.UNSAVED);
         }
     }
@@ -183,7 +172,6 @@ class ConnectionManager {
                 let isNetworkSuccess = networkResultValue.status === "fulfilled" && networkResultValue.value.isSuccess();
                 let localDbResultValue = promiseValues[1];
                 let isLocalDbSuccess = localDbResultValue.status === "fulfilled" && localDbResultValue.value !== undefined;
-                console.log(isNetworkSuccess, isLocalDbSuccess, localDbResultValue.value)
                 if (isNetworkSuccess === false && isLocalDbSuccess === false) {
                     //Double fail, no result available
                     connectivityBroadcastChannel.postMessage(SERVICE_WORKER_CONNECTIVITY.OFFLINE);

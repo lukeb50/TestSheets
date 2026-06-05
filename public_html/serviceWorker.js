@@ -52,7 +52,7 @@ self.addEventListener("fetch", (event) => {
     let requestDestination = request.destination;
     //Local testing short-circuit
     if (self.location.hostname === "localhost" || self.location.hostname.startsWith("127.0.") || self.location.hostname === "" || self.location.hostname.startsWith("10.0.")) {
-        return;
+        //return;
     }
     if (requestDestination === "style" || requestDestination === "script" || requestDestination === "image" ||
         requestDestination === "document" || requestDestination === "font" || request.url.endsWith(".json")) {
