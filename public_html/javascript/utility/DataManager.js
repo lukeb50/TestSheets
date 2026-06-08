@@ -155,6 +155,7 @@ class DataManager {
     async deleteToolkitInstance(toolkitKey, attachedSheetEntry, skillId) {
         //Save
         var networkResultObj = await this.connection.deleteToolkitInstance(toolkitKey, attachedSheetEntry.dbKey);
+        console.log(networkResultObj);
         if (networkResultObj.getSaveStatus() === SAVE_STATUS.UNSAVED) {
             console.warn(networkResultObj.getError());
             throw networkResultObj.getError();

@@ -119,7 +119,6 @@ function renderSheetList(data, userInfo, offlineData) {
         mainListHolder.appendChild(sheetCardFragment);
         //Get category & sheet information
         var sheetInfo = getSheetFromIdentifier(sheetEntry.sheetId);
-        console.log(sheetInfo, sheetEntry);
         var categoryName = Object.entries(sheetData).find(([key, value]) => value.some((entry) => entry.identifier === sheetEntry.sheetId))?.[0];
         //Set Text & Color
         sheetCard.style.setProperty("--card-color", `var(--${categoryName},black)`);

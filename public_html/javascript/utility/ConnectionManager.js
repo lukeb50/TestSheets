@@ -117,6 +117,9 @@ class ConnectionManager {
         if (executionObj.method === "get") {
             return this.processGetCall(executionObj);
         }
+        if (executionObj.method === "delete") {
+            return this.processDeleteCall(executionObj);
+        }
         return new Promise((resolve, reject) => {
             var networkPromise = this.connection.execute(executionObj).then((resultObj) => {
                 if (!resultObj.isSuccess()) {//The server responded with a 4xx of 5xx
@@ -159,7 +162,7 @@ class ConnectionManager {
         }
     }
 
-    async processGetCall(executionObj) {
+    processGetCall(executionObj) {
         const connectivityBroadcastChannel = new BroadcastChannel('TEST_SHEETS/SW_CONNECTIVITY');
         if (executionObj.method !== "get") {
             throw new Error("Invalid execution object (not get method)");
@@ -175,7 +178,7 @@ class ConnectionManager {
                 if (isNetworkSuccess === false && isLocalDbSuccess === false) {
                     //Double fail, no result available
                     connectivityBroadcastChannel.postMessage(SERVICE_WORKER_CONNECTIVITY.OFFLINE);
-                    console.log("No DB Access")
+                    console.log("Network and SW Fail")
                     reject(new OperationPublicResult(null, networkResultValue.reason, SAVE_STATUS.UNSAVED));
                 } else if (isNetworkSuccess === true && isLocalDbSuccess === false) {
                     //network only
@@ -214,6 +217,43 @@ class ConnectionManager {
                 }
             })
         });
+    }
+
+    processDeleteCall(executionObj) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                //Network attempt
+                let result = await this.connection.execute(executionObj);
+                if (result.isSuccess()) {
+                    resolve(new OperationPublicResult(result.payload, null, SAVE_STATUS.SERVER_SAVED));
+                    //DO NOT RETURN HERE. A successful network call is to be passed through below
+                }else if (result.statusCode !== 404) {
+                    //Server returned but rejected
+                    reject(new OperationPublicResult(null, result.errorCode, SAVE_STATUS.UNSAVED));
+                    //Stop
+                    return;
+                }
+                //Server returned a success or a 404, ask the service worker to delete local recods
+                new LocalDatabaseConnection(SERVICE_WORKER_NETWORK_RESULT.PASSTHROUGH).execute(executionObj).then((res) => {
+                    console.log(res);
+                    resolve(new OperationPublicResult(res, null, SAVE_STATUS.SERVER_SAVED));//Return to manager that this was a server success delete
+                }).catch((swErr) => {//SW Failure
+                    console.log(swErr)
+                    //Reject. If this was a server success, the reject call will be ignored, if a server fail, this is the first resolution and will propagate.
+                    reject(new OperationPublicResult(null, swErr, SAVE_STATUS.UNSAVED));
+                })
+            } catch (err) {
+                console.log(err);
+                //Network failure, attempt SW with replay enabled
+                new LocalDatabaseConnection(SERVICE_WORKER_NETWORK_RESULT.FAILED).execute(executionObj).then((res) => {
+                    resolve(new OperationPublicResult(res, null, SAVE_STATUS.LOCAL_SAVED));//Return to manager that this was a local only delete
+                }).catch((swErr) => {
+                    //Double failure, operation failed
+                    console.log(swErr)
+                    reject(new OperationPublicResult(null, swErr, SAVE_STATUS.UNSAVED));
+                })
+            }
+        })
     }
 
     async syncGetResultToLocal(executionObj, resultJSON) {
@@ -338,7 +378,7 @@ class BaseConnection {
 
 class LocalDatabaseConnection extends BaseConnection {
     networkSuccess;
-    constructor(networkSuccess = true) {
+    constructor(networkSuccess = SERVICE_WORKER_NETWORK_RESULT.UNSAVED) {
         super();
         this.networkSuccess = networkSuccess;
     }

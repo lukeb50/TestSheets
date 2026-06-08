@@ -45,8 +45,20 @@ function markChange() {
     }
 }
 
+function interuptSaving() {
+    clearTimeout(localChangeTimeoutRef);
+    localChangeTimeoutRef = null;
+    clearTimeout(serverChangeTimeoutRef);
+    serverChangeTimeoutRef = null;
+    clearTimeout(safetyTimeout);
+    safetyTimeout = null;
+    changePending = false;
+}
+
 async function executeLocalUpdate() {
-    return await saveExecuteFn(SAVE_MODE.LOCAL);
+    if (allowSave()) {
+        return await saveExecuteFn(SAVE_MODE.LOCAL);
+    }
 }
 
 async function forceSave() {

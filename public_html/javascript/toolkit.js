@@ -61,6 +61,7 @@ onChange = (() => {
 })
 
 saveExecuteFn = (async (mode) => {
+    console.log("Saving", mode);
     return await dataManagerInstance.saveToolkitInstance(currentMarkingToolkit, sheetContainer, mode);
 })
 
@@ -1503,18 +1504,30 @@ async function showMarkingNavigationList() {
             try {
                 //attempt delete
                 await dataManagerInstance.deleteToolkitInstance(entryInterpreter.getId(), sheetContainer, currentMarkingToolkit.skillId);
+                performEvaluationDelete();
+            } catch (err) {
+                if (err.saveStatus === "unsaved") {
+                    //Deleting an evaluation that just got created locally and not yet server saved, reflect delete locally
+                    performEvaluationDelete();
+                } else {
+                    console.log(err)
+                    alert("Error deleting evaluation. Please try again later");
+                }
+            } finally {
+                hideSpinner();
+            }
+            function performEvaluationDelete() {
+                var skillId = currentMarkingToolkit.skillId;
+                var dbKey = currentMarkingToolkit.dbKey;
+                currentMarkingToolkit = null;
+                interuptSaving();
                 //Remove from list UI
                 mappingHolder.remove();
                 //Check if that sheet is being displayed
-                if (entryInterpreter.getId() === currentMarkingToolkit.dbKey) {
+                if (entryInterpreter.getId() === dbKey) {
                     //load the most recent evaluation
-                    loadMostRecentOrNewToolkit(currentMarkingToolkit.skillId);
+                    loadMostRecentOrNewToolkit(skillId);
                 }
-            } catch (err) {
-                console.log(err)
-                alert("Error deleting evaluation. Please try again later");
-            } finally {
-                hideSpinner();
             }
         })
         //Group button
@@ -1739,7 +1752,7 @@ function showResultsScreen() {
                         })
                         break;
                     case "skill":
-                        let skillRef = toolkitData.sheets[sheetContainer.getSheetIdentifier()].skills[queryValue];
+                        let skillRef = toolkitData.sheets[sheetContainer.getSheetIdentifier()].skills[rawValue];
                         card.querySelector(".resultTitle").textContent = skillRef.name;
                         let includedCandidates = findIncludedSkillCandidates(queryRelatedIds);
                         includedCandidates.forEach((candidateResponseId) => {
@@ -1769,7 +1782,7 @@ function showResultsScreen() {
                             });
                             break;
                         case "skill":
-                            reportTitle = toolkitData.sheets[sheetContainer.getSheetIdentifier()].skills[queryValue].name;
+                            reportTitle = toolkitData.sheets[sheetContainer.getSheetIdentifier()].skills[rawValue].name;
                             let includedCandidates = findIncludedSkillCandidates(queryRelatedIds);
                             includedCandidates.forEach((candidateResponseId) => {
                                 //Candidate name
@@ -2154,6 +2167,7 @@ function resetMarkingScreen() {
 window.addEventListener("popstate", async (event) => {
     if (event.state) {
         let navData = event.state;
+        forceSave();
         switch (navData.page) {
             case "results":
                 showResultsScreen();

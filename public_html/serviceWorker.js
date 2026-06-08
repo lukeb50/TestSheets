@@ -52,7 +52,7 @@ self.addEventListener("fetch", (event) => {
     let requestDestination = request.destination;
     //Local testing short-circuit
     if (self.location.hostname === "localhost" || self.location.hostname.startsWith("127.0.") || self.location.hostname === "" || self.location.hostname.startsWith("10.0.")) {
-        //return;
+        return;
     }
     if (requestDestination === "style" || requestDestination === "script" || requestDestination === "image" ||
         requestDestination === "document" || requestDestination === "font" || request.url.endsWith(".json")) {
@@ -99,7 +99,7 @@ self.addEventListener("message", async (event) => {
             }
             //If a network save just occured, clear all pending operations on that object
             if (eventPayload.method === "save" && event.data.networkSuccess === SERVICE_WORKER_NETWORK_RESULT.SUCCESS) {
-                prunePendingKey(eventPayload.objectType, eventPayload.objectKey);
+                await prunePendingKey(eventPayload.objectType, eventPayload.objectKey);
             }
             let replyPort = event.ports[0];
             if (!savedObjectTypes.includes(event.data.payload.objectType)) {
@@ -108,17 +108,20 @@ self.addEventListener("message", async (event) => {
             }
             let dbTransaction = await indexedDbManagerInstance.startTransaction(TRANSACTION_MODE.WRITE, [eventPayload.objectType, "pendingOperations"]);
             let objectTypeStore = dbTransaction.getStore(eventPayload.objectType);
-            //Perform ops
-            await Promise.all([
-                handleDbOperation(eventPayload, objectTypeStore),
-                savePendingDbOperation(eventPayload, event.data.networkSuccess, dbTransaction)
-            ]).then((results) => {
+            //Perform ops. Not using Promise.all so that operations run consecutively (Handle the operation, then commit it to the pending queue).
+            //Avoids edge case of a delete taking longer to execute, and wiping out a queued server replay of that same delete operation.
+            try {
+                let results = [
+                    await handleDbOperation(eventPayload, objectTypeStore),
+                    await savePendingDbOperation(eventPayload, event.data.networkSuccess)
+                ]
                 replyPort.postMessage({ success: true, payload: results[0] });
-            }).catch((err) => {
+            } catch (err) {
                 console.log(err);
                 replyPort.postMessage({ success: false, payload: null });
-            })
-            replyPort.close();
+            } finally {
+                replyPort.close();
+            }
         } else if (event.data.type === "TEST_SHEETS/LOGOUT") {
             //Clear all offline database information
             try {
@@ -199,6 +202,11 @@ async function handleDbOperation(eventPayload, dbObjectStore) {
                     return val;
                     break;
                 case "delete":
+                    //Any queued save/update operations need to be removed
+                    await prunePendingKey(eventPayload.objectType, eventPayload.objectKey);
+                    //Start a new transaction due to awaiting prune
+                    let dbTransaction = await indexedDbManagerInstance.startTransaction(TRANSACTION_MODE.WRITE, [eventPayload.objectType]);
+                    dbObjectStore = dbTransaction.getStore(eventPayload.objectType);
                     await dbObjectStore.delete(eventPayload.objectKey);
                     resolve();
                     break;
@@ -216,8 +224,8 @@ async function handleDbOperation(eventPayload, dbObjectStore) {
     })
 }
 
-async function savePendingDbOperation(eventPayload, networkSuccessEnum, dbTransaction) {
-    return new Promise((resolve, reject) => {
+async function savePendingDbOperation(eventPayload, networkSuccessEnum) {
+    return new Promise(async (resolve, reject) => {
         if (networkSuccessEnum === SERVICE_WORKER_NETWORK_RESULT.SUCCESS || networkSuccessEnum === SERVICE_WORKER_NETWORK_RESULT.PASSTHROUGH) {
             //If successful or a passthrough, don't save for replay
             //If failed or an autosave, save for replay
@@ -229,6 +237,7 @@ async function savePendingDbOperation(eventPayload, networkSuccessEnum, dbTransa
             resolve();
             return;
         }
+        let dbTransaction = await indexedDbManagerInstance.startTransaction(TRANSACTION_MODE.WRITE, ["pendingOperations"]);
         dbTransaction.getStore("pendingOperations").put(eventPayload).then(() => {
             resolve();
         }).catch(() => {
