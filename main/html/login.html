@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test Sheets  - Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="stylesheet" href="../stylesheets/login.css">
+    <link rel="stylesheet" href="../stylesheets/root.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,300,0,0">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+</head>
+
+<body>
+    <div id="loginSuperContainer">
+        <div id="loginMainContainer">
+            <div id="loginFormHolder" class="loginSectionHolder">
+                <h2>Log In</h2>
+                <form id="loginForm">
+                    <label class="loginFormLabel" for="loginEmailInput">Email:</label>
+                    <div class="loginFormRow">
+                        <input id="loginEmailInput" type="email" autocomplete="username">
+                    </div>
+                    <label class="loginFormLabel" for="loginPasswordInput">Password:</label>
+                    <div class="loginFormRow">
+                        <input id="loginPasswordInput" type="password" autocomplete="current-password">
+                    </div>
+                    <p id="loginErrorMessage" class="loginErrorMessage">Error Message</p>
+                    <div class="loginButtonHolder">
+                        <div class="loginFormRow rowFlex">
+                            <button id="loginExecuteButton" class="loginExecuteButton">Log In</button>
+                        </div>
+                        <div class="loginFormRow rowFlex">
+                            <span id="googleLoginButton" class="oAuthPromptBtn">
+                                <img
+                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Google_Favicon_2025.svg/960px-Google_Favicon_2025.svg.png">
+                                <label>Sign in with Google</label>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+                <div class="loginFormRow columnFlex navigationButtonHolder">
+                    <div class="loginFormRow" style="justify-content: center;"><a id="loginForgotPasswordButton"
+                            href="javascript:void(0)" onclick="setActiveScene(forgotPasswordHolder)">Forgot Password</a>
+                    </div>
+                    <div class="loginFormRow" style="justify-content: center;"><a id="loginCreateAccountButton"
+                            href="javascript:void(0)" onclick="setActiveScene(signupHolder)">Create Account</a></div>
+                </div>
+            </div>
+            <div id="signupFormHolder" class="loginSectionHolder hidden">
+                <h2>Sign Up</h2>
+                <form id="signupForm">
+                    <label class="loginFormLabel" for="signupEmailInput">Email:</label>
+                    <div class="loginFormRow">
+                        <input id="signupEmailInput" type="email" autocomplete="username">
+                    </div>
+                    <label class="loginFormLabel" for="signupPasswordInput">Password:</label>
+                    <div class="loginFormRow">
+                        <input id="signupPasswordInput" type="password" autocomplete="new-password">
+                    </div>
+                    <label class="loginFormLabel" for="signupPasswordConfirmInput">Confirm Password:</label>
+                    <div class="loginFormRow">
+                        <input id="signupPasswordConfirmInput" type="password" autocomplete="new-password">
+                    </div>
+                    <p id="signupErrorMessage" class="loginErrorMessage">Error Message</p>
+                    <div class="loginButtonHolder">
+                        <div class="loginFormRow rowFlex">
+                            <button id="signupExecuteButton" class="loginExecuteButton">Sign Up</button>
+                        </div>
+                    </div>
+                </form>
+                <div class="loginFormRow columnFlex navigationButtonHolder">
+                    <div class="loginFormRow" style="justify-content: center;">
+                        <a id="signupLoginAccountButton" href="javascript:void(0)"
+                            onclick="setActiveScene(loginHolder)">Sign In Instead</a>
+                    </div>
+                </div>
+            </div>
+            <div id="emailSignupSuccessHolder" class="loginSectionHolder hidden">
+                <h2>Sign Up Successful</h2>
+                <h3>We've sent you a verification email</h3>
+                <span class="material-symbols-outlined" id="verificationIcon">check_circle</span>
+                <p id="verificationHint">Verifying your email gets you more storage space.</p>
+                <div class="loginFormRow rowFlex">
+                    <button id="emailSignupSuccessGoButton" class="loginExecuteButton">Continue</button>
+                </div>
+            </div>
+            <div id="forgotPasswordFormHolder" class="loginSectionHolder hidden">
+                <h2>Forgotten Password</h2>
+                <a>Enter your email address to receive a recovery link</a>
+                <form id="forgotPasswordForm">
+                    <label class="loginFormLabel" for="forgotEmailInput">Email:</label>
+                    <div class="loginFormRow">
+                        <input id="forgotEmailInput" type="email" autocomplete="username">
+                    </div>
+                    <p id="forgotErrorMessage" class="loginErrorMessage">Error Message</p>
+                    <div class="loginButtonHolder">
+                        <div class="loginFormRow rowFlex">
+                            <button id="forgotPasswordExecuteButton" class="loginExecuteButton">Recover</button>
+                        </div>
+                    </div>
+                </form>
+                <div class="loginFormRow columnFlex navigationButtonHolder">
+                    <div class="loginFormRow" style="justify-content: center;">
+                        <a id="forgotPasswordSignInAccountButton" href="javascript:void(0)"
+                            onclick="setActiveScene(loginHolder)">Sign In Instead</a>
+                    </div>
+                </div>
+            </div>
+            <div id="loginFeaturesHolder">
+                <h3>Account Features</h3>
+                <ul>
+                    <li>Save Test Sheets</li>
+                    <li>Examination Toolkit</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-auth-compat.js"></script>
+    <script src="../SourceSystem/AuthProvider.js"></script>
+    <script src="../SourceSystem/sources/Source.js"></script>
+    <script src="../SourceSystem/sources/GoogleFormsSource.js"></script>
+    <script src="../javascript/utility/utility.js"></script>
+    <script src="../javascript/ui/login.js"></script>
+</body>
+
+</html>

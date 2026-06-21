@@ -1,0 +1,264 @@
+#mainContainer {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#communication {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+#communicationSplashScreen {
+    display: none;
+    flex: 1;
+}
+
+#splashTitle {
+    text-align: center;
+    margin: 10px;
+}
+
+#spashSubTitle {
+    font-weight: normal;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+ul {
+    list-style-type: none;
+    text-align: center;
+    padding: 0;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+#splashExplainDivHolder {
+    display: flex;
+    justify-content: center;
+}
+
+#splashExplainDiv {
+    display: flex;
+    justify-content: center;
+    height: 30%;
+    width: fit-content;
+}
+
+#splashExplainDiv div.splashExplainSection {
+    flex: 1;
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin: 10px 20px;
+    padding: 5px;
+    border: 2px solid color-mix(in srgb, var(--card-color, black) 80%, black);
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px 1px color-mix(in srgb, var(--card-color, black) 80%, black);
+    transition: 0.5s;
+    position: relative;
+}
+
+#splashExplainDiv div.splashExplainSection:not(:nth-last-child(1))::after {
+    content: ">";
+    position: absolute;
+    left: 105%;
+    top: 45%;
+    font-size: 25px;
+    color:
+        color-mix(in srgb, var(--card-color, black) 50%, transparent);
+
+}
+
+#splashExplainDiv div.splashExplainSection:hover {
+    background-color: color-mix(in srgb, var(--card-color, black) 3%, transparent);
+}
+
+#splashExplainDiv div.splashExplainSection b {
+    font-size: 20px;
+}
+
+#splashExplainDiv div.splashExplainSection p {
+    flex: 1;
+}
+
+#splashExplainDiv div.splashExplainSection span.splashExplainIcon {
+    font-size: 6em;
+    color: var(--card-color, black);
+    cursor: default;
+    margin-bottom: 5px;
+}
+
+#splashStartButtonHolder {
+    display: grid;
+    justify-items: center;
+    margin-top: 30px;
+}
+
+#splashStartButton {
+    width: 60%;
+    max-width: 600px;
+    height: 4em;
+    border: 2px solid color-mix(in srgb, var(--theme-color, black) 70%, black);
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0px 4px 10px 1px color-mix(in srgb, var(--theme-color, black) 40%, black);
+}
+
+@media(max-width: 1000px) {
+    #splashExplainDiv {
+        flex-direction: column;
+    }
+
+    #splashStartButton {
+        width: 80%;
+    }
+}
+
+#communicationMainPanel {
+    flex: 1;
+    display: none;
+    flex-direction: row-reverse;
+}
+
+#qrCodePanel {
+    border-left: 1px solid gray;
+    margin-top: 5px;
+    padding: 5px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: -5px 0px 5px 0px gray;
+}
+
+#qrCodePanel h1 {
+    margin: 10px;
+}
+
+#qrImage {
+    background-color: rgba(100, 100, 100, 0.2);
+    border: 1px solid gray;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px 1px gray;
+}
+
+button.infoI {
+    margin-left: 5px;
+    border: 2px solid color-mix(in srgb, var(--theme-color) 50%, transparent);
+    border-radius: 50%;
+    width: 22px;
+    text-align: center;
+}
+
+#qrCandidateListHolder {
+    flex: 1;
+    width: 100%;
+    overflow-y: auto;
+    padding: 5px;
+}
+
+div.qrCandidateListEntry {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 25px;
+    margin-bottom: 5px;
+}
+
+span.qrListCandidateIcon {
+    width: 25px;
+    border-radius: 5px;
+    text-align: center;
+    height: 100%;
+}
+
+p.qrListCandidateNameLabel {
+    flex: 1;
+    margin: 0;
+    margin-left: 5px;
+    border-radius: 5px;
+    line-height: 25px;
+    padding: 0px 5px;
+    padding-left: 0px;
+    height: 100%;
+}
+
+p.qrListError {
+    text-align: center;
+    margin: 0;
+    padding: 10px;
+    border-radius: 5px;
+    color: darkred;
+    font-weight: bold;
+    background-color: rgba(100, 100, 100, 0.2);
+}
+
+#qrListHeaderBar {
+    display: flex;
+    width: 100%;
+    font-weight: bold;
+    background: rgba(100, 100, 100, 0.25);
+    align-items: center;
+    border-radius: 5px;
+    padding: 5px 0px;
+}
+
+#qrListRefreshButton {
+    margin-right: 5px;
+    border: none;
+}
+
+#qrCodeCandidateLimitLabel {
+    margin: 5px 0px;
+    font-size: 14px;
+}
+
+#sendMessagePanel {
+    flex: 1;
+    display: flex;
+}
+
+#sendMessagePanelCenterer {
+    width: 100%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+}
+
+#sendMessagePanelCenterer h1 {
+    text-align: center;
+}
+
+#sendMessageCandidateListHolder {
+    width: 100%;
+    flex: 1;
+    overflow-y: auto;
+}
+
+#sendMessageTextInputHolder {
+    display: flex;
+}
+
+#sendMessageTextInput {
+    height: 10em;
+    border-radius: 5px;
+    box-sizing: border-box;
+    margin: 5px;
+    flex: 1;
+}
+
+#sendMessageButtonHolder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px;
+}
+
+#sendMessageButton{
+    padding: 15px;
+    width: 100%;
+}

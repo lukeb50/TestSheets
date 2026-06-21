@@ -1,0 +1,2275 @@
+{
+    "sheets": {
+        "BzCr2020Org": {
+            "skills": {
+                "multipleVictims": {
+                    "name": "Rescue 1: Multiple Victims",
+                    "featureFlags": [
+                        {
+                            "name": "team",
+                            "maxSize": 2,
+                            "maxCount": 2
+                        },
+                        {
+                            "name": "situationDesigner",
+                            "situationLists": [
+                                {
+                                    "categoryName": "Minor Swimming",
+                                    "categoryLists": [
+                                        {
+                                            "list": "minorSmVic"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "categoryName": "Major Swimming",
+                                    "categoryLists": [
+                                        {
+                                            "list": "majorSmVic"
+                                        },
+                                        {
+                                            "list": "multiVic"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "categoryName": "Minor First Aid",
+                                    "categoryLists": [
+                                        {
+                                            "list": "EfaMinor"
+                                        },
+                                        {
+                                            "list": "SfaMinor",
+                                            "conditionName": "bronzeCrossIncludeSFA",
+                                            "conditionOperator": "equalTo",
+                                            "conditionValue": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "categoryName": "Major First Aid",
+                                    "categoryLists": [
+                                        {
+                                            "list": "EfaMajor"
+                                        },
+                                        {
+                                            "list": "SfaMajor",
+                                            "conditionName": "bronzeCrossIncludeSFA",
+                                            "conditionOperator": "equalTo",
+                                            "conditionValue": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "categoryName": "Aquatic Spinals",
+                                    "categoryLists": [
+                                        {
+                                            "list": "spinalVics"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "maxSituations": 5,
+                            "defaultSituationCount": 3,
+                            "perSituationMarking": true,
+                            "globalSituations": false
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "recog",
+                            "text": "Quick, accurate recognition and appropriate assessment of situation - signal for help"
+                        },
+                        {
+                            "id": "comm",
+                            "text": "Effective communication and response with other rescuer"
+                        },
+                        {
+                            "id": "ladder",
+                            "text": "Lowest risk rescue possible under the circumstances and concern for personal safety throughout"
+                        },
+                        {
+                            "id": "aid",
+                            "text": "Appropriate choice and use of aid(s)"
+                        },
+                        {
+                            "id": "entry",
+                            "text": "Safe and effective entry, approach (maintaining visual contact), reverse and ready"
+                        },
+                        {
+                            "id": "tow",
+                            "text": "Effective tow or carry (when used)"
+                        },
+                        {
+                            "id": "secure",
+                            "text": "Victim secured at nearest point of safety"
+                        },
+                        {
+                            "id": "bystander",
+                            "text": "Effective use of bystanders where appropriate"
+                        },
+                        {
+                            "id": "removal",
+                            "text": "Safe and effective removal with bystander assistance"
+                        },
+                        {
+                            "id": "ems",
+                            "text": "Contact with EMS at earliest possible moment if appropriate"
+                        },
+                        {
+                            "id": "abc",
+                            "text": "Victim Assessment (ABCs) and appropriate care until rescuers relieved of responsibility",
+                            "mustSees": [
+                                "EFA2014/assessment",
+                                "EFA2014/cpr"
+                            ],
+                            "fromSituationDesigner": [
+                                "EfaMinor/*",
+                                "SfaMinor/*",
+                                "EfaMajor/*",
+                                "SfaMajor/*",
+                                "spinalVics/*"
+                            ]
+                        },
+                        {
+                            "id": "barrier",
+                            "text": "Effective use of barrier devices if required"
+                        }
+                    ]
+                }
+            },
+            "situationLists": {
+                "spinalVics": {
+                    "name": "Aquatic Spinal Victims",
+                    "values": [
+                        {
+                            "id": "br-spine",
+                            "text": "Breathing Spinal"
+                        },
+                        {
+                            "id": "vsa-spine",
+                            "text": "Non-Breathing Spinal"
+                        }
+                    ]
+                }
+            }
+        },
+        "EFA2014": {
+            "skills": {
+                "assessment": {
+                    "name": "Victim Assessment",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "scene",
+                            "text": "Evaluation of the rescue scene"
+                        },
+                        {
+                            "id": "danger",
+                            "text": "Removal of/from danger"
+                        },
+                        {
+                            "id": "comm",
+                            "text": "Appropriate communication with victim"
+                        },
+                        {
+                            "id": "loc",
+                            "text": "Assessment of level of consciousness"
+                        },
+                        {
+                            "id": "abc",
+                            "text": "Assessment of airway, breathing, circulation"
+                        },
+                        {
+                            "id": "history",
+                            "text": "Relevant history (accident, medical, personal)"
+                        },
+                        {
+                            "id": "vitals",
+                            "text": "Taking and recording vital signs (respiration, pulse, pupils, skin, LOC)"
+                        },
+                        {
+                            "id": "headtoe",
+                            "text": "Systematic head-to-toe examination of victim"
+                        }
+                    ]
+                },
+                "cpr": {
+                    "name": "Single-Rescuer CPR",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "assess",
+                            "text": "Assessment of environment for hazards"
+                        },
+                        {
+                            "id": "response",
+                            "text": "Establish Unresponsiveness"
+                        },
+                        {
+                            "id": "ems",
+                            "text": "Activate EMS"
+                        },
+                        {
+                            "id": "getaed",
+                            "text": "Attempt to obtain AED and recruit AED-trained responder"
+                        },
+                        {
+                            "id": "airway",
+                            "text": "Open airway: head-tilt/chin-lift"
+                        },
+                        {
+                            "id": "breathing",
+                            "text": "Visual check for breathing (5 sec.)"
+                        },
+                        {
+                            "id": "cpr",
+                            "text": "CPR started with 30 chest compressions (or with 2 rescue breaths for drowning victims)"
+                        },
+                        {
+                            "id": "move",
+                            "text": "If victim begins to move, reassess ABCs and treat appropriately"
+                        },
+                        {
+                            "id": "aed",
+                            "text": "AED usage"
+                        }
+                    ]
+                },
+                "obstruct": {
+                    "name": "Obstructed Airway (A,C,I)",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "assess",
+                            "text": "Assessment of degree of obstruction - ask 'Are you choking?'"
+                        },
+                        {
+                            "id": "selfident",
+                            "text": "Rescuer identifies self - 'Can I help?'"
+                        },
+                        {
+                            "id": "mdcough",
+                            "text": "Mild - Coughing encouraged"
+                        },
+                        {
+                            "id": "mdassure",
+                            "text": "Mild - Reassurance for victim"
+                        },
+                        {
+                            "id": "svshout",
+                            "text": "Severe - Shout for help"
+                        },
+                        {
+                            "id": "svland",
+                            "text": "Severe - Careful landmarking"
+                        },
+                        {
+                            "id": "svblows",
+                            "text": "Severe - Alternating back blows/abdominal thrusts until airway is clear (chest thrusts for pregnant/obese victim)"
+                        },
+                        {
+                            "id": "svsuccess",
+                            "text": "Severe - If successful, direct victim to see a physician to rule out complications from the obstruction or the abdominal thrusts."
+                        },
+                        {
+                            "id": "inthrusts",
+                            "text": "Infant - 5 back blows and 5 chest thrusts"
+                        },
+                        {
+                            "id": "inrepeat",
+                            "text": "Infant - Back blows and thrusts until effective or the infant becomes unconscious"
+                        },
+                        {
+                            "id": "insuccess",
+                            "text": "Infant - If successful, caregiver directed to take victim to see a physician to rule out complications from the obstruction or the treatement"
+                        }
+                    ]
+                },
+                "obstrUnc": {
+                    "name": "Unconscious Obstructed Airway (A,C,I)",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "envir",
+                            "text": "Assessment of environment for hazards"
+                        },
+                        {
+                            "id": "response",
+                            "text": "Establish Unresponsiveness"
+                        },
+                        {
+                            "id": "ems",
+                            "text": "Activate EMS"
+                        },
+                        {
+                            "id": "aed",
+                            "text": "Attempt to obtain AED and recruit AED-trained responder"
+                        },
+                        {
+                            "id": "airway",
+                            "text": "Open airway: head-tilt/chin-lift"
+                        },
+                        {
+                            "id": "visual",
+                            "text": "Visual check for breathing (5 sec.)"
+                        },
+                        {
+                            "id": "compress",
+                            "text": "If breathing is absent or abnormal, CPR started with 30 chest compressions (or with 2 rescue breaths for drowning victims)"
+                        },
+                        {
+                            "id": "ventilate",
+                            "text": "Attempt to ventilate"
+                        },
+                        {
+                            "id": "ventsucc",
+                            "text": "   If ventilation successful - Continue CPR sequence"
+                        },
+                        {
+                            "id": "repo",
+                            "text": " If ventilation unsuccessful - Resposition airway and re-attempt to ventilate"
+                        },
+                        {
+                            "id": "landmark",
+                            "text": "Careful landmarking and 30 chest compressions"
+                        },
+                        {
+                            "id": "foreignck",
+                            "text": "Foreign body check: look in mouth and if object can be seen, attempt to remove it"
+                        },
+                        {
+                            "id": "atptVent",
+                            "text": "Attempt to ventilate. Repeat sequence (reposition head, re-attempt to ventilate, chest compressions, foreign body check) until successful"
+                        }
+                    ]
+                },
+                "respir": {
+                    "name": "Respiratory Emergencies",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "cause",
+                            "text": "Determination of cause (and removal if possible) of emergency"
+                        },
+                        {
+                            "id": "assess",
+                            "text": "Victim and scene assessment"
+                        },
+                        {
+                            "id": "ems",
+                            "text": "EMS activated if necessary"
+                        },
+                        {
+                            "id": "position",
+                            "text": "Individual placed in most comfortable position"
+                        },
+                        {
+                            "id": "assure",
+                            "text": "Victim reassured"
+                        },
+                        {
+                            "id": "airway",
+                            "text": "Airway and respiration maintained"
+                        },
+                        {
+                            "id": "asthma",
+                            "text": "Asthma - Victim assisted with medication (inhaler)"
+                        },
+                        {
+                            "id": "hyper",
+                            "text": "Encouragement of pursed lip breathing"
+                        }
+                    ],
+                    "subSituations": [
+                        {
+                            "id": "resp-hy",
+                            "text": "Hyperventillation"
+                        },
+                        {
+                            "id": "resp-ast",
+                            "text": "Asthma"
+                        }
+                    ]
+                },
+                "shock": {
+                    "name": "Shock",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "assess",
+                            "text": "Victim and scene assessment"
+                        },
+                        {
+                            "id": "ems",
+                            "text": "EMS Activated"
+                        },
+                        {
+                            "id": "assure",
+                            "text": "Victim reassured"
+                        },
+                        {
+                            "id": "position",
+                            "text": "Victim placed in position of comfort, preferably recovery position"
+                        },
+                        {
+                            "id": "warm",
+                            "text": "Victim kept warm"
+                        },
+                        {
+                            "id": "vitals",
+                            "text": "Vital signs monitored"
+                        }
+                    ]
+                },
+                "heart": {
+                    "name": "Heart Attack/Angina",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "scene",
+                            "text": "Victim and scene assessment"
+                        },
+                        {
+                            "id": "ems",
+                            "text": "EMS Activated"
+                        },
+                        {
+                            "id": "stop",
+                            "text": "Rescuer has victim stop activity and sit or lay in a position most comfortable for the victim"
+                        },
+                        {
+                            "id": "assure",
+                            "text": "Victim reassured"
+                        },
+                        {
+                            "id": "vital",
+                            "text": "Vital signs monitored"
+                        },
+                        {
+                            "id": "history",
+                            "text": "Medical history requested (e.g. cardiovascular disease)"
+                        },
+                        {
+                            "id": "medic",
+                            "text": "Victim helped to take medication (nitroglycerine) if available; rescuer does not administer"
+                        }
+                    ],
+                    "subSituations": [
+                        {
+                            "id": "ha-ha",
+                            "text": "Heart Attack"
+                        },
+                        {
+                            "id": "ha-ag",
+                            "text": "Angina"
+                        }
+                    ]
+                },
+                "bleed": {
+                    "name": "External Bleeding",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "scene",
+                            "text": "Victim and scene assessment"
+                        },
+                        {
+                            "id": "ems",
+                            "text": "EMS activated if necessary"
+                        },
+                        {
+                            "id": "bandage",
+                            "text": "Application of dressing or bandage"
+                        },
+                        {
+                            "id": "aggravate",
+                            "text": "No aggravation of injury"
+                        },
+                        {
+                            "id": "distal",
+                            "text": "Distal circulation check"
+                        },
+                        {
+                            "id": "pressure",
+                            "text": "Direct pressure over wound or around wound if contains impaled object"
+                        },
+                        {
+                            "id": "assure",
+                            "text": "Reassurance for victim and instruction to rest"
+                        }
+                    ],
+                    "subSituations": [
+                        {
+                            "id": "bd-mnr",
+                            "text": "Minor Bleeding"
+                        },
+                        {
+                            "id": "bd-mjr",
+                            "text": "Major Bleeding"
+                        },
+                        {
+                            "id": "bd-embd",
+                            "text": "Embedded Object"
+                        }
+                    ]
+                },
+                "stroke": {
+                    "name": "Stroke",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "assess",
+                            "text": "Victim and scene assessment"
+                        },
+                        {
+                            "id": "ems",
+                            "text": "EMS activated"
+                        },
+                        {
+                            "id": "recovery",
+                            "text": "Victim placed in recovery position or position of comfort"
+                        },
+                        {
+                            "id": "vital",
+                            "text": "Vital signs monitored"
+                        },
+                        {
+                            "id": "assure",
+                            "text": "Victim reassured"
+                        }
+                    ]
+                },
+                "abdominal": {
+                    "name": "Abdominal Injury",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "assess",
+                            "text": "Victim and scene assessment"
+                        },
+                        {
+                            "id": "ems",
+                            "text": "EMS activated"
+                        },
+                        {
+                            "id": "assure",
+                            "text": "Victim reassured"
+                        },
+                        {
+                            "id": "position",
+                            "text": "Victim placed in a comfortable position with as little movement as possible until help arrives"
+                        },
+                        {
+                            "id": "bleed",
+                            "text": "External bleeding (if present) controlled and wounds dressed"
+                        }
+                    ]
+                },
+                "burn": {
+                    "name": "Burn Injuries",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "assess",
+                            "text": "Victim and scene assessment"
+                        },
+                        {
+                            "id": "ems",
+                            "text": "EMS activated if necessary"
+                        },
+                        {
+                            "id": "source",
+                            "text": "Victim removed from source of injury"
+                        },
+                        {
+                            "id": "water",
+                            "text": "Burn site immediately cooled with cool water"
+                        },
+                        {
+                            "id": "clean",
+                            "text": "Injury covered with dry clean (preferably sterile) dressings"
+                        },
+                        {
+                            "id": "wetchem",
+                            "text": "Wet Chemical - Flushed with lots of water"
+                        },
+                        {
+                            "id": "drychem",
+                            "text": "Dry Chemical - Dust before flushing with water"
+                        },
+                        {
+                            "id": "elecburn",
+                            "text": "Check for entry and exit burns, immobilize affected limbs"
+                        }
+                    ],
+                    "subSituations": [
+                        {
+                            "id": "bn-1",
+                            "text": "1st Degree Burn"
+                        },
+                        {
+                            "id": "bn-2",
+                            "text": "2and Degree Burn"
+                        },
+                        {
+                            "id": "bn-3",
+                            "text": "3rd Degree Burn"
+                        },
+                        {
+                            "id": "bn-dc",
+                            "text": "Dry Chemical Burn"
+                        },
+                        {
+                            "id": "bn-wc",
+                            "text": "Wet Chemical Burn"
+                        },
+                        {
+                            "id": "bn-ec",
+                            "text": "Electrical Burn"
+                        }
+                    ]
+                },
+                "facial": {
+                    "name": "Facial Injuries",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "scene",
+                            "text": "Victim and scene assessment"
+                        },
+                        {
+                            "id": "ems",
+                            "text": "EMS activated if necessary"
+                        },
+                        {
+                            "id": "cause",
+                            "text": "Determination of (and if possible, removal from) cause of injury"
+                        },
+                        {
+                            "id": "treat",
+                            "text": "Selected treatment appropriate for the injury"
+                        }
+                    ],
+                    "subSituations": [
+                        {
+                            "id": "fc-eyec",
+                            "text": "Chemical in Eyes"
+                        },
+                        {
+                            "id": "fc-eyepl",
+                            "text": "Eye Puncture/Laceration"
+                        },
+                        {
+                            "id": "fc-ear",
+                            "text": "Bleeding/Fluid in Ear"
+                        },
+                        {
+                            "id": "fc-chip",
+                            "text": "Broken/Chipped Tooth"
+                        },
+                        {
+                            "id": "fc-loose",
+                            "text": "Loose Tooth"
+                        },
+                        {
+                            "id": "fc-mouth",
+                            "text": "Laceration in Mouth"
+                        },
+                        {
+                            "id": "fc-nb",
+                            "text": "Nosebleed"
+                        },
+                        {
+                            "id": "fc-bn",
+                            "text": "Broken Nose"
+                        }
+                    ]
+                },
+                "unconbr": {
+                    "name": "Unconscious Victim",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "scene",
+                            "text": "Victim and scene assessment"
+                        },
+                        {
+                            "id": "ems",
+                            "text": "EMS activated if necessary"
+                        },
+                        {
+                            "id": "position",
+                            "text": "Victim placed in recovery position (except if suspected spinal injury or if moving victim will aggravate injuries)"
+                        },
+                        {
+                            "id": "airway",
+                            "text": "Airway maintained"
+                        },
+                        {
+                            "id": "reason",
+                            "text": "Rescuer looks for reason for unconscousness (e.g. Medic Alert tag, syringe, environmental factors such as heat)"
+                        }
+                    ]
+                }
+            }
+        },
+        "SFA2023": {
+            "skills": {
+                "2cpr": {
+                    "name": "2-Rescuer CPR",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "assess",
+                            "text": "Rescuer #1 - Assessment of environment for hazards"
+                        },
+                        {
+                            "id": "onecpr",
+                            "text": "Rescuer #1 - One-rescuer CPR sequence"
+                        },
+                        {
+                            "id": "resc2",
+                            "text": "Rescuer #2 - Identifies self as CPR trained & confirms EMS activation"
+                        },
+                        {
+                            "id": "interupt",
+                            "text": "Both - Continue CPR and switch roles with as little interruption as possible"
+                        },
+                        {
+                            "id": "takeover",
+                            "text": "Both - CPR continued until EMS takes over, or an AED-trained responder begins treatment with an AED unit, or the victim begins to move"
+                        },
+                        {
+                            "id": "move",
+                            "text": "Both - If the victim begins to move, ABCs reassessed and appropriate treatment"
+                        },
+                        {
+                            "id": "aed-comm",
+                            "text": "AED - Communication and coordination between rescuers throughout the AED protocol"
+                        },
+                        {
+                            "id": "aed-apply",
+                            "text": "AED - AED applied; clothing removed (chest bare), skin prepared, appropriate positioning of electrodes, and connection to defibrillator"
+                        },
+                        {
+                            "id": "aed-prmpt",
+                            "text": "AED - Appropriate response to voice prompts and machine indicators"
+                        },
+                        {
+                            "id": "aed-clr",
+                            "text": "AED - Victim cleared to for analysis ensuring no motion or contact with others; visual check and 'all clear' stated for analysis and shock"
+                        },
+                        {
+                            "id": "aed-cpr",
+                            "text": "AED - AED prompts followed (sequence of analyze/shock, followed immedidately by about 2 minutes of CPR) until EMS takes over treatment, or victim begins to move"
+                        }
+                    ]
+                },
+                "lndspnl": {
+                    "name": "Suspected Land Spinal",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "recog",
+                            "text": "Quick, accurate recognition"
+                        },
+                        {
+                            "id": "scene",
+                            "text": "Victim and scene assessment"
+                        },
+                        {
+                            "id": "ems",
+                            "text": "EMS Activated"
+                        },
+                        {
+                            "id": "restrict",
+                            "text": "Spinal movement restricted throughout: Conscious victim reassured and directed not to move"
+                        },
+                        {
+                            "id": "care",
+                            "text": "Appropriate care of victim throughout"
+                        }
+                    ],
+                    "subSituations": [
+                        {
+                            "id": "ldspnlbr",
+                            "text": "Breathing Land Spinal"
+                        },
+                        {
+                            "id": "ldspnlnb",
+                            "text": "Non-Breathing Land Spinal"
+                        }
+                    ]
+                },
+                "enviro": {
+                    "name": "Environmental Emergencies",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "scene",
+                            "text": "Victim and scene assessment"
+                        },
+                        {
+                            "id": "assure",
+                            "text": "Victim reassured"
+                        },
+                        {
+                            "id": "cause",
+                            "text": "Determination of cause of injury and removal from cause"
+                        },
+                        {
+                            "id": "ems",
+                            "text": "EMS activated if necessary"
+                        },
+                        {
+                            "id": "heat",
+                            "text": "Heat - Victim cooled and attempt to reduce core temperature"
+                        },
+                        {
+                            "id": "dehy",
+                            "text": "Dehydration - Attempt to provide fluids - preferably electrolyte drink with carbohydration (for dehydration due to exertion)"
+                        },
+                        {
+                            "id": "cold",
+                            "text": "Cold - Attempt to increase core temperature"
+                        },
+                        {
+                            "id": "frost",
+                            "text": "Frostbite - Protection from further injury - apply dressing and keep warm"
+                        }
+                    ],
+                    "subSituations": [
+                        {
+                            "id": "en-htcrmp",
+                            "text": "Heat Cramps"
+                        },
+                        {
+                            "id": "en-htex",
+                            "text": "Heat Exhaustion"
+                        },
+                        {
+                            "id": "en-htsrke",
+                            "text": "Heat Stroke"
+                        },
+                        {
+                            "id": "en-dehy",
+                            "text": "Dehydration"
+                        },
+                        {
+                            "id": "en-hypo",
+                            "text": "Hypothermia"
+                        },
+                        {
+                            "id": "en-frbt",
+                            "text": "Frostbite"
+                        }
+                    ]
+                },
+                "bonejoint": {
+                    "name": "Bone & Joint",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "scene",
+                            "text": "Victim and scene assessment"
+                        },
+                        {
+                            "id": "ems",
+                            "text": "EMS activated if necessary"
+                        },
+                        {
+                            "id": "immob",
+                            "text": "Immobilization of injury site"
+                        },
+                        {
+                            "id": "distal",
+                            "text": "Check for sensation and circulation above and below the injury"
+                        },
+                        {
+                            "id": "treat",
+                            "text": "Treatment of wounds associated with the injury"
+                        },
+                        {
+                            "id": "ice",
+                            "text": "If available, ice applied to injury site"
+                        }
+                    ],
+                    "subSituations": [
+                        {
+                            "id": "bj-dislo",
+                            "text": "Dislocation"
+                        },
+                        {
+                            "id": "bj-sprain",
+                            "text": "Sprain"
+                        },
+                        {
+                            "id": "bj-clo",
+                            "text": "Closed Facture"
+                        },
+                        {
+                            "id": "bj-open",
+                            "text": "Open Fracture"
+                        }
+                    ]
+                },
+                "chest": {
+                    "name": "Chest Injury",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "scene",
+                            "text": "Victim and scene assessment"
+                        },
+                        {
+                            "id": "ems",
+                            "text": "EMS Activated"
+                        },
+                        {
+                            "id": "assure",
+                            "text": "Victim reassured"
+                        },
+                        {
+                            "id": "position",
+                            "text": "Victim placed in a comfortable position with as little movement as possible until help arrives"
+                        },
+                        {
+                            "id": "bleed",
+                            "text": "External bleeding (if present) controlled and wounds dressed"
+                        }
+                    ],
+                    "subSituations": [
+                        {
+                            "id": "ch-wall",
+                            "text": "Chest Wall Injury"
+                        },
+                        {
+                            "id": "ch-pneu",
+                            "text": "Pneumothorax (Open/Closed)"
+                        },
+                        {
+                            "id": "ch-rib",
+                            "text": "Broken Rib"
+                        },
+                        {
+                            "id": "ch-flail",
+                            "text": "Flail Chest"
+                        }
+                    ]
+                },
+                "head": {
+                    "name": "Head Injury",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "scene",
+                            "text": "Victim and scene assessment"
+                        },
+                        {
+                            "id": "ems",
+                            "text": "EMS activated if necessary"
+                        },
+                        {
+                            "id": "spine",
+                            "text": "Spinal motion restricted if spinal injury suspected"
+                        },
+                        {
+                            "id": "bandage",
+                            "text": "Bandaging if situation requires (i.e. if no bleeding/discharge, no bandage required)"
+                        },
+                        {
+                            "id": "vital",
+                            "text": "Vital signs monitored"
+                        },
+                        {
+                            "id": "side",
+                            "text": "Treatment with injured side down"
+                        }
+                    ],
+                    "subSituations": [
+                        {
+                            "id": "hd-con",
+                            "text": "Possible Concussion"
+                        },
+                        {
+                            "id": "hd-spnl",
+                            "text": "Head Injury - Blood / Spinal Fluid"
+                        }
+                    ]
+                },
+                "seizure": {
+                    "name": "Seizure",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "scene",
+                            "text": "Victim and scene assessment"
+                        },
+                        {
+                            "id": "ems",
+                            "text": "EMS activated if necessary"
+                        },
+                        {
+                            "id": "recog",
+                            "text": "Recognition of seizure"
+                        },
+                        {
+                            "id": "head",
+                            "text": "Protection of head"
+                        },
+                        {
+                            "id": "norest",
+                            "text": "Rescuer does not restrain or immobilize victim or put anything into the victim's mouth"
+                        },
+                        {
+                            "id": "danger",
+                            "text": "Removal of dangers to victim"
+                        },
+                        {
+                            "id": "recovery",
+                            "text": "Victim placed in recovery psoition after seizure has stopped"
+                        }
+                    ]
+                },
+                "diabetic": {
+                    "name": "Diabetic Emergency",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "scene",
+                            "text": "Victim and scene assessment"
+                        },
+                        {
+                            "id": "ems",
+                            "text": "EMS activated if victim is unconscious or if conscious victim does not improve"
+                        },
+                        {
+                            "id": "recog",
+                            "text": "Recognition of situation through symptoms and medical history"
+                        },
+                        {
+                            "id": "sugar",
+                            "text": "Sugar administered if victim is conscious"
+                        }
+                    ]
+                },
+                "poison": {
+                    "name": "Poisoning",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 6
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "scene",
+                            "text": "Victim and scene assessment"
+                        },
+                        {
+                            "id": "ems",
+                            "text": "EMS activated if necessary"
+                        },
+                        {
+                            "id": "cause",
+                            "text": "Determination of cause of poisoning: identification and collection of sample (and container) of substance if feasible"
+                        },
+                        {
+                            "id": "avoid",
+                            "text": "Avoidance of exposure to the poison"
+                        },
+                        {
+                            "id": "treat",
+                            "text": "Treatment - Naloxone / Epipen / Other"
+                        },
+                        {
+                            "id": "pcontrol",
+                            "text": "Poison Control Center or EMS contacted for treatment information"
+                        },
+                        {
+                            "id": "vitals",
+                            "text": "Vital signs monitored"
+                        }
+                    ],
+                    "subSituations": [
+                        {
+                            "id": "ps-inj",
+                            "text": "Injected Poison"
+                        },
+                        {
+                            "id": "ps-ana",
+                            "text": "Anaphylaxis"
+                        },
+                        {
+                            "id": "ps-opi",
+                            "text": "Opioid Overdose"
+                        },
+                        {
+                            "id": "ps-absrb",
+                            "text": "Absorbed Poison"
+                        },
+                        {
+                            "id": "ps-inhale",
+                            "text": "Inhaled Poison"
+                        },
+                        {
+                            "id": "ps-injest",
+                            "text": "Injested Poison"
+                        }
+                    ]
+                }
+            }
+        },
+        "NLPL2022Or": {
+            "skills": {
+                "commGn": {
+                    "name": "Communication",
+                    "hidden": true,
+                    "mustSees": [
+                        {
+                            "id": "cues",
+                            "text": "Appropriate use of verbal and non-verbal communication skills (language, tone, facial expressions, body language)"
+                        },
+                        {
+                            "id": "model",
+                            "text": "Ability to instill and model trust through clear and open communication"
+                        },
+                        {
+                            "id": "educate",
+                            "text": "Ability to educate patrons about safe practices"
+                        },
+                        {
+                            "id": "fair",
+                            "text": "Ability to deal positively and fairly with patrons"
+                        },
+                        {
+                            "id": "conflict",
+                            "text": "Recognition of conflict and the need for safety-centered resolution"
+                        },
+                        {
+                            "id": "hand",
+                            "text": "Appropriate use of communication techniques: hand signals"
+                        },
+                        {
+                            "id": "voice",
+                            "text": "Appropriate use of communication techniques: signalling devices"
+                        },
+                        {
+                            "id": "dir",
+                            "text": "Ability to give and receive directions"
+                        },
+                        {
+                            "id": "accurate",
+                            "text": "Immediate and accurate communication with others in an emergency"
+                        },
+                        {
+                            "id": "ems",
+                            "text": "Clear and concise communcation with EMS at earliest possible moment under the circumstances"
+                        }
+                    ]
+                },
+                "commPtrn": {
+                    "name": "Patron Communication",
+                    "hidden": true,
+                    "mustSees": [
+                        {
+                            "id": "cues",
+                            "text": "Appropriate use of verbal and non-verbal communication skills (language, tone, facial expressions, body language)"
+                        },
+                        {
+                            "id": "model",
+                            "text": "Ability to instill and model trust through clear and open communication"
+                        },
+                        {
+                            "id": "educate",
+                            "text": "Ability to educate patrons about safe practices"
+                        },
+                        {
+                            "id": "fair",
+                            "text": "Ability to deal positively and fairly with patrons"
+                        },
+                        {
+                            "id": "conflict",
+                            "text": "Recognition of conflict and the need for safety-centered resolution"
+                        },
+                        {
+                            "id": "hand",
+                            "text": "Appropriate use of communication techniques: hand signals"
+                        }
+                    ]
+                },
+                "scanObs": {
+                    "name": "Scanning & Observation",
+                    "hidden": true,
+                    "mustSees": [
+                        {
+                            "id": "vigilant",
+                            "text": "Vigilant, attentive and alert demeanor"
+                        },
+                        {
+                            "id": "headmv",
+                            "text": "Systematic scanning pattern with observable head movement"
+                        },
+                        {
+                            "id": "contin",
+                            "text": "Continuous scan of designated supervision zone including bottom"
+                        },
+                        {
+                            "id": "quick",
+                            "text": "Quick, accurate recognition and analysis of potential incidenets and of patrons needing assistance"
+                        },
+                        {
+                            "id": "comm",
+                            "text": "Recognition of communication from other lifeguards (e.g. hand and whistle signals)"
+                        }
+                    ]
+                },
+                "missing": {
+                    "name": "Missing Person",
+                    "hidden": true,
+                    "mustSees": [
+                        {
+                            "id": "pools",
+                            "text": "Immediate search of water area and the bottom of all pools"
+                        },
+                        {
+                            "id": "desc",
+                            "text": "Complete description of missing person obtained (name, age, size, clothing, etc.) with other key information such as where last seen"
+                        },
+                        {
+                            "id": "reporter",
+                            "text": "Lifeguard remains with the reporting party"
+                        },
+                        {
+                            "id": "timely",
+                            "text": "Accurate and timely relay of missing person description to other lifeguards and bystanders"
+                        },
+                        {
+                            "id": "system",
+                            "text": "A systematic, thorough search of the facility starting in the area where missing person was last seen or the area of greatest danger if not seen"
+                        },
+                        {
+                            "id": "direct",
+                            "text": "Appropriate and effective direction of bystanders where applicable"
+                        },
+                        {
+                            "id": "teamwork",
+                            "text": "Good teamwork: back-up, follow-up, crowd control"
+                        },
+                        {
+                            "id": "assure",
+                            "text": "Reassurance, assistance, and direction to further authority for the person reporting the incident"
+                        }
+                    ],
+                    "subSituations": [
+                        {
+                            "id": "ms-sub",
+                            "text": "Missing - Submerged"
+                        },
+                        {
+                            "id": "ms-crowd",
+                            "text": "Missing - In Crowd"
+                        },
+                        {
+                            "id": "ms-chrm",
+                            "text": "Missing - In Changeroom"
+                        },
+                        {
+                            "id": "ms-eq",
+                            "text": "Missing - Equipment Room"
+                        },
+                        {
+                            "id": "ms-deck",
+                            "text": "Missing - On Deck"
+                        },
+                        {
+                            "id": "ms-ofc",
+                            "text": "Missing - In Guard Office"
+                        },
+                        {
+                            "id": "ms-ms",
+                            "text": "Missing - Not In Facility"
+                        }
+                    ]
+                },
+                "spinalVic": {
+                    "name": "Spinal Victim Management",
+                    "hidden": true,
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 4
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "recog",
+                            "text": "Quick recognition and immediate response"
+                        },
+                        {
+                            "id": "entry",
+                            "text": "Safe and appropriate entry with or without aid"
+                        },
+                        {
+                            "id": "approach",
+                            "text": "Quick, efficient approach"
+                        },
+                        {
+                            "id": "restrict",
+                            "text": "Motion of victim's spine restricted during roll-over (if required) and throughout"
+                        },
+                        {
+                            "id": "airway",
+                            "text": "Victim's airway supported above surface"
+                        },
+                        {
+                            "id": "removal",
+                            "text": "Safe and effective removal with assistance"
+                        },
+                        {
+                            "id": "comm",
+                            "text": "Effective communication with other lifeguards, victim, patrons, bystanders",
+                            "mustSees": [
+                                "NLPL2022Or/commGn"
+                            ]
+                        },
+                        {
+                            "id": "barrier",
+                            "text": "Effective use of barrier devices (e.g. pocket mask, gloves)"
+                        },
+                        {
+                            "id": "abcBr",
+                            "text": "ABC assessment - Stabilize breathing victim",
+                            "mustSees": [
+                                "EFA2014/assessment"
+                            ]
+                        },
+                        {
+                            "id": "abcVsa",
+                            "text": "ABC assessment - Immediately removal & CPR non-breathing victim",
+                            "mustSees": [
+                                "SFA2023/2cpr"
+                            ]
+                        },
+                        {
+                            "id": "ems",
+                            "text": "EMS activated at earliest possible moment"
+                        },
+                        {
+                            "id": "reassess",
+                            "text": "ABC reassessment and ability to deal with complications (e.g. airway obstruction, vomiting, gastric distension)"
+                        },
+                        {
+                            "id": "secondary",
+                            "text": "Secondary assessment"
+                        }
+                    ]
+                },
+                "singleSit": {
+                    "name": "Lifeguard Situation: Single Guard",
+                    "featureFlags": [
+                        {
+                            "name": "individual",
+                            "maxCount": 2
+                        },
+                        {
+                            "name": "situationDesigner",
+                            "situationLists": [
+                                {
+                                    "categoryName": "Minor Swimming",
+                                    "categoryLists": [
+                                        {
+                                            "list": "minorSmVic"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "categoryName": "Major Swimming",
+                                    "categoryLists": [
+                                        {
+                                            "list": "majorSmVic"
+                                        },
+                                        {
+                                            "list": "multiVic"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "categoryName": "Minor First Aid",
+                                    "categoryLists": [
+                                        {
+                                            "list": "EfaMinor"
+                                        },
+                                        {
+                                            "list": "SfaMinor"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "categoryName": "Major First Aid",
+                                    "categoryLists": [
+                                        {
+                                            "list": "EfaMajor"
+                                        },
+                                        {
+                                            "list": "SfaMajor"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "categoryName": "Aquatic Spinals",
+                                    "categoryLists": [
+                                        {
+                                            "list": "spinalVics"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "categoryName": "Missing Persons",
+                                    "categoryLists": [
+                                        {
+                                            "list": "missings"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "categoryName": "Public Relations",
+                                    "categoryLists": [
+                                        {
+                                            "list": "pr"
+                                        },
+                                        {
+                                            "list": "facility"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "maxSituations": 7,
+                            "defaultSituationCount": 3,
+                            "perSituationMarking": true,
+                            "globalSituations": true
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "position",
+                            "text": "Effective lifeguard positioning"
+                        },
+                        {
+                            "id": "observe",
+                            "text": "Effective observation skills and scanning techniques",
+                            "mustSees": [
+                                "NLPL2022Or/scanObs"
+                            ]
+                        },
+                        {
+                            "id": "timely",
+                            "text": "Timely recognition and appropriate response"
+                        },
+                        {
+                            "id": "lead",
+                            "text": "Leadership in the management of the situation"
+                        },
+                        {
+                            "id": "comm",
+                            "text": "Effective communication with auxiliary staff, victim, patrons, bystanders",
+                            "mustSees": [
+                                "NLPL2022Or/commGn"
+                            ]
+                        },
+                        {
+                            "id": "tech",
+                            "text": "Appropriate selection and effective demonstration of rescue techniques and use of equipment"
+                        },
+                        {
+                            "id": "barrier",
+                            "text": "Effective use of barrier devices (e.g. pocket mask, gloves)"
+                        },
+                        {
+                            "id": "fa",
+                            "text": "Appropriate first aid treatment if required",
+                            "mustSees": [
+                                "EFA2014/assessment",
+                                "SFA2023/2cpr"
+                            ],
+                            "fromSituationDesigner": [
+                                "EfaMinor/*",
+                                "SfaMinor/*",
+                                "EfaMajor/*",
+                                "SfaMajor/*",
+                                "spinalVics/*",
+                                "missings/*"
+                            ]
+                        },
+                        {
+                            "id": "ems",
+                            "text": "Accurate communication with EMS (if appropriate) at earliest possible moment"
+                        },
+                        {
+                            "id": "pool",
+                            "text": "Continued safety supervision of other patrons throughout or water cleared"
+                        },
+                        {
+                            "id": "pr",
+                            "text": "Concern for good public relations",
+                            "mustSees": [
+                                "NLPL2022Or/commPtrn"
+                            ]
+                        },
+                        {
+                            "id": "followup",
+                            "text": "Accurate reporting and appropriate follow-up"
+                        }
+                    ]
+                },
+                "teamSit": {
+                    "name": "Lifeguard Situation: Team",
+                    "featureFlags": [
+                        {
+                            "name": "team",
+                            "maxSize": 5,
+                            "maxCount": 1
+                        },
+                        {
+                            "name": "rescuerRoles"
+                        },
+                        {
+                            "name": "situationDesigner",
+                            "situationLists": [
+                                {
+                                    "categoryName": "Minor Swimming",
+                                    "categoryLists": [
+                                        {
+                                            "list": "minorSmVic"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "categoryName": "Major Swimming",
+                                    "categoryLists": [
+                                        {
+                                            "list": "majorSmVic"
+                                        },
+                                        {
+                                            "list": "multiVic"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "categoryName": "Minor First Aid",
+                                    "categoryLists": [
+                                        {
+                                            "list": "EfaMinor"
+                                        },
+                                        {
+                                            "list": "SfaMinor"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "categoryName": "Major First Aid",
+                                    "categoryLists": [
+                                        {
+                                            "list": "EfaMajor"
+                                        },
+                                        {
+                                            "list": "SfaMajor"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "categoryName": "Aquatic Spinals",
+                                    "categoryLists": [
+                                        {
+                                            "list": "spinalVics"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "categoryName": "Missing Persons",
+                                    "categoryLists": [
+                                        {
+                                            "list": "missings"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "categoryName": "Public Relations",
+                                    "categoryLists": [
+                                        {
+                                            "list": "pr"
+                                        },
+                                        {
+                                            "list": "facility"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "maxSituations": 5,
+                            "defaultSituationCount": 3,
+                            "perSituationMarking": true,
+                            "globalSituations": true
+                        }
+                    ],
+                    "mustSees": [
+                        {
+                            "id": "position",
+                            "text": "Effective lifeguard positioning"
+                        },
+                        {
+                            "id": "observe",
+                            "text": "Effective observation skills and scanning techniques",
+                            "mustSees": [
+                                "NLPL2022Or/scanObs"
+                            ]
+                        },
+                        {
+                            "id": "timely",
+                            "text": "Timely recognition and appropriate response"
+                        },
+                        {
+                            "id": "lead",
+                            "text": "Effective performance as a team leader and as a team member in the management of the situation"
+                        },
+                        {
+                            "id": "comm",
+                            "text": "Effective communication with other lifeguards, assistant lifeguards, victims, patrons, bystanders, and auxiliary staff",
+                            "mustSees": [
+                                "NLPL2022Or/commGn"
+                            ]
+                        },
+                        {
+                            "id": "tech",
+                            "text": "Appropriate selection and effective demonstration of rescue techniques and use of equipment"
+                        },
+                        {
+                            "id": "barrier",
+                            "text": "Effective use of barrier devices (e.g. pocket mask, gloves)"
+                        },
+                        {
+                            "id": "fa",
+                            "text": "Appropriate first aid treatment if required",
+                            "mustSees": [
+                                "EFA2014/assessment",
+                                "SFA2023/2cpr"
+                            ],
+                            "fromSituationDesigner": [
+                                "EfaMinor/*",
+                                "SfaMinor/*",
+                                "EfaMajor/*",
+                                "SfaMajor/*",
+                                "spinalVics/*",
+                                "missings/*"
+                            ]
+                        },
+                        {
+                            "id": "ems",
+                            "text": "Accurate communication with EMS (if appropriate) at earliest possible moment"
+                        },
+                        {
+                            "id": "pool",
+                            "text": "Continued safety supervision of other patrons throughout or water cleared"
+                        },
+                        {
+                            "id": "pr",
+                            "text": "Concern for good public relations",
+                            "mustSees": [
+                                "NLPL2022Or/commPtrn"
+                            ]
+                        },
+                        {
+                            "id": "followup",
+                            "text": "Accurate reporting and appropriate follow-up"
+                        }
+                    ]
+                }
+            },
+            "situationLists": {
+                "spinalVics": {
+                    "name": "Aquatic Spinal Victims",
+                    "values": [
+                        {
+                            "id": "br-spine",
+                            "text": "Breathing Spinal",
+                            "skill": "NLPL2022Or/spinalVic"
+                        },
+                        {
+                            "id": "vsa-spine",
+                            "text": "Non-Breathing Spinal",
+                            "skill": "NLPL2022Or/spinalVic"
+                        }
+                    ]
+                },
+                "missings": {
+                    "name": "Missing Persons",
+                    "values": [
+                        {
+                            "id": "missing",
+                            "text": "Missing Person",
+                            "skill": "NLPL2022Or/missing"
+                        }
+                    ]
+                },
+                "pr": {
+                    "name": "Public Relations",
+                    "values": [
+                        {
+                            "id": "horse",
+                            "text": "Children Horseplaying"
+                        },
+                        {
+                            "id": "splash",
+                            "text": "Child Splashing/Pushing Lifeguard"
+                        },
+                        {
+                            "id": "booking",
+                            "text": "Pool Booking/Swimming Lesson Request"
+                        },
+                        {
+                            "id": "lostObj",
+                            "text": "Lost Earing"
+                        },
+                        {
+                            "id": "call",
+                            "text": "Request To Use The Phone"
+                        },
+                        {
+                            "id": "orient",
+                            "text": "Patron Asking About The Facility"
+                        },
+                        {
+                            "id": "breakin",
+                            "text": "Items Stolen From Locker"
+                        },
+                        {
+                            "id": "temp",
+                            "text": "Pool Temperature Complaint"
+                        },
+                        {
+                            "id": "dirty",
+                            "text": "Dirty Changeroom Complaint"
+                        },
+                        {
+                            "id": "dirty",
+                            "text": "Music Complaint"
+                        },
+                        {
+                            "id": "flirt",
+                            "text": "Patron Flirting With Lifeguard"
+                        },
+                        {
+                            "id": "angry",
+                            "text": "Patron Angry With Lifeguard"
+                        },
+                        {
+                            "id": "feature",
+                            "text": "Patron Complaining About Closed Feature"
+                        },
+                        {
+                            "id": "running",
+                            "text": "Running On Deck"
+                        },
+                        {
+                            "id": "goggles",
+                            "text": "Asking For Goggles"
+                        },
+                        {
+                            "id": "shave",
+                            "text": "Inappropriate Behaviour (Shaving In Pool)"
+                        },
+                        {
+                            "id": "shave",
+                            "text": "Inappropriate Behaviour (Brushing Teeth)"
+                        },
+                        {
+                            "id": "makeout",
+                            "text": "Inappropriate Behaviour (Making Out)"
+                        },
+                        {
+                            "id": "behave",
+                            "text": "Inappropriate Behaviour (Drunk)"
+                        },
+                        {
+                            "id": "shave",
+                            "text": "Inappropriate Behaviour (Harrassment)"
+                        },
+                        {
+                            "id": "fight",
+                            "text": "Patrons Fighting"
+                        },
+                        {
+                            "id": "ratio",
+                            "text": "Swim Test/Parent Ratio"
+                        },
+                        {
+                            "id": "equipAsk",
+                            "text": "Asking For Equipment"
+                        },
+                        {
+                            "id": "equipMis",
+                            "text": "Misuse Of Equipment"
+                        },
+                        {
+                            "id": "breath",
+                            "text": "Breath-Holding Contest"
+                        },
+                        {
+                            "id": "dive",
+                            "text": "Diving Where Not Permitted"
+                        },
+                        {
+                            "id": "photo",
+                            "text": "Taking Photos"
+                        },
+                        {
+                            "id": "food",
+                            "text": "Eating Food"
+                        },
+                        {
+                            "id": "other",
+                            "text": "Other"
+                        }
+                    ]
+                },
+                "facility": {
+                    "name": "Facility Events",
+                    "values": [
+                        {
+                            "id": "pump",
+                            "text": "Pump Failure"
+                        },
+                        {
+                            "id": "power",
+                            "text": "Power Outage"
+                        },
+                        {
+                            "id": "tornado",
+                            "text": "Tornado Warning"
+                        },
+                        {
+                            "id": "fire",
+                            "text": "Fire Alarm"
+                        },
+                        {
+                            "id": "evac",
+                            "text": "Evacuation"
+                        },
+                        {
+                            "id": "foul",
+                            "text": "Pool Fouling"
+                        },
+                        {
+                            "id": "thunder",
+                            "text": "Thunder/Lightning (Outdoors Only)"
+                        },
+                        {
+                            "id": "light",
+                            "text": "Low Light/Lighting Failure"
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "situationLists": {
+        "minorSmVic": {
+            "name": "Aquatic Victims",
+            "values": [
+                {
+                    "id": "tiredsw",
+                    "text": "Tired Swimmer"
+                },
+                {
+                    "id": "weaksw",
+                    "text": "Weak Swimmer"
+                },
+                {
+                    "id": "nonsw",
+                    "text": "Non-Swimmer"
+                }
+            ]
+        },
+        "majorSmVic": {
+            "name": "Aquatic Victims",
+            "values": [
+                {
+                    "id": "un-br-sw",
+                    "text": "Unconscious Breathing"
+                },
+                {
+                    "id": "vsa-sw",
+                    "text": "Unconscious Non-Breathing"
+                },
+                {
+                    "id": "submerge",
+                    "text": "Submerged Victim"
+                }
+            ]
+        },
+        "multiVic": {
+            "name": "Double Clutch Victims",
+            "values": [
+                {
+                    "id": "dc-sub",
+                    "text": "Double Clutch - 1 Submerged"
+                },
+                {
+                    "id": "db-2non",
+                    "text": "Double Clutch - 2 Non-Swimmers"
+                }
+            ]
+        },
+        "EfaMinor": {
+            "name": "EFA Minors",
+            "values": [
+                {
+                    "id": "obs-con",
+                    "text": "Conscious Obstructed Airway",
+                    "skill": "EFA2014/obstruct"
+                },
+                {
+                    "id": "resp",
+                    "text": "Respiratory Emergencies",
+                    "skill": "EFA2014/respir"
+                },
+                {
+                    "id": "shock",
+                    "text": "Shock",
+                    "skill": "EFA2014/shock"
+                },
+                {
+                    "id": "bleed",
+                    "text": "External Bleeding",
+                    "skill": "EFA2014/bleed",
+                    "subSituations": [
+                        "bd-mnr",
+                        "bd-embd"
+                    ]
+                },
+                {
+                    "id": "burn",
+                    "text": "Burns",
+                    "skill": "EFA2014/burn",
+                    "subSituations": [
+                        "bn-1",
+                        "bn-2",
+                        "bn-dc",
+                        "bn-wc",
+                        "bn-ec"
+                    ]
+                },
+                {
+                    "id": "facial",
+                    "text": "Facial Injuries",
+                    "skill": "EFA2014/facial",
+                    "subSituations": [
+                        "fc-chip",
+                        "fc-loose",
+                        "fc-mouth",
+                        "fc-nb",
+                        "fc-bn"
+                    ]
+                }
+            ]
+        },
+        "EfaMajor": {
+            "name": "EFA Majors",
+            "values": [
+                {
+                    "id": "obstrUnc",
+                    "text": "Unconscious Obstructed Airway",
+                    "skill": "EFA2014/obstrUnc"
+                },
+                {
+                    "id": "burn",
+                    "text": "Burns",
+                    "skill": "EFA2014/burn",
+                    "subSituations": [
+                        "bn-3"
+                    ]
+                },
+                {
+                    "id": "bleed",
+                    "text": "External Bleeding",
+                    "skill": "EFA2014/bleed",
+                    "subSituations": [
+                        "bd-mjr"
+                    ]
+                },
+                {
+                    "id": "heart",
+                    "text": "Circulatory Emergencies",
+                    "skill": "EFA2014/heart",
+                    "subSituations": [
+                        "ha-ha",
+                        "ha-ag"
+                    ]
+                },
+                {
+                    "id": "stroke",
+                    "text": "Stroke",
+                    "skill": "EFA2014/stroke"
+                },
+                {
+                    "id": "abdominal",
+                    "text": "Unconscious Obstructed Airway",
+                    "skill": "EFA2014/abdominal"
+                },
+                {
+                    "id": "facial",
+                    "text": "Facial Injuries",
+                    "skill": "EFA2014/facial",
+                    "subSituations": [
+                        "fc-eyec",
+                        "fc-eyepl",
+                        "fc-ear"
+                    ]
+                },
+                {
+                    "id": "unconbr",
+                    "text": "Unconscious Breathing",
+                    "skill": "EFA2014/unconbr"
+                },
+                {
+                    "id": "unconnb",
+                    "text": "Unconscious Non-Breathing",
+                    "skill": "EFA2014/cpr"
+                }
+            ]
+        },
+        "SfaMinor": {
+            "name": "SFA Minors",
+            "values": [
+                {
+                    "id": "envrio",
+                    "text": "Environmental Emergencies",
+                    "skill": "SFA2023/enviro",
+                    "subSituations": [
+                        "en-htcrmp",
+                        "en-htex",
+                        "en-dehy",
+                        "en-hypo"
+                    ]
+                },
+                {
+                    "id": "bonejoint",
+                    "text": "Bone & Joint",
+                    "skill": "SFA2023/bonejoint",
+                    "subSituations": [
+                        "bj-dislo",
+                        "bj-sprain"
+                    ]
+                },
+                {
+                    "id": "head",
+                    "text": "Head Injuries",
+                    "skill": "SFA2023/head",
+                    "subSituations": [
+                        "hd-con"
+                    ]
+                },
+                {
+                    "id": "diabetic",
+                    "text": "Diabetic Emergency",
+                    "skill": "SFA2023/diabetic"
+                }
+            ]
+        },
+        "SfaMajor": {
+            "name": "SFA Majors",
+            "values": [
+                {
+                    "id": "landspnl",
+                    "text": "Land Spinals",
+                    "skill": "SFA2023/lndspnl"
+                },
+                {
+                    "id": "envrio",
+                    "text": "Environmental Emergencies",
+                    "skill": "SFA2023/enviro",
+                    "subSituations": [
+                        "en-stsrke",
+                        "en-frbt"
+                    ]
+                },
+                {
+                    "id": "bonejoint",
+                    "text": "Bone & Joint",
+                    "skill": "SFA2023/bonejoint",
+                    "subSituations": [
+                        "bj-clo",
+                        "bj-open"
+                    ]
+                },
+                {
+                    "id": "chest",
+                    "text": "Chest Injuries",
+                    "skill": "SFA2023/chest"
+                },
+                {
+                    "id": "head",
+                    "text": "Head Injuries",
+                    "skill": "SFA2023/head",
+                    "subSituations": [
+                        "hd-spnl"
+                    ]
+                },
+                {
+                    "id": "seizure",
+                    "text": "Seizures",
+                    "skill": "SFA2023/seizure"
+                },
+                {
+                    "id": "poison",
+                    "text": "Poisoning",
+                    "skill": "SFA2023/poison"
+                }
+            ]
+        }
+    },
+    "settings": {
+        "bronzeCrossIncludeSFA": {
+            "type": "boolean",
+            "default": true
+        },
+        "markingMode": {
+            "type": "list",
+            "default": "negative"
+        },
+        "useRescuerRoles": {
+            "type": "boolean",
+            "default": true
+        },
+        "resultShowComments": {
+            "type": "boolean",
+            "default": true
+        },
+        "resultOnlyFailMS": {
+            "type": "boolean",
+            "default": false
+        }
+    },
+    "flagNames": {
+        "team": {
+            "name": "Team Marking",
+            "icon": "people",
+            "color": "darkblue"
+        },
+        "individual": {
+            "name": "Individual Marking",
+            "icon": "person",
+            "color": "darkgreen"
+        },
+        "situationDesigner": {
+            "name": "Situation Designer",
+            "icon": "design_services",
+            "color": "darkorange"
+        }
+    }
+}

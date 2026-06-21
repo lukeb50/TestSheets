@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Aquatics Course</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="stylesheet" href="/main/stylesheets/root.css">
+    <link rel="stylesheet" href="../candidateNotification.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+</head>
+
+<body>
+    <div id="mainContainer">
+        <div id="splashContainer">
+            <h1>Join Class</h1>
+            <h2>Your instructor will be able to send you messages for up to 7 days.</h2>
+            <h3>You can stop messages at any time</h3>
+            <div id="candidateListHolder" class="scrollbar">
+                <div id="candidateList"></div>
+            </div>
+            <div id="joinButtonHolder">
+                <button id="joinButton" disabled>Join</button>
+            </div>
+        </div>
+        <div id="messagingContainer"></div>
+    </div>
+    <div id="dialogContainer">
+        <div class="spinner masterSpinner">
+            <div></div>
+        </div>
+        <div id="blankDialog" class="dialog">
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-functions-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-auth-compat.js"></script>
+
+    <script src="/main/javascript/utility/utility.js"></script>
+    <script src="/main/javascript/utility/IndexedDbManager.js"></script>
+
+    <script src="/main/javascript/networking/ConnectionClasses.js"></script>
+    <script src="/main/javascript/networking/FirebaseConnection.js"></script>
+
+    <script src="../utility/CandidateConnectionManager.js"></script>
+    <script src="../utility/CandidateDataManager.js"></script>
+
+    <script src="../candidateNotification.js"></script>
+</body>
+
+</html>

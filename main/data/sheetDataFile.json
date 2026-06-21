@@ -1,0 +1,374 @@
+{
+    "lifesaving": [
+        {
+            "name": "Bronze Star (2020)",
+            "identifier": "BzSt2020Org",
+            "shortform": "Star",
+            "descriptionText": "Original Exam",
+            "documentUrl": "BronzeStar2020.pdf",
+            "pageSlotCounts": [
+                6,
+                7
+            ],
+            "DividablesToInclude": [
+                "DOB"
+            ],
+            "ModificationsToApply": {
+                "Phone": "Formatted",
+                "PostalCode": "Formatted",
+                "DOBM": "Numeric",
+                "Name": "Uppercase",
+                "City": "Uppercase",
+                "Address": "Uppercase"
+            },
+            "GenerationModificationsToApply": {
+                "DOBY": "TwoDigit"
+            },
+            "fields": [
+                "Name",
+                "Address",
+                "City",
+                "PostalCode",
+                "Email",
+                "Phone",
+                "DOBY",
+                "DOBM",
+                "DOBD"
+            ]
+        },
+        {
+            "name": "Bronze Medallion (2020)",
+            "identifier": "BzMd2020Org",
+            "shortform": "Medallion",
+            "descriptionText": "Original Exam",
+            "documentUrl": "BronzeMedallion2020.pdf",
+            "pageSlotCounts": [
+                6,
+                7
+            ],
+            "DividablesToInclude": [
+                "DOB"
+            ],
+            "ModificationsToApply": {
+                "Phone": "Formatted",
+                "PostalCode": "Formatted",
+                "DOBM": "Numeric",
+                "Name": "Uppercase",
+                "City": "Uppercase",
+                "Address": "Uppercase"
+            },
+            "GenerationModificationsToApply": {
+                "DOBY": "TwoDigit"
+            },
+            "prerequisites": {
+                "age": 13,
+                "hardAgeRequirement": false,
+                "ageRequirementAlternativeText": "have their Bronze Star certification"
+            },
+            "fields": [
+                "Name",
+                "Address",
+                "City",
+                "PostalCode",
+                "Email",
+                "Phone",
+                "DOBY",
+                "DOBM",
+                "DOBD"
+            ]
+        },
+        {
+            "name": "Bronze Cross (2020)",
+            "identifier": "BzCr2020Org",
+            "shortform": "Cross",
+            "descriptionText": "Original Exam",
+            "documentUrl": "BronzeCross2020.pdf",
+            "pageSlotCounts": [
+                6,
+                7
+            ],
+            "DividablesToInclude": [
+                "DOB"
+            ],
+            "ModificationsToApply": {
+                "Phone": "Formatted",
+                "PostalCode": "Formatted",
+                "DOBM": "Numeric",
+                "Name": "Uppercase",
+                "City": "Uppercase",
+                "Address": "Uppercase"
+            },
+            "GenerationModificationsToApply": {
+                "DOBY": "TwoDigit"
+            },
+            "prerequisites": {
+                "courses": [
+                    "Bronze Medallion",
+                    "Emergency First Aid"
+                ]
+            },
+            "fields": [
+                "Name",
+                "Address",
+                "City",
+                "PostalCode",
+                "Email",
+                "Phone",
+                "DOBY",
+                "DOBM",
+                "DOBD",
+                "Prereq1Date",
+                "Prereq1Location",
+                "Prereq2Date",
+                "Prereq2Location"
+            ]
+        },
+        {
+            "name": "National Lifeguard (2022)",
+            "identifier": "NLPL2022Or",
+            "shortform": "NL",
+            "descriptionText": "Original Exam - Pool",
+            "documentUrl": "NL-Pool2022.pdf",
+            "pageSlotCounts": [
+                4,
+                4
+            ],
+            "DividablesToInclude": [
+                "DOB",
+                "Name"
+            ],
+            "CombinablesToInclude": [
+                "LastName"
+                
+            ],
+            "ModificationsToApply": {
+                "Phone": "Formatted",
+                "PostalCode": "Formatted",
+                "DOBM": "Numeric",
+                "Name": "Uppercase",
+                "City": "Uppercase",
+                "Address": "Uppercase",
+                "LSSId": "UppercaseID"
+            },
+            "GenerationModificationsToApply": {
+                "DOBY": "TwoDigit"
+            },
+            "prerequisites": {
+                "courses": [
+                    "Bronze Cross",
+                    "Standard First Aid"
+                ],
+                "age": 15,
+                "hardAgeRequirement": true
+            },
+            "fields": [
+                "FirstName",
+                "LastName",
+                "Address",
+                "Province",
+                "City",
+                "PostalCode",
+                "Email",
+                "Phone",
+                "DOBY",
+                "DOBM",
+                "DOBD",
+                "LSSId",
+                "Prereq1Date",
+                "Prereq1Location",
+                "Prereq2Date",
+                "Prereq2Location"
+            ]
+        },
+        {
+            "name": "National Lifeguard (2022)",
+            "identifier": "NLPL2022RC",
+            "shortform": "NL",
+            "descriptionText": "Recertification Exam - Pool",
+            "documentUrl": "NL-Pool-Recert2022.pdf",
+            "pageSlotCounts": [
+                4,
+                4
+            ],
+            "DividablesToInclude": [
+                "DOB",
+                "Name"
+            ],
+            "CombinablesToInclude": [
+                "LastName"
+            ],
+            "ModificationsToApply": {
+                "Phone": "Formatted",
+                "PostalCode": "Formatted",
+                "DOBM": "Numeric",
+                "Name": "Uppercase",
+                "City": "Uppercase",
+                "Address": "Uppercase",
+                "LSSId": "UppercaseID"
+            },
+            "GenerationModificationsToApply": {
+                "DOBY": "TwoDigit"
+            },
+            "prerequisites": {
+                "courses": [
+                    "National Lifeguard"
+                ],
+                "age": 15,
+                "hardAgeRequirement": true
+            },
+            "fields": [
+                "FirstName",
+                "LastName",
+                "Address",
+                "Province",
+                "City",
+                "PostalCode",
+                "Email",
+                "Phone",
+                "DOBY",
+                "DOBM",
+                "DOBD",
+                "Prereq1Date",
+                "Prereq1Location"
+            ]
+        }
+    ],
+    "firstAid": [
+        {
+            "name": "Emergency First Aid (2014)",
+            "identifier": "EFA2014",
+            "shortform": "EFA",
+            "descriptionText": "Original or Recert Exam",
+            "documentUrl": "EFA2014.pdf",
+            "pageSlotCounts": [
+                5,
+                5
+            ],
+            "DividablesToInclude": [
+                "DOB"
+            ],
+            "ModificationsToApply": {
+                "Phone": "Formatted",
+                "PostalCode": "Formatted",
+                "DOBM": "Numeric",
+                "Name": "Uppercase",
+                "City": "Uppercase",
+                "Address": "Uppercase"
+            },
+            "GenerationModificationsToApply": {
+                "DOBY": "TwoDigit"
+            },
+            "fields": [
+                "Name",
+                "Address",
+                "Apartment",
+                "City",
+                "PostalCode",
+                "Email",
+                "Phone",
+                "DOBY",
+                "DOBM",
+                "DOBD"
+            ]
+        },
+        {
+            "name": "Standard First Aid (2023)",
+            "identifier": "SFA2023",
+            "shortform": "SFA",
+            "descriptionText": "Original or Recert Exam",
+            "documentUrl": "SFA2023.pdf",
+            "pageSlotCounts": [
+                5,
+                5
+            ],
+            "DividablesToInclude": [
+                "DOB"
+            ],
+            "ModificationsToApply": {
+                "Phone": "Formatted",
+                "PostalCode": "Formatted",
+                "DOBM": "Numeric",
+                "Name": "Uppercase",
+                "City": "Uppercase",
+                "Address": "Uppercase"
+            },
+            "GenerationModificationsToApply": {
+                "DOBY": "TwoDigit"
+            },
+            "prerequisites": {
+                "courses": [
+                    "Standard First Aid"
+                ]
+            },
+            "fields": [
+                "Name",
+                "Address",
+                "Apartment",
+                "City",
+                "PostalCode",
+                "Email",
+                "Phone",
+                "DOBY",
+                "DOBM",
+                "DOBD",
+                "Prereq1Date",
+                "Prereq1Location"
+            ]
+        }
+    ],
+    "leadership": [
+        {
+            "name": "Master Sheet",
+            "identifier": "MasterShtNew",
+            "shortform": "Instructors",
+            "descriptionText": "New Leadership Program",
+            "documentUrl": "MasterSheetNew.pdf",
+            "pageSlotCounts": [
+                3,
+                6
+            ],
+            "repeatingPages": [
+                1
+            ],
+            "DividablesToInclude": [],
+            "CombinablesToInclude": [
+                "FullAddress"
+            ],
+            "ModificationsToApply": {
+                "Phone": "Formatted",
+                "PostalCode": "Formatted",
+                "DOBM": "Numeric",
+                "Name": "Uppercase",
+                "City": "Uppercase",
+                "Address": "Uppercase",
+                "LSSId": "UppercaseID"
+            },
+            "GenerationModificationsToApply": {
+                "DOBY": "TwoDigit",
+                "DOB": [
+                    "ShortYear",
+                    "Spaced"
+                ]
+            },
+            "prerequisites": {
+                "courses": [
+                    "Bronze Cross"
+                ],
+                "age": 15,
+                "hardAgeRequirement": true
+            },
+            "fields": [
+                "Name",
+                "FullAddress",
+                "Email",
+                "Phone",
+                "DOB",
+                "LSSId",
+                "Prereq1Date",
+                "Prereq1Location",
+                "Prereq1Name"
+            ]
+        }
+    ],
+    "other": []
+}

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test Sheets</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="stylesheet" href="../stylesheets/root.css">
+    <link rel="stylesheet" href="../stylesheets/create.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,300,0,0">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+</head>
+
+<body>
+    <div id="mainListContainer">
+        <div class="topbar">
+            <span class="topbarSpacer"></span>
+            <h1>Test Sheets</h1>
+            <span class="topbarButtonSection">
+                <span id="topbarAccountSignUpHolder">
+                    <button onclick="redirectTo('login')">Sign Up</button>
+                    <button onclick="redirectTo('login')">Log In</button>
+                </span>
+                <span id="topbarAccountLoggedInHolder">
+                    <button id="topbarAccountButton">Account<span
+                            class="material-symbols-outlined">arrow_drop_down</span></button>
+                    <button onclick="redirectTo('home')">Home<span
+                            class="material-symbols-outlined">view_comfy_alt</span></button>
+                </span>
+                <span id="networkSyncIndicator">
+                    <p id="networkSyncIndicatorIcon" class="material-symbols-outlined">globe_2_cancel</p>
+                    <p id="networkSyncIndicatorText">Syncing</p>
+                    <button id="networkSyncIndicatorButton">Fix</button>
+                </span>
+                <div id="topbarAccountDropdown">
+                    <div id="topbarAccountDropdownList">
+                        <button id="accountSettingsButton">Account Settings<span class="material-symbols-outlined">person</span></button>
+                        <button id="signOutButton">Sign Out<span
+                                class="material-symbols-outlined">logout</span></button>
+                    </div>
+                </div>
+            </span>
+        </div>
+        <div id="mainListDiv">
+            <div id="mainLifesavingListHolder" class="mainlistholder">
+                <h1>Lifesaving & Lifeguarding</h1>
+                <div id="mainLifesavingList" class="list scrollbar"></div>
+            </div>
+            <div id="mainFirstAidListHolder" class="mainlistholder">
+                <h1>First Aid</h1>
+                <div id="mainFirstAidList" class="list scrollbar"></div>
+            </div>
+            <div id="mainLeadershipListHolder" class="mainlistholder">
+                <h1>Leadership</h1>
+                <div id="mainLeadershipList" class="list scrollbar"></div>
+            </div>
+            <div id="mainOtherListHolder" class="mainlistholder">
+                <h1>Other</h1>
+                <div id="mainOtherList" class="list scrollbar"></div>
+            </div>
+        </div>
+        <h2>Supported Sources</h2>
+        <div id="supportedSources">
+            <div>
+                <img
+                    src="https://storage.googleapis.com/assets_workspace/uploads/7uffzv9dk4sn-7xWvh4uZdi5Gm7fu8xC33c-1d132d3cdfa2407ed1435f5e1ead9ce0-Forms-title-logo.svg">
+                <label>Google Forms</label>
+            </div>
+            <div>
+                <label class="outlinedIcon">CSV</label>
+                <label>.CSV files</label>
+            </div>
+        </div>
+        <a href="javascript:void(0)" id="helpButton">Contact Us</a>
+    </div>
+    <div id="dialogContainer">
+        <div id="sourceDialog" class="dialog">
+            <h2>Select Data Source</h2>
+            <iframe id="sourceSelectorFrame" src="../html/sourceSelector.html"></iframe>
+            <button class="cancelButton" id="cancelSourceDialogButton">Cancel</button>
+        </div>
+        <div id="helpDialog" class="dialog">
+            <iframe id="contactForm"
+                src="https://docs.google.com/forms/d/e/1FAIpQLSfmawXLGiONxwWdfTEdk-wb8MxjxhFbbu4_dmtv9UGZ5CZ5ng/viewform?embedded=true"
+                frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+            <button class="cancelButton" id="closeHelpDialogButton">Close</button>
+        </div>
+        <dialog id="loadingDialog"><label>Loading...</label></dialog>
+    </div>
+    <iframe id="matchingIFrame" src="sheet.html"></iframe>
+    <template id="listSkeleton">
+        <div class="listing skeleton-container">
+            <div class="skeleton-exempt">
+                <label class="listingTitle skeleton"></label>
+                <label class="listingInfo skeleton"></label>
+            </div>
+            <button class="listingButton skeleton"></button>
+        </div>
+    </template>
+
+    <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-auth-compat.js"></script>
+
+    <script src="../javascript/models/BaseResponseAnswer.js"></script>
+
+    <script src="../SourceSystem/RawSourceResult.js"></script>
+    <script src="../SourceSystem/SourceMatchingEngine.js"></script>
+    <script src="../SourceSystem/matchingStrategies/BaseMatchingStrategy.js"></script>
+    <script src="../SourceSystem/matchingStrategies/HeaderMatchingStrategy.js"></script>
+    <script src="../SourceSystem/matchingStrategies/ResponseMatchingStrategy.js"></script>
+    <script src="../SourceSystem/matchingStrategies/PrerequisiteMatchingStrategy.js"></script>
+
+    <script src="../javascript/utility/ServerTimeService.js"></script>
+    <script src="../javascript/models/SheetContainer.js"></script>
+    <script src="../javascript/models/SheetContainerBuilder.js"></script>
+    <script src="../javascript/models/SheetInterpreter.js"></script>
+
+    <script src="../javascript/dataTransformers/SheetDataTransformer.js"></script>
+
+    <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+    <script src="../javascript/utility/utility.js"></script>
+    <script src="../javascript/ui/create.js"></script>
+</body>
+
+</html>
