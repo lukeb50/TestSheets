@@ -104,7 +104,7 @@
             "prerequisites": {
                 "courses": [
                     "Bronze Medallion",
-                    "Emergency First Aid"
+                    "Basic First Aid"
                 ]
             },
             "fields": [
@@ -156,7 +156,7 @@
             "prerequisites": {
                 "courses": [
                     "Bronze Cross",
-                    "Standard First Aid"
+                    "Intermediate First Aid"
                 ],
                 "age": 15,
                 "hardAgeRequirement": true
@@ -297,7 +297,7 @@
             },
             "prerequisites": {
                 "courses": [
-                    "Standard First Aid"
+                    "Intermediate First Aid"
                 ]
             },
             "fields": [

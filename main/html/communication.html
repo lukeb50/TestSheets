@@ -27,6 +27,10 @@
                             class="material-symbols-outlined">arrow_drop_down</span></button>
                     <button onclick="redirectTo('home')">Home<span
                             class="material-symbols-outlined">view_comfy_alt</span></button>
+                    <span id="communicationSaveIndicator">
+                        <p id="objectSaveIndicator">Changes Published</p>
+                        <span id="objectSaveIcon" class="material-symbols-outlined">save</span>
+                    </span>
                     <span id="networkSyncIndicator">
                         <p id="networkSyncIndicatorIcon" class="material-symbols-outlined">globe_2_cancel</p>
                         <p id="networkSyncIndicatorText">Syncing</p>
@@ -82,57 +86,159 @@
             </div>
             <div id="communicationMainPanel">
                 <div id="qrCodePanel">
-                    <h1>Candidate Setup QR Code</h1>
+                    <h1>Candidate QR Code</h1>
                     <canvas id="qrImage"></canvas>
                     <div id="qrStatSubPanel">
-                        <p>Expires In: <b id="expiryTimeLabel">20 hours</b><button class="infoI"
-                                onclick="alert('After 7 days, all candidates will be unsubscribed as a privacy measure. They can always sign up again after expiry.')">i</button>
+                        <p>Expires In: <b id="expiryTimeLabel"></b><button class="infoI"
+                                onclick="alert('After 90 days, your class page will be removed as a privacy measure.')">i</button>
                         </p>
                     </div>
-                    <span id="qrListHeaderBar">
-                        <span class="qrListCandidateIcon material-symbols-outlined">people</span>
-                        <p class="qrListCandidateNameLabel">Candidates</p>
-                        <button id="qrListRefreshButton" class="material-symbols-outlined">refresh</button>
-                    </span>
-                    <div id="qrCandidateListHolder" class="scrollbar">
-                        <div id="qrCandidateList">
+                    <div id="qrListContainer">
+                        <span id="qrListHeaderBar">
+                            <span class="qrListCandidateIcon material-symbols-outlined">people</span>
+                            <p class="qrListCandidateNameLabel">Candidates</p>
+                            <button id="qrListRefreshButton" class="material-symbols-outlined">refresh</button>
+                        </span>
+                        <div id="qrCandidateListHolder" class="scrollbar">
+                            <div id="qrCandidateList">
+                            </div>
                         </div>
                     </div>
                     <p id="qrCodeCandidateLimitLabel"></p>
                 </div>
-                <div id="sendMessagePanel">
-                    <div id="sendMessagePanelCenterer">
-                        <h1>Send A Message</h1>
-                        <div id="sendMessageCandidateListHolder" class="scrollbar">
-                            <div id="sendMessageCandidateList"></div>
+                <div id="configurationPanel">
+                    <div class="configPanelColumn">
+                        <div id="settingsPanel" class="configPanel">
+                            <h1>Settings</h1>
+                            <div class="configPanelContent scrollbar">
+                                <label>No settings available</label>
+                                <!--<label>Enable contact form:<input type="checkbox" data-setting="contactForm"><button class="infoI"
+                                        onclick="alert('Enables a contact form that forwards messages to your account email address. Your email address will not be visible unless you reply.')">i</button></label>-->
+                            </div>
                         </div>
-                        <label><input type="checkbox">Send to All Candidates</label>
-                        <div id="sendMessageTextInputHolder">
-                            <limited-textarea id="sendMessageTextInput" maxLength="400"></limited-textarea>
+                        <div id="schedulePanel" class="configPanel">
+                            <h1>Schedule</h1>
+                            <div class="configPanelContent scrollbar">
+                                <div id="scheduleListHolder"></div>
+                                <span class="addButtonSpan"><button id="scheduleNewDayButton"
+                                        class="addButton scheduleNewSessionButton">Add New
+                                        Day</button></span>
+                            </div>
                         </div>
-                        <span id="sendMessageButtonHolder">
-                            <label>Next Send in 30 seconds</label>
-                            <button id="sendMessageButton">Send</button>
-                        </span>
+                    </div>
+                    <div class="configPanelColumn">
+                        <div class="configPanel">
+                            <h1>Notes</h1>
+                            <div class="configPanelContent scrollbar">
+                                <div id="noteListHolder"></div>
+                                <span class="addButtonSpan"><button id="newNoteButton" class="addButton">Add
+                                        Note</button></span>
+                            </div>
+                        </div>
+                        <div id="linkPanel" class="configPanel">
+                            <h1>Links</h1>
+                            <div class="configPanelContent scrollbar">
+                                <div id="linkListHolder">
+                                </div>
+                                <span class="addButtonSpan"><button id="newLinkButton" class="addButton">Add
+                                        Link</button></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
     <template id="qrListTemplate">
         <div class="qrCandidateListEntry">
             <span class="qrListCandidateIcon material-symbols-outlined"></span>
             <p class="qrListCandidateNameLabel"></p>
+            <button class="qrListCandidateBypassButton material-symbols-outlined" title="Get Join Code">key</button>
         </div>
     </template>
     <div id="dialogContainer">
         <div class="spinner masterSpinner">
             <div></div>
         </div>
-        <div id="blankDialog" class="dialog">
+        <div id="bypassDialog" class="dialog">
+            <div class="dialogSwipeHolder">
+                <h1>Join Code</h1>
+                <h4><b id="bypassCodeNameLabel"></b> can enter this code to join the class by pressing "Enter Bypass
+                    Code" on their screen</h4>
+                <span id="bypassCodeSpan">
+                    <h2 id="bypassCodeLabel"></h2>
+                </span>
+                <h5>Do not share this code with anyone other than the listed student</h5>
+            </div>
+            <button class="cancelButton cancelAction">Close</button>
         </div>
     </div>
+    <template id="linkTemplate">
+        <div class="linkEntry">
+            <span class="listEntrySpan">
+                <label>Name:<input class="nameInput"></label>
+                <label class="linkColorLabel">Color:<input class="colorInput" type="color" list="colorList"></label>
+                <button class="material-symbols-outlined deletebtn">delete</button>
+            </span>
+            <span class="listEntrySpan">
+                <label>Link:<input class="urlInput" type="url"></label>
+            </span>
+        </div>
+    </template>
+    <template id="noteTemplate">
+        <div class="noteEntry">
+            <span class="listEntrySpan">
+                <label>Title:<input class="nameInput"></label>
+                <button class="material-symbols-outlined deletebtn">delete</button>
+            </span>
+            <label>Note:</label>
+            <limited-textarea class="messageInput" maxLength="400"></limited-textarea>
+            </span>
+        </div>
+    </template>
+    <template id="scheduleUnitTemplate">
+        <div class="scheduleUnit">
+            <b>Day</b>
+            <span class="scheduleUnitInfoBar">
+                <label>Date:<input class="scheduleDateInput" type="date"></label>
+                <label>Start Time:<input class="scheduleStartInput" type="time" step="900"></label>
+                <label>End Time:<input class="scheduleEndInput" type="time" step="900"></label>
+                <span class="scheduleUnitActionHolder">
+                    <button class="material-symbols-outlined deletebtn" title="Delete">delete</button>
+                    <button class="material-symbols-outlined clonebtn" title="Clone">content_copy</button>
+                </span>
+            </span>
+            <label class="scheduleUnitNoteLabel">Note:</label>
+            <limited-textarea maxLength="200" class="scheduleNoteArea"></limited-textarea>
+            <div class="scheduleUnitSessionHolder">
+
+            </div>
+            <button class="addButton scheduleNewSessionButton">Add New Session</button>
+        </div>
+    </template>
+    <template id="scheduleUnitSessionTemplate">
+        <div class="scheduleUnitSession">
+            <b>Session</b>
+            <span class="scheduleUnitInfoBar">
+                <label>Start Time:<input class="scheduleSessionStartInput" type="time"></label>
+                <label>End Time:<input class="scheduleSessionEndInput" type="time"></label>
+                <label>Location:<select class="scheduleSessionLocationInput">
+                        <option value="class">Classroom</option>
+                        <option value="water">Water</option>
+                        <option value="break">Break</option>
+                    </select></label>
+                <span class="scheduleUnitActionHolder">
+                    <button class="material-symbols-outlined deletebtn sessionDeleteButton"
+                        title="Delete">delete</button>
+                </span>
+            </span>
+            <label class="scheduleUnitNoteLabel">Note:</label>
+            <limited-textarea maxLength="200" class="scheduleSessionNoteArea"></limited-textarea>
+        </div>
+    </template>
+    <datalist id="colorList">
+        <option></option>
+    </datalist>
     <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-functions-compat.js"></script>
@@ -141,7 +247,10 @@
     <script src="../javascript/models/SheetContainer.js"></script>
     <script src="../javascript/models/SheetContainerBuilder.js"></script>
 
+    <script src="../javascript/models/CommunicationConfiguration.js"></script>
+
     <script src="../javascript/utility/ServerTimeService.js"></script>
+    <script src="../javascript/utility/SaveHandler.js"></script>
 
     <script src="../javascript/utility/utility.js"></script>
 

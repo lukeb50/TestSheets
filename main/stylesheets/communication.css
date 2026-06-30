@@ -1,3 +1,34 @@
+#communicationSaveIndicator {
+    display: none;
+    padding: 0px 5px;
+    border-radius: 5px;
+    margin-right: 5px;
+    transition: 0.5s;
+    border:1px solid transparent;
+}
+
+#communicationSaveIndicator.unsaved {
+    border: 1px solid red;
+    display: flex;
+    background: rgba(255, 0, 0, 0.3);
+}
+
+#communicationSaveIndicator.pending {
+    border: 1px solid orange;
+    display: flex;
+    background: rgba(255, 155, 0, 0.15);
+}
+
+#objectSaveIndicator {
+    font-weight: normal;
+}
+
+#objectSaveIcon {
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+}
+
 #mainContainer {
     height: 100%;
     width: 100%;
@@ -128,7 +159,7 @@ ul {
 #qrCodePanel {
     border-left: 1px solid gray;
     margin-top: 5px;
-    padding: 5px 10px;
+    padding: 5px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -137,6 +168,7 @@ ul {
 
 #qrCodePanel h1 {
     margin: 10px;
+    text-align: center;
 }
 
 #qrImage {
@@ -154,11 +186,18 @@ button.infoI {
     text-align: center;
 }
 
-#qrCandidateListHolder {
+#qrListContainer {
+    display: flex;
+    flex-direction: column;
     flex: 1;
     width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+#qrCandidateListHolder {
+    flex: 1;
     overflow-y: auto;
-    padding: 5px;
 }
 
 div.qrCandidateListEntry {
@@ -166,7 +205,16 @@ div.qrCandidateListEntry {
     flex-direction: row;
     align-items: center;
     height: 25px;
-    margin-bottom: 5px;
+    padding: 5px 0px;
+}
+
+div.qrCandidateListEntry:nth-child(even) {
+    background: rgba(200, 200, 200, 0.2);
+}
+
+div.qrCandidateListEntry.registered {
+    color: darkgreen;
+    font-weight: bold;
 }
 
 span.qrListCandidateIcon {
@@ -197,9 +245,16 @@ p.qrListError {
     background-color: rgba(100, 100, 100, 0.2);
 }
 
+button.qrListCandidateBypassButton {
+    border: none;
+    height: 100%;
+    width: 35px;
+    margin-left: 5px;
+    background: transparent;
+}
+
 #qrListHeaderBar {
     display: flex;
-    width: 100%;
     font-weight: bold;
     background: rgba(100, 100, 100, 0.25);
     align-items: center;
@@ -217,48 +272,264 @@ p.qrListError {
     font-size: 14px;
 }
 
-#sendMessagePanel {
-    flex: 1;
-    display: flex;
+#bypassDialog h1 {
+    margin: 5px auto;
 }
 
-#sendMessagePanelCenterer {
-    width: 100%;
-    max-width: 1000px;
+#bypassDialog h4 {
+    font-weight: normal;
+    text-align: center;
+    margin: 5px;
+}
+
+#bypassCodeSpan {
+    margin: 5px 20px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: color-mix(in srgb, var(--theme-color, black) 15%, transparent);
+    box-shadow: 0px 0px 5px 2px color-mix(in srgb, var(--theme-color, black) 55%, transparent);
+}
+
+#bypassDialog h5 {
+    text-align: center;
+    font-weight: normal;
+    margin: 5px auto;
+}
+
+#configurationPanel {
+    flex: 1;
+    display: flex;
+    margin-top: 5px;
+}
+
+div.configPanelColumn {
+    flex: 1;
+    margin: 5px;
     display: flex;
     flex-direction: column;
 }
 
-#sendMessagePanelCenterer h1 {
-    text-align: center;
+div.configPanel {
+    border: 2px solid rgba(0, 0, 0, 0.6);
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex: 1;
+    max-height: fit-content;
 }
 
-#sendMessageCandidateListHolder {
-    width: 100%;
+div.configPanel:not(:nth-child(1)) {
+    margin-top: 5px;
+}
+
+div.configPanel h1 {
+    margin: 5px;
+    text-align: center;
+    font-size: 24px;
+}
+
+div.configPanelContent {
     flex: 1;
     overflow-y: auto;
 }
 
-#sendMessageTextInputHolder {
+#settingsPanel label {
     display: flex;
+    align-items: center;
+    margin-left: 5px;
+    margin-bottom: 5px;
 }
 
-#sendMessageTextInput {
-    height: 10em;
-    border-radius: 5px;
-    box-sizing: border-box;
-    margin: 5px;
-    flex: 1;
-}
-
-#sendMessageButtonHolder {
+div.scheduleUnit {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    margin: 5px;
     padding: 5px;
+    padding-bottom: 0px;
+    border-radius: 5px;
+    background-color: rgba(200, 200, 200, 0.4);
+    border: 1px solid black;
 }
 
-#sendMessageButton{
-    padding: 15px;
+span.scheduleUnitInfoBar {
+    display: flex;
+}
+
+span.scheduleUnitActionHolder {
+    display: flex;
+}
+
+span.scheduleUnitActionHolder button,
+button.deletebtn {
+    border: none;
+    font-size: 18px;
+    background-color: transparent;
+    align-self: center;
+    margin-left: 5px;
+    font-weight: bold;
+    height: 100%;
+}
+
+button.deletebtn {
+    color: darkred;
+}
+
+span.scheduleUnitInfoBar label {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+span.scheduleUnitInfoBar label input,
+span.scheduleUnitInfoBar label select {
+    flex: 1;
+    margin: 0px 10px;
+    border-radius: 5px;
+    border: 1px solid black;
+}
+
+label.scheduleUnitNoteLabel {
+    margin-top: 5px;
+}
+
+limited-textarea {
+    resize: none;
+    height: 4rem;
+    border-radius: 5px;
     width: 100%;
+    background-color: white;
+    margin-bottom: 5px;
+}
+
+div.scheduleUnitSession {
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 5px;
+    background-color: white;
+    border-radius: 5px;
+}
+
+span.addButtonSpan {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+button.addButton {
+    margin: 5px;
+    margin-top: 0px;
+    padding: 5px;
+    font-weight: bold;
+    border-color: black;
+}
+
+div.linkEntry,
+div.noteEntry {
+    background-color: rgba(100, 100, 100, 0.2);
+    margin: 5px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+}
+
+span.listEntrySpan {
+    display: flex;
+}
+
+span.listEntrySpan label:not(.linkColorLabel) {
+    display: flex;
+    flex: 1;
+    align-items: center;
+}
+
+span.listEntrySpan label.linkColorLabel {
+    margin-left: 5px;
+    display: flex;
+    align-items: center;
+}
+
+div.linkEntry input[type="color"] {
+    padding: 0;
+    margin: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    width: 20px;
+    height: 24px;
+}
+
+div.linkEntry input[type="color"]::-webkit-color-swatch {
+    border-radius: 15px;
+    border: none;
+}
+
+div.linkEntry input[type="color"]::-moz-color-swatch {
+    border-radius: 15px;
+    border: none;
+}
+
+span.listEntrySpan:not(:nth-last-child(1)) {
+    margin-bottom: 5px;
+}
+
+div.linkEntry input,
+div.noteEntry input {
+    border-radius: 5px;
+    border: 1px solid black;
+    height: 20px;
+    box-sizing: border-box;
+    flex: 1;
+    margin-left: 5px;
+}
+
+@media(max-width:1500px) {
+    #configurationPanel {
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    #qrCodePanel {
+        padding: 0px;
+        box-shadow: none;
+    }
+
+    #qrListContainer {
+        padding: 5px;
+    }
+}
+
+@media(max-width:750px) {
+    #qrCodePanel {
+        border: none;
+    }
+
+    #communication {
+        overflow-y: auto;
+    }
+
+    #communicationMainPanel {
+        flex-direction: column;
+    }
+
+    #configurationPanel {
+        overflow-y: visible;
+    }
+
+    .scheduleUnitInfoBar,
+    .listEntrySpan {
+        flex-direction: column-reverse;
+    }
+
+    .scheduleUnitInfoBar label,
+    .listEntrySpan label {
+        margin-bottom: 5px;
+    }
 }

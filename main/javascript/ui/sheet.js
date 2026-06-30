@@ -1008,9 +1008,7 @@ window.addEventListener("pagehide", (ev) => {
     }
 
 });
-document.addEventListener("visibilitychange", () => {//Save when the user tabs out
-    if (document.visibilityState === "hidden") forceSave();
-});
+
 function hideMatchingScreen() {
     dialogContainer.style.display = "none";
     warningBar.removeAttribute("data-module");

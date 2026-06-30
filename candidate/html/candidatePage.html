@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Aquatics Course</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="stylesheet" href="/main/stylesheets/root.css">
+    <link rel="stylesheet" href="../candidatePage.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+</head>
+
+<body>
+    <div id="mainContainer">
+        <div id="splashContainer">
+            <div id="verificationHolder">
+                <div id="joinHolder" class="sectionHolder">
+                    <h1>Join Class</h1>
+                    <span>
+                        <h3>Enter your <select id="verificationMethodSelect">
+                                <option value="LSSId">LSS ID</option>
+                                <option value="Phone">Phone Number</option>
+                                <option value="Email">Email Address</option>
+                            </select> to start</h3>
+                    </span>
+                    <span>
+                        <input id="verificationInput">
+                    </span>
+                    <label class="tcLabel">I accept the
+                        <a target="_blank" href="https://google.com">Terms and Conditions</a>
+                        <input id="verificationTcCheckbox" type="checkbox"></label>
+                    <div class="joinButtonHolder">
+                        <button id="verificationSubmitButton" disabled>Join</button>
+                    </div>
+                    <span id="goToBypassButtonHolder">
+                        <button id="goToBypassButton">Use an instructor-provided join code</button>
+                    </span>
+                </div>
+                <div id="entryConfirmHolder" class="sectionHolder">
+                    <h3>Joining As:</h3>
+                    <h2 id="entryConfirmationNameLabel">Luke Bentley</h2>
+                    <span id="entryConfirmButtonHolder">
+                        <button id="entryConfirmationYesButton">Yes, That's Me</button>
+                        <button id="entryConfirmationNoButton">No, Not Me</button>
+                    </span>
+                </div>
+                <div id="bypassCodeHolder" class="sectionHolder">
+                    <h1>Join Class</h1>
+                    <p>If you are having trouble joining, ask your instructor for your join code. Enter it below to join
+                        the class directly.</p>
+                    <label id="bypassCodeLabel">Join Code:<input id="bypassCodeInput" maxlength="10"></label>
+                    <label class="tcLabel">I accept the
+                        <a target="_blank" href="https://google.com">Terms and Conditions</a>
+                        <input id="bypassTcCheckbox" type="checkbox"></label>
+                    <div class="joinButtonHolder">
+                        <button id="bypassCodeSubmitButton">Join</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div id="classContainer">
+            <div class="topbar">
+                <span class="topbarSpacer"></span>
+                <h1>Aquatics Course</h1>
+                <span class="topbarButtonSection">
+                    <p id="nameLabel"></p>
+                    <button id="signOutButton">Sign Out<span class="material-symbols-outlined">logout</span></button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div id="dialogContainer">
+        <div class="spinner masterSpinner">
+            <div></div>
+        </div>
+        <div id="blankDialog" class="dialog">
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-functions-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-auth-compat.js"></script>
+
+    <script src="/main/javascript/utility/utility.js"></script>
+    <script src="/main/javascript/utility/IndexedDbManager.js"></script>
+
+    <script src="/main/javascript/networking/ConnectionClasses.js"></script>
+    <script src="/main/javascript/networking/FirebaseConnection.js"></script>
+
+    <script src="../utility/CandidateConnectionManager.js"></script>
+    <script src="../utility/CandidateDataManager.js"></script>
+
+    <script src="/main/javascript/models/CommunicationConfiguration.js"></script>
+
+    <script src="../candidatePage.js"></script>
+</body>
+
+</html>

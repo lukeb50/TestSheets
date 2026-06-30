@@ -35,9 +35,9 @@
                 </span>
                 <div id="topbarAccountDropdown">
                     <div id="topbarAccountDropdownList">
-                        <!--<button id="classCommunicationTopbarButton"
+                        <button id="classCommunicationTopbarButton"
                             onclick="redirectToCommunication(sheetContainer)">Class Communication<span
-                                class="material-symbols-outlined">notifications_active</span></button>-->
+                                class="material-symbols-outlined">notifications_active</span></button>
                         <button id="accountSettingsButton">Account Settings<span
                                 class="material-symbols-outlined">person</span></button>
                         <button id="signOutButton">Sign Out<span
@@ -324,8 +324,11 @@
         <script src="../javascript/utility/ServerTimeService.js"></script>
         <script src="../javascript/utility/InternalMessageChannel.js"></script>
 
-        <script src="../javascript/utility/ConnectionManager.js"></script>
-        <script src="../javascript/utility/DataManager.js"></script>
+        <script src="../javascript/networking/ConnectionClasses.js"></script>
+        <script src="../javascript/networking/FirebaseConnection.js"></script>
+        <script src="../javascript/networking/ConnectionManager.js"></script>
+        <script src="../javascript/networking/DataManager.js"></script>
+
         <script src="../javascript/utility/IndexedDbManager.js"></script>
         <script src="../javascript/utility/SaveHandler.js"></script>
 

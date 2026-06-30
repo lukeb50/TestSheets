@@ -42,6 +42,9 @@ class LimitedTextArea extends HTMLElement {
         if (this.hasAttribute("disabled")) {
             this.#updateDisabledState(this.getAttribute("disabled"));
         }
+        if(this.hasAttribute("maxLength")){
+            this.setMaxCharacterCount(new Number(this.getAttribute("maxLength")));
+        }
     }
 
     #updateDisabledState(disabled) {

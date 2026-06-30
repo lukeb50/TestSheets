@@ -2187,6 +2187,3 @@ window.addEventListener("popstate", async (event) => {
 })
 
 window.addEventListener("pagehide", forceSave);
-document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") forceSave();
-});

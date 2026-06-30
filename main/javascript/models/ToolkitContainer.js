@@ -44,8 +44,8 @@ class SkillMarkingEntry {
         }
     }
 
-    markModified() {
-        this.modifiedAt = Date.now();
+    async markModified() {
+        this.modifiedAt = await this.timeService.getActualTime();
     }
 
     static fromJson({ situationConfiguration, situationData, teams, skillId, modifiedAt, version } = {}, key, attachedSheetKey) {

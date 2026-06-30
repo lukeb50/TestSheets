@@ -200,12 +200,52 @@ class DataManager {
         return networkResultObj.getPayload();
     }
 
-    async getCommunicationRegisteredCandidates(sheetId) {
-        var networkResultObj = await this.connection.getCommunicationCandidates(sheetId);
+    async getCommunicationRegisteredCandidates(registrationId) {
+        var networkResultObj = await this.connection.getCommunicationCandidates(registrationId);
         if (networkResultObj.getSaveStatus() === SAVE_STATUS.UNSAVED) {
             console.warn(networkResultObj.getError());
             throw networkResultObj.getError();
         }
         return networkResultObj.getPayload();
+    }
+
+    async getCommunicationBypassKey(registrationId, responseId) {
+        var networkResultObj = await this.connection.getCommunicationBypassKey(registrationId, responseId);
+        if (networkResultObj.getSaveStatus() === SAVE_STATUS.UNSAVED) {
+            console.warn(networkResultObj.getError());
+            throw networkResultObj.getError();
+        }
+        return networkResultObj.getPayload();
+    }
+
+    async saveCommunicationConfiguration(configInstance, saveMode = SAVE_MODE.SERVER) {
+        if (saveMode !== SAVE_MODE.SERVER) {
+            return;
+        }
+        //Conversions
+        var jsonData = configInstance.toJson();
+        //Request
+        var networkResultObj = await this.connection.saveCommunicationConfiguration(jsonData.key, jsonData.data);
+        //Update sheet save status
+        if (networkResultObj.getSaveStatus() !== SAVE_STATUS.UNSAVED) {
+            //Save was made to some extent
+            return networkResultObj.getPayload();
+        }
+        //Failed save (network & service worker)
+        console.warn(networkResultObj.getError());
+        throw networkResultObj.getError();
+    }
+
+    async getCommunicationConfiguration(registrationId) {
+        var networkResultObj = await this.connection.getCommunicationConfiguration(registrationId);
+        if (networkResultObj.getSaveStatus() === SAVE_STATUS.UNSAVED) {
+            console.warn(networkResultObj.getError());
+            throw networkResultObj.getError();
+        }
+        if (networkResultObj.getPayload()) {
+            return new CommunicationConfiguration(registrationId, networkResultObj.getPayload());
+        } else {
+            return new CommunicationConfiguration(registrationId);
+        }
     }
 }

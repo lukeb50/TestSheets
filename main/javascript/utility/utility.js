@@ -254,7 +254,7 @@ async function signOut() {
 }
 
 //Topbar dropdown menu
-if (typeof window !== 'undefined' && document.getElementById("signOutButton")) {
+if (typeof window !== 'undefined' && document.getElementById("signOutButton") && document.getElementById("topbarAccountDropdown")) {
     document.getElementById("signOutButton").addEventListener('click', () => {
         signOut();
     })

@@ -1,7 +1,7 @@
 {
     "name": "Test Sheets",
     "short_name": "Test Sheets",
-    "start_url": "/TestSheets/main/html/home",
+    "start_url": "/TestSheets/main/html/home.html",
     "display": "standalone",
     "icons": [
         {
@@ -15,5 +15,5 @@
             "type": "image/png"
         }
     ]
-    
+
 }

@@ -113,17 +113,31 @@ class ConnectionManager {
     }
 
     async getCommunicationRegistration(sheetKey) {
-        let info = new DatabaseExecutionObject("get", "communicationregistration", null, null, sheetKey);
+        let info = new DatabaseExecutionObject("get", "communicationregistration", null, null, { sheetKey: sheetKey });
         return this.processCall(info);
     }
 
     async createCommunicationRegistration(sheetKey) {
-        let info = new DatabaseExecutionObject("get", "communicationregistration", null, "create", sheetKey);
+        let info = new DatabaseExecutionObject("get", "communicationregistration", null, "create", { sheetKey: sheetKey });
         return this.processCall(info);
     }
 
-    async getCommunicationCandidates(sheetKey) {
-        let info = new DatabaseExecutionObject("get", "communicationregistration", null, "candidates", sheetKey);
+    async getCommunicationCandidates(registrationId) {
+        let info = new DatabaseExecutionObject("get", "communicationregistration", null, "candidates", { registrationId: registrationId });
+        return this.processCall(info);
+    }
+
+    async getCommunicationBypassKey(registrationId, responseId) {
+        let info = new DatabaseExecutionObject("get", "communicationregistration", null, "getbypasskey", { registrationId: registrationId, responseId: responseId });
+        return this.processCall(info);
+    }
+    async saveCommunicationConfiguration(registrationId, data) {
+        let info = new DatabaseExecutionObject("save", "communicationregistration", registrationId, "configuration", { key: registrationId, data: data });
+        return this.processCall(info);
+    }
+
+    async getCommunicationConfiguration(registrationId) {
+        let info = new DatabaseExecutionObject("get", "communicationregistration", registrationId, "configuration", { registrationId: registrationId });
         return this.processCall(info);
     }
 
@@ -138,7 +152,7 @@ class ConnectionManager {
         return new Promise((resolve, reject) => {
             this.connection.execute(executionObj).then((resultObj) => {
                 if (!resultObj.isSuccess()) {//The server responded with a 4xx of 5xx
-                    reject(new OperationPublicResult(null, resultObj.error, SAVE_STATUS.UNSAVED));
+                    resolve(new OperationPublicResult(null, resultObj.error, SAVE_STATUS.UNSAVED));
                     return;
                 }
                 //The server returned 2xx or 3xx, Let UI know save succeeded

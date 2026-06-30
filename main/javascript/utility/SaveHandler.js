@@ -106,3 +106,11 @@ async function executeSave() {
         throw err;
     }
 }
+
+document.addEventListener("visibilitychange", () => {//Save when the user tabs out
+    if (document.visibilityState === "hidden") forceSave();
+});
+
+document.addEventListener("beforeunload", () => {//Save when the tab is closing (not reliable, but better to include)
+    if (document.visibilityState === "hidden") forceSave();
+});

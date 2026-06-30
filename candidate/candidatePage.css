@@ -1,0 +1,165 @@
+#mainContainer {
+    overflow: hidden;
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+#splashContainer {
+    width: 100%;
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+}
+
+#classContainer {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+}
+
+.topbar {
+    justify-content: flex-end;
+}
+
+.topbar p {
+    margin: 0;
+    height: fit-content;
+    margin-right: 5px;
+}
+
+span.topbarButtonSection {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+#signOutButton {
+    flex: 0;
+}
+
+h1,
+h2,
+h3 {
+    text-align: center;
+    margin: 5px;
+}
+
+h3 {
+    font-weight: normal;
+    font-size: 18px;
+}
+
+.sectionHolder {
+    display: none;
+}
+
+#verificationHolder {
+    box-shadow: 0px 0px 10px 5px color-mix(in srgb, var(--theme-color, black) 75%, transparent);
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 20px;
+    width: 50%;
+    min-width: 500px;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+@media(max-width:500px) {
+    #verificationHolder {
+        width: 100%;
+        box-shadow: none;
+        min-width: 100%;
+    }
+}
+
+#verificationHolder span {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+#verificationInput {
+    flex: 1;
+    padding: 5px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid black;
+}
+
+.joinButtonHolder {
+    margin-top: 5px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+#verificationSubmitButton,
+#bypassCodeSubmitButton {
+    padding: 5px 15px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.tcLabel {
+    margin: 5px 0px;
+    display: flex;
+    justify-content: center;
+}
+
+.tcLabel a {
+    margin-left: 3px;
+    text-decoration: none;
+    color: var(--theme-color)
+}
+
+.tcLabel a:visited {
+    color: var(--theme-color);
+}
+
+#goToBypassButton {
+    border: none;
+    margin-top: 5px;
+    padding: 5px;
+    color: color-mix(in srgb, var(--theme-color, black) 50%, black);
+}
+
+#entryConfirmButtonHolder {
+    margin: 5px;
+    display: flex;
+}
+
+#entryConfirmationNameLabel {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+#entryConfirmButtonHolder button {
+    font-weight: bold;
+    padding: 10px 5px;
+    flex: 1;
+    margin: 0px 5px;
+}
+
+#bypassCodeHolder p {
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    margin: 5px;
+    margin-bottom: 10px;
+}
+
+#bypassCodeLabel {
+    width: 100%;
+    display: flex;
+}
+
+#bypassCodeInput {
+    flex: 1;
+    margin-left: 5px;
+    border-radius: 5px;
+    border: 1px solid black;
+}
